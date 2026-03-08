@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Team A - Burkhart Road</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0d1117;color:#f0f6fc;min-height:100vh;}
+
+/* ── PAGE HEADER ── */
+.pg-header{background:#C1121F;padding:12px 14px;display:flex;align-items:center;gap:10px;}
+.pg-badge{background:rgba(255,255,255,.22);border-radius:8px;padding:5px 12px;font-weight:800;font-size:22px;color:#fff;flex-shrink:0;}
+.pg-info{flex:1;min-width:0;}
+.pg-info h1{font-size:15px;font-weight:700;color:#fff;}
+.pg-info p{font-size:11px;color:rgba(255,255,255,.8);margin-top:1px;}
+.pg-stats{display:flex;gap:6px;flex-shrink:0;}
+.pstat{background:rgba(255,255,255,.18);border-radius:14px;padding:4px 9px;text-align:center;}
+.pstat .n{font-size:16px;font-weight:800;color:#fff;line-height:1;}
+.pstat .l{font-size:9px;color:rgba(255,255,255,.8);}
+.pstat.gn{background:rgba(40,164,78,.6);}
+
+/* ── ACTION TOOLBAR ── */
+.toolbar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:#161b22;border-bottom:1px solid #21262d;flex-wrap:wrap;}
+.toolbar input{flex:1;min-width:120px;padding:8px 12px;background:#0d1117;border:1.5px solid #30363d;border-radius:8px;color:#f0f6fc;font-size:14px;outline:none;-webkit-appearance:none;}
+.toolbar input::placeholder{color:#6e7681;}
+.exp-btn{padding:9px 14px;background:#2da44e;border:none;border-radius:8px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px;flex-shrink:0;}
+.exp-btn svg{width:16px;height:16px;fill:#fff;}
+.map-btn{padding:9px 14px;background:#1D3557;border:none;border-radius:8px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+
+/* ── FILTER PILLS ── */
+.filters{display:flex;gap:6px;padding:8px 12px;background:#0d1117;border-bottom:1px solid #21262d;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.fp{flex-shrink:0;padding:6px 12px;border-radius:16px;border:1.5px solid #30363d;background:transparent;color:rgba(255,255,255,.55);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;}
+.fp.on{background:#C1121F;border-color:#C1121F;color:#fff;}
+
+/* ── SECTION HEADER ── */
+.sec{padding:8px 14px;font-size:11px;font-weight:700;color:#6e7681;letter-spacing:.8px;text-transform:uppercase;background:#161b22;border-bottom:1px solid #21262d;border-top:1px solid #21262d;}
+
+/* ── STOP CARD ── */
+.sc{display:flex;align-items:stretch;border-bottom:1px solid #161b22;background:#0d1117;cursor:pointer;}
+.sc:active{background:#161b22;}
+.sc-left{width:54px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px;border-right:3px solid #1e2a38;}
+.sc-num{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;}
+.sc-vl{font-size:9px;font-weight:700;margin-top:4px;color:rgba(255,255,255,.4);}
+.sc-body{flex:1;padding:10px 10px 10px 12px;min-width:0;}
+.sc-row1{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:3px;}
+.sc-name{font-size:15px;font-weight:700;color:#f0f6fc;}
+.bdg{font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;}
+.bL{background:#FFD700;color:#1a1a1a;}
+.bH{background:#1a6b2a;color:#fff;}
+.sc-addr{font-size:12px;color:#8b949e;margin-bottom:2px;}
+.sc-meta{font-size:11px;color:#58a6a0;font-weight:600;}
+.sc-sts{font-size:11px;font-weight:700;margin-top:3px;}
+.sc-right{width:50px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.nav-btn{width:38px;height:38px;border-radius:50%;background:#C1121F;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.4);}
+.nav-btn svg{width:20px;height:20px;fill:#fff;}
+
+/* ── MODAL OVERLAY ── */
+.modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:5000;background:rgba(0,0,0,.7);-webkit-overflow-scrolling:touch;}
+.modal.open{display:flex;align-items:flex-end;}
+.modal-sheet{background:#161b22;border-radius:16px 16px 0 0;width:100%;max-height:88vh;overflow-y:auto;padding:16px 16px 40px;border-top:3px solid #C1121F;box-shadow:0 -6px 30px rgba(0,0,0,.8);}
+.modal-close{float:right;background:rgba(255,255,255,.1);border:none;color:#aaa;width:32px;height:32px;border-radius:50%;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.mc-lbl{font-size:11px;font-weight:700;color:#C1121F;text-transform:uppercase;margin-bottom:3px;clear:both;}
+.mc-name{font-size:24px;font-weight:800;color:#f0f6fc;margin-bottom:3px;line-height:1.1;}
+.mc-addr{font-size:14px;color:#8b949e;margin-bottom:5px;}
+.mc-levy{font-size:13px;color:#58a6a0;font-weight:700;margin-bottom:10px;}
+.mc-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+.mc-bdg{font-size:12px;font-weight:700;padding:4px 10px;border-radius:6px;}
+.mcbL{background:#FFD700;color:#1a1a1a;}
+.mcbH{background:#1a6b2a;color:#fff;}
+.mcbV{background:#1D3557;color:#fff;}
+.nav-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.nb{padding:14px 8px;border-radius:12px;border:none;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;}
+.nb svg{width:20px;height:20px;fill:currentColor;}
+.nb:active{opacity:.8;}
+.nbG{background:#4285F4;color:#fff;}
+.nbA{background:#e8e8ed;color:#1d1d1f;}
+.field-lbl{font-size:11px;font-weight:700;color:#6e7681;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.notes-ta{width:100%;padding:10px 12px;background:#0d1117;border:1.5px solid #30363d;border-radius:10px;color:#f0f6fc;font-size:14px;outline:none;resize:none;font-family:inherit;margin-bottom:14px;}
+.sts-row{display:flex;gap:8px;margin-bottom:4px;}
+.sb{flex:1;padding:12px 4px;border-radius:10px;border:1.5px solid #30363d;background:transparent;color:rgba(255,255,255,.5);font-size:12px;font-weight:700;cursor:pointer;}
+.sbY{background:#1a6b2a !important;border-color:#1a6b2a !important;color:#fff !important;}
+.sbN{background:#6b1a1a !important;border-color:#6b1a1a !important;color:#fff !important;}
+.sbNH{background:#6b4e1a !important;border-color:#6b4e1a !important;color:#fff !important;}
+.sbU{background:#3d3880 !important;border-color:#3d3880 !important;color:#fff !important;}
+
+/* ── MAP OVERLAY ── */
+#map-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:4000;flex-direction:column;}
+#map-overlay.open{display:flex;}
+#map-topbar{background:#C1121F;height:50px;display:flex;align-items:center;padding:0 12px;gap:10px;flex-shrink:0;}
+#map-topbar button{background:rgba(255,255,255,.2);border:none;color:#fff;padding:7px 14px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;}
+#map-topbar span{color:#fff;font-size:14px;font-weight:700;flex:1;}
+#map{flex:1;width:100%;}
+
+/* ── EXPORT MODAL ── */
+#exp-modal .modal-sheet{max-height:80vh;}
+#exp-csv-text{width:100%;height:180px;background:#0d1117;border:1.5px solid #30363d;border-radius:8px;color:#58a6a0;font-size:11px;padding:10px;font-family:monospace;resize:none;margin-bottom:10px;}
+.copy-btn{width:100%;padding:14px;background:#2da44e;border:none;border-radius:10px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:8px;}
+.copy-btn:active{opacity:.85;}
+.dl-hint{font-size:12px;color:#6e7681;text-align:center;line-height:1.5;}
+
+/* ── TOAST ── */
+#toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#2da44e;color:#fff;font-size:13px;font-weight:700;padding:10px 20px;border-radius:20px;z-index:99999;display:none;box-shadow:0 4px 16px rgba(0,0,0,.5);white-space:nowrap;}
+</style>
+</head>
+<body>
+
+<!-- PAGE HEADER -->
+<div class="pg-header">
+  <div class="pg-badge">A</div>
+  <div class="pg-info">
+    <h1>Burkhart Road Corridor</h1>
+    <p>A-1: stops 1&ndash;45 &middot; A-2: stops 46&ndash;91</p>
+  </div>
+  <div class="pg-stats">
+    <div class="pstat"><div class="n">91</div><div class="l">STOPS</div></div>
+    <div class="pstat"><div class="n">58</div><div class="l">LIKELY</div></div>
+    <div class="pstat gn"><div class="n" id="done-n">0</div><div class="l">DONE</div></div>
+  </div>
+</div>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <input type="search" id="srch" placeholder="Search name or address..." autocomplete="off">
+  <button class="map-btn" onclick="openMap()">Map</button>
+  <button class="exp-btn" onclick="openExport()">
+    <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+    Export
+  </button>
+</div>
+
+<!-- FILTERS -->
+<div class="filters">
+  <button class="fp on" data-f="all" onclick="setF(this)">All (91)</button>
+  <button class="fp" data-f="v1" onclick="setF(this)">A-1 (45)</button>
+  <button class="fp" data-f="v2" onclick="setF(this)">A-2 (46)</button>
+  <button class="fp" data-f="likely" onclick="setF(this)">&#9733; Likely (58)</button>
+  <button class="fp" data-f="todo" onclick="setF(this)">Pending</button>
+  <button class="fp" data-f="done" onclick="setF(this)">Visited</button>
+</div>
+
+<!-- STOP LIST -->
+<div id="lcon"></div>
+
+<!-- STOP DETAIL MODAL -->
+<div class="modal" id="stop-modal" onclick="modalBgClick(event)">
+  <div class="modal-sheet">
+    <button class="modal-close" onclick="closeModal('stop-modal')">X</button>
+    <div class="mc-lbl" id="mc-lbl"></div>
+    <div class="mc-name" id="mc-name"></div>
+    <div class="mc-addr" id="mc-addr"></div>
+    <div class="mc-levy" id="mc-levy"></div>
+    <div class="mc-badges" id="mc-badges"></div>
+    <div class="nav-btns">
+      <button class="nb nbG" id="btn-gm">
+        <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        Google Maps
+      </button>
+      <button class="nb nbA" id="btn-am">
+        <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        Apple Maps
+      </button>
+    </div>
+    <div class="field-lbl">Notes (optional):</div>
+    <textarea class="notes-ta" id="mc-notes" rows="2" placeholder="Yard sign request, call back, etc..."></textarea>
+    <div class="field-lbl">Mark this stop:</div>
+    <div class="sts-row" id="mc-sts"></div>
+  </div>
+</div>
+
+<!-- MAP OVERLAY -->
+<div id="map-overlay">
+  <div id="map-topbar">
+    <span>Team A Map</span>
+    <button onclick="closeMap()">&#8592; Back to List</button>
+  </div>
+  <div id="map"></div>
+</div>
+
+<!-- EXPORT MODAL -->
+<div class="modal" id="exp-modal" onclick="modalBgClick(event)">
+  <div class="modal-sheet">
+    <button class="modal-close" onclick="closeModal('exp-modal')">X</button>
+    <div class="mc-lbl">Export Results - Team A</div>
+    <div class="mc-name" style="font-size:16px;margin-bottom:12px;" id="exp-summary-line">0 of 91 stops marked</div>
+    <div class="field-lbl">Your CSV data:</div>
+    <textarea id="exp-csv-text" readonly></textarea>
+    <button class="copy-btn" onclick="copyCSV()">Copy All to Clipboard</button>
+    <button class="copy-btn" style="background:#1D3557;" onclick="tryDownload()">Download CSV File</button>
+    <div class="dl-hint" id="dl-hint">Paste into a new spreadsheet, or share this text with campaign HQ.</div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+var STOPS = [{"i": 0, "stop": 1, "name": "Graber", "addr": "15034  BURKHART RD", "nav": "15034 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777255, "levy": 148.69, "hh": 4, "likely": true, "v1": true}, {"i": 1, "stop": 2, "name": "Becker", "addr": "15045  BURKHART RD", "nav": "15045 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777257, "levy": 156.07, "hh": 1, "likely": false, "v1": true}, {"i": 2, "stop": 3, "name": "Mcconnell", "addr": "15111  BURKHART RD", "nav": "15111 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777267, "levy": 147.53, "hh": 2, "likely": true, "v1": true}, {"i": 3, "stop": 4, "name": "Geib", "addr": "15155  BURKHART RD", "nav": "15155 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777273, "levy": 126.43, "hh": 2, "likely": true, "v1": true}, {"i": 4, "stop": 5, "name": "Amstutz", "addr": "15403  BURKHART RD", "nav": "15403 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.77731, "levy": 168.94, "hh": 2, "likely": true, "v1": true}, {"i": 5, "stop": 6, "name": "Firby", "addr": "15487  BURKHART RD", "nav": "15487 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777323, "levy": 97.99, "hh": 2, "likely": true, "v1": true}, {"i": 6, "stop": 7, "name": "Geiser", "addr": "15515  BURKHART RD", "nav": "15515 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777327, "levy": 171.0, "hh": 1, "likely": false, "v1": true}, {"i": 7, "stop": 8, "name": "Hoover", "addr": "15601  BURKHART RD", "nav": "15601 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.77734, "levy": 165.97, "hh": 2, "likely": true, "v1": true}, {"i": 8, "stop": 9, "name": "Curtis", "addr": "15660  BURKHART RD", "nav": "15660 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777349, "levy": 185.31, "hh": 3, "likely": true, "v1": true}, {"i": 9, "stop": 10, "name": "Jackson", "addr": "15808  BURKHART RD", "nav": "15808 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777371, "levy": 104.66, "hh": 1, "likely": false, "v1": true}, {"i": 10, "stop": 11, "name": "Masters", "addr": "16101  BURKHART RD", "nav": "16101 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777415, "levy": 282.37, "hh": 2, "likely": true, "v1": true}, {"i": 11, "stop": 12, "name": "Graber", "addr": "16210  BURKHART RD", "nav": "16210 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777432, "levy": 275.71, "hh": 1, "likely": false, "v1": true}, {"i": 12, "stop": 13, "name": "Mcgrew", "addr": "16210  BURKHART RD", "nav": "16210 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777432, "levy": 275.71, "hh": 1, "likely": false, "v1": true}, {"i": 13, "stop": 14, "name": "Tomassetti", "addr": "16210  BURKHART RD", "nav": "16210 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777432, "levy": 275.71, "hh": 1, "likely": false, "v1": true}, {"i": 14, "stop": 15, "name": "Saxer", "addr": "16230  BURKHART RD", "nav": "16230 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777435, "levy": 299.85, "hh": 4, "likely": true, "v1": true}, {"i": 15, "stop": 16, "name": "Masters", "addr": "16265  BURKHART RD", "nav": "16265 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.77744, "levy": 161.76, "hh": 1, "likely": false, "v1": true}, {"i": 16, "stop": 17, "name": "Kaserman", "addr": "16284  BURKHART RD", "nav": "16284 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777443, "levy": 342.1, "hh": 2, "likely": true, "v1": true}, {"i": 17, "stop": 18, "name": "Clark", "addr": "16355  BURKHART RD", "nav": "16355 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777453, "levy": 166.44, "hh": 2, "likely": true, "v1": true}, {"i": 18, "stop": 19, "name": "Lehman", "addr": "16376  BURKHART RD", "nav": "16376 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777456, "levy": 190.08, "hh": 1, "likely": false, "v1": true}, {"i": 19, "stop": 20, "name": "Miller", "addr": "16376  BURKHART RD", "nav": "16376 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777456, "levy": 190.08, "hh": 1, "likely": false, "v1": true}, {"i": 20, "stop": 21, "name": "Stutzman", "addr": "16400  BURKHART RD", "nav": "16400 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.77746, "levy": 240.98, "hh": 2, "likely": true, "v1": true}, {"i": 21, "stop": 22, "name": "Waitkunas", "addr": "16424  BURKHART RD", "nav": "16424 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777464, "levy": 207.54, "hh": 1, "likely": false, "v1": true}, {"i": 22, "stop": 23, "name": "Williams", "addr": "16435  BURKHART RD", "nav": "16435 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777465, "levy": 151.43, "hh": 1, "likely": false, "v1": true}, {"i": 23, "stop": 24, "name": "Staley", "addr": "16466  BURKHART RD", "nav": "16466 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.77747, "levy": 224.23, "hh": 2, "likely": true, "v1": true}, {"i": 24, "stop": 25, "name": "Tenney", "addr": "16500  BURKHART RD", "nav": "16500 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777475, "levy": 161.72, "hh": 3, "likely": true, "v1": true}, {"i": 25, "stop": 26, "name": "Cardinal", "addr": "16507  BURKHART RD", "nav": "16507 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777476, "levy": 364.79, "hh": 2, "likely": true, "v1": true}, {"i": 26, "stop": 27, "name": "Cardinal", "addr": "16507  BURKHART RD", "nav": "16507 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777476, "levy": 117.78, "hh": 2, "likely": true, "v1": true}, {"i": 27, "stop": 28, "name": "Scheufler", "addr": "16542  BURKHART RD", "nav": "16542 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777481, "levy": 164.34, "hh": 2, "likely": true, "v1": true}, {"i": 28, "stop": 29, "name": "Franks", "addr": "16590  BURKHART RD", "nav": "16590 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777489, "levy": 192.38, "hh": 2, "likely": true, "v1": true}, {"i": 29, "stop": 30, "name": "Smith", "addr": "16644  BURKHART RD", "nav": "16644 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777497, "levy": 163.91, "hh": 1, "likely": false, "v1": true}, {"i": 30, "stop": 31, "name": "Peters", "addr": "16677  BURKHART RD", "nav": "16677 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777502, "levy": 187.25, "hh": 1, "likely": false, "v1": true}, {"i": 31, "stop": 32, "name": "Chupp", "addr": "16686  BURKHART RD", "nav": "16686 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777503, "levy": 181.51, "hh": 1, "likely": false, "v1": true}, {"i": 32, "stop": 33, "name": "Egli", "addr": "16740  BURKHART RD", "nav": "16740 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777511, "levy": 213.66, "hh": 2, "likely": true, "v1": true}, {"i": 33, "stop": 34, "name": "Geiser", "addr": "16780  BURKHART RD", "nav": "16780 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777517, "levy": 214.39, "hh": 2, "likely": true, "v1": true}, {"i": 34, "stop": 35, "name": "Ressler", "addr": "16808  BURKHART RD", "nav": "16808 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777521, "levy": 156.4, "hh": 2, "likely": true, "v1": true}, {"i": 35, "stop": 36, "name": "Ressler", "addr": "16865  BURKHART RD", "nav": "16865 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.77753, "levy": 213.91, "hh": 2, "likely": true, "v1": true}, {"i": 36, "stop": 37, "name": "Regier", "addr": "17027  BURKHART RD", "nav": "17027 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777554, "levy": 141.64, "hh": 1, "likely": false, "v1": true}, {"i": 37, "stop": 38, "name": "Longworth", "addr": "17817  BURKHART RD", "nav": "17817 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777673, "levy": 181.55, "hh": 2, "likely": true, "v1": true}, {"i": 38, "stop": 39, "name": "Rohr", "addr": "17872  BURKHART RD", "nav": "17872 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777681, "levy": 138.8, "hh": 2, "likely": true, "v1": true}, {"i": 39, "stop": 40, "name": "Haer", "addr": "17910  BURKHART RD", "nav": "17910 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777687, "levy": 124.91, "hh": 2, "likely": true, "v1": true}, {"i": 40, "stop": 41, "name": "Hutchison", "addr": "17984  BURKHART RD", "nav": "17984 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777698, "levy": 183.43, "hh": 1, "likely": false, "v1": true}, {"i": 41, "stop": 42, "name": "Wright", "addr": "17984  BURKHART RD", "nav": "17984 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777698, "levy": 183.43, "hh": 1, "likely": false, "v1": true}, {"i": 42, "stop": 43, "name": "Hall", "addr": "18121  BURKHART RD", "nav": "18121 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777718, "levy": 229.65, "hh": 3, "likely": true, "v1": true}, {"i": 43, "stop": 44, "name": "Weikert", "addr": "18215  BURKHART RD", "nav": "18215 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777732, "levy": 160.24, "hh": 1, "likely": false, "v1": true}, {"i": 44, "stop": 45, "name": "Maston", "addr": "18261  BURKHART RD", "nav": "18261 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777739, "levy": 179.06, "hh": 2, "likely": true, "v1": true}, {"i": 45, "stop": 46, "name": "Jaquet", "addr": "18285  BURKHART RD", "nav": "18285 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777743, "levy": 241.49, "hh": 2, "likely": true, "v1": false}, {"i": 46, "stop": 47, "name": "Byall", "addr": "18314  BURKHART RD", "nav": "18314 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777747, "levy": 196.05, "hh": 1, "likely": false, "v1": false}, {"i": 47, "stop": 48, "name": "Kidd", "addr": "18314  BURKHART RD", "nav": "18314 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777747, "levy": 196.05, "hh": 1, "likely": false, "v1": false}, {"i": 48, "stop": 49, "name": "Knepp", "addr": "18314  BURKHART RD", "nav": "18314 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777747, "levy": 196.05, "hh": 1, "likely": false, "v1": false}, {"i": 49, "stop": 50, "name": "Lecon", "addr": "18321  BURKHART RD", "nav": "18321 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777748, "levy": 167.15, "hh": 2, "likely": true, "v1": false}, {"i": 50, "stop": 51, "name": "Oberlin", "addr": "18435  BURKHART RD", "nav": "18435 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777765, "levy": 172.42, "hh": 1, "likely": false, "v1": false}, {"i": 51, "stop": 52, "name": "Ketler", "addr": "18468  BURKHART RD", "nav": "18468 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.77777, "levy": 148.75, "hh": 2, "likely": true, "v1": false}, {"i": 52, "stop": 53, "name": "Jones", "addr": "18591  BURKHART RD", "nav": "18591 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777789, "levy": 326.79, "hh": 4, "likely": true, "v1": false}, {"i": 53, "stop": 54, "name": "Ketler", "addr": "18598  BURKHART RD", "nav": "18598 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.77779, "levy": 374.42, "hh": 1, "likely": false, "v1": false}, {"i": 54, "stop": 55, "name": "Ediger", "addr": "18687  BURKHART RD", "nav": "18687 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777803, "levy": 126.2, "hh": 2, "likely": true, "v1": false}, {"i": 55, "stop": 56, "name": "Byall", "addr": "18947  BURKHART RD", "nav": "18947 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777842, "levy": 150.79, "hh": 2, "likely": true, "v1": false}, {"i": 56, "stop": 57, "name": "Rossiter", "addr": "18964  BURKHART RD", "nav": "18964 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777845, "levy": 168.97, "hh": 2, "likely": true, "v1": false}, {"i": 57, "stop": 58, "name": "Lintern", "addr": "18991  BURKHART RD", "nav": "18991 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777849, "levy": 114.11, "hh": 2, "likely": true, "v1": false}, {"i": 58, "stop": 59, "name": "Swartzentruber", "addr": "19035  BURKHART RD", "nav": "19035 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777855, "levy": 132.25, "hh": 1, "likely": false, "v1": false}, {"i": 59, "stop": 60, "name": "Lengi", "addr": "19120  BURKHART RD", "nav": "19120 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777868, "levy": 147.86, "hh": 1, "likely": false, "v1": false}, {"i": 60, "stop": 61, "name": "Wirt", "addr": "19120  BURKHART RD", "nav": "19120 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777868, "levy": 147.86, "hh": 1, "likely": false, "v1": false}, {"i": 61, "stop": 62, "name": "Smith", "addr": "16479  EMMITSBURG RD", "nav": "16479 EMMITSBURG RD ORRVILLE OH 44667", "lat": 40.922, "lon": -81.766352, "levy": 254.54, "hh": 1, "likely": false, "v1": false}, {"i": 62, "stop": 63, "name": "Galehouse", "addr": "16480  EMMITSBURG RD", "nav": "16480 EMMITSBURG RD ORRVILLE OH 44667", "lat": 40.922, "lon": -81.766352, "levy": 195.17, "hh": 2, "likely": true, "v1": false}, {"i": 63, "stop": 64, "name": "Bell", "addr": "16525  EMMITSBURG RD", "nav": "16525 EMMITSBURG RD ORRVILLE OH 44667", "lat": 40.922, "lon": -81.766347, "levy": 197.68, "hh": 2, "likely": true, "v1": false}, {"i": 64, "stop": 65, "name": "Jones", "addr": "16526  EMMITSBURG RD", "nav": "16526 EMMITSBURG RD ORRVILLE OH 44667", "lat": 40.922, "lon": -81.766347, "levy": 227.24, "hh": 2, "likely": true, "v1": false}, {"i": 65, "stop": 66, "name": "Stitt", "addr": "16574  EMMITSBURG RD", "nav": "16574 EMMITSBURG RD ORRVILLE OH 44667", "lat": 40.922, "lon": -81.766343, "levy": 220.99, "hh": 3, "likely": true, "v1": false}, {"i": 66, "stop": 67, "name": "Daugherty", "addr": "16575  EMMITSBURG RD", "nav": "16575 EMMITSBURG RD ORRVILLE OH 44667", "lat": 40.922, "lon": -81.766343, "levy": 186.82, "hh": 4, "likely": true, "v1": false}, {"i": 67, "stop": 68, "name": "Isler", "addr": "16619  EMMITSBURG RD", "nav": "16619 EMMITSBURG RD ORRVILLE OH 44667", "lat": 40.922, "lon": -81.766338, "levy": 288.12, "hh": 1, "likely": false, "v1": false}, {"i": 68, "stop": 69, "name": "Hills", "addr": "16620  EMMITSBURG RD", "nav": "16620 EMMITSBURG RD ORRVILLE OH 44667", "lat": 40.922, "lon": -81.766338, "levy": 232.34, "hh": 2, "likely": true, "v1": false}, {"i": 69, "stop": 70, "name": "Shatto", "addr": "16665  EMMITSBURG RD", "nav": "16665 EMMITSBURG RD ORRVILLE OH 44667", "lat": 40.922, "lon": -81.766334, "levy": 236.25, "hh": 2, "likely": true, "v1": false}, {"i": 70, "stop": 71, "name": "Copeland", "addr": "16666  EMMITSBURG RD", "nav": "16666 EMMITSBURG RD ORRVILLE OH 44667", "lat": 40.922, "lon": -81.766333, "levy": 173.7, "hh": 3, "likely": true, "v1": false}, {"i": 71, "stop": 72, "name": "Andrew", "addr": "16695  EMMITSBURG RD", "nav": "16695 EMMITSBURG RD ORRVILLE OH 44667", "lat": 40.922, "lon": -81.76633, "levy": 230.82, "hh": 4, "likely": true, "v1": false}, {"i": 72, "stop": 73, "name": "Amstutz", "addr": "16696  EMMITSBURG RD", "nav": "16696 EMMITSBURG RD ORRVILLE OH 44667", "lat": 40.922, "lon": -81.76633, "levy": 199.32, "hh": 2, "likely": true, "v1": false}, {"i": 73, "stop": 74, "name": "Robinson", "addr": "PO BOX 302", "nav": "16705 EMMITSBURG RD ORRVILLE OH 44667", "lat": 40.922, "lon": -81.766329, "levy": 264.64, "hh": 1, "likely": false, "v1": false}, {"i": 74, "stop": 75, "name": "Robinson", "addr": "16705  EMMITSBURG RD", "nav": "16705 EMMITSBURG RD ORRVILLE OH 44667", "lat": 40.922, "lon": -81.766329, "levy": 264.64, "hh": 1, "likely": false, "v1": false}, {"i": 75, "stop": 76, "name": "Congo", "addr": "16710  EMMITSBURG RD", "nav": "16710 EMMITSBURG RD ORRVILLE OH 44667", "lat": 40.922, "lon": -81.766329, "levy": 188.5, "hh": 2, "likely": true, "v1": false}, {"i": 76, "stop": 77, "name": "Hershberger", "addr": "16325  HANOVER RD", "nav": "16325 HANOVER RD ORRVILLE OH 44667", "lat": 40.918, "lon": -81.768041, "levy": 213.27, "hh": 2, "likely": true, "v1": false}, {"i": 77, "stop": 78, "name": "Carpenter", "addr": "16334  HANOVER RD", "nav": "16334 HANOVER RD ORRVILLE OH 44667", "lat": 40.918, "lon": -81.76804, "levy": 269.29, "hh": 2, "likely": true, "v1": false}, {"i": 78, "stop": 79, "name": "Watkins", "addr": "16361  HANOVER RD", "nav": "16361 HANOVER RD ORRVILLE OH 44667", "lat": 40.918, "lon": -81.768037, "levy": 231.77, "hh": 2, "likely": true, "v1": false}, {"i": 79, "stop": 80, "name": "Erb", "addr": "16370  HANOVER RD", "nav": "16370 HANOVER RD ORRVILLE OH 44667", "lat": 40.918, "lon": -81.768036, "levy": 264.21, "hh": 2, "likely": true, "v1": false}, {"i": 80, "stop": 81, "name": "Perna", "addr": "16400  HANOVER RD", "nav": "16400 HANOVER RD ORRVILLE OH 44667", "lat": 40.918, "lon": -81.768032, "levy": 198.39, "hh": 1, "likely": false, "v1": false}, {"i": 81, "stop": 82, "name": "Smith Perna", "addr": "16400  HANOVER RD", "nav": "16400 HANOVER RD ORRVILLE OH 44667", "lat": 40.918, "lon": -81.768032, "levy": 198.39, "hh": 1, "likely": false, "v1": false}, {"i": 82, "stop": 83, "name": "Stillings", "addr": "16429  HANOVER RD", "nav": "16429 HANOVER RD ORRVILLE OH 44667", "lat": 40.918, "lon": -81.768029, "levy": 180.69, "hh": 2, "likely": true, "v1": false}, {"i": 83, "stop": 84, "name": "Morgan", "addr": "16450  HANOVER RD", "nav": "16450 HANOVER RD ORRVILLE OH 44667", "lat": 40.918, "lon": -81.768026, "levy": 271.1, "hh": 2, "likely": true, "v1": false}, {"i": 84, "stop": 85, "name": "Miller", "addr": "16469  HANOVER RD", "nav": "16469 HANOVER RD ORRVILLE OH 44667", "lat": 40.918, "lon": -81.768024, "levy": 218.33, "hh": 4, "likely": true, "v1": false}, {"i": 85, "stop": 86, "name": "Baer", "addr": "16501  HANOVER RD", "nav": "16501 HANOVER RD ORRVILLE OH 44667", "lat": 40.918, "lon": -81.76802, "levy": 234.94, "hh": 4, "likely": true, "v1": false}, {"i": 86, "stop": 87, "name": "Butts", "addr": "16530  HANOVER RD", "nav": "16530 HANOVER RD ORRVILLE OH 44667", "lat": 40.918, "lon": -81.768016, "levy": 234.96, "hh": 2, "likely": true, "v1": false}, {"i": 87, "stop": 88, "name": "Jones", "addr": "16591  HANOVER RD", "nav": "16591 HANOVER RD ORRVILLE OH 44667", "lat": 40.918, "lon": -81.768009, "levy": 323.94, "hh": 2, "likely": true, "v1": false}, {"i": 88, "stop": 89, "name": "Bostick", "addr": "16615  HANOVER RD", "nav": "16615 HANOVER RD ORRVILLE OH 44667", "lat": 40.918, "lon": -81.768006, "levy": 276.27, "hh": 2, "likely": true, "v1": false}, {"i": 89, "stop": 90, "name": "Henderson", "addr": "16615  HANOVER RD", "nav": "16615 HANOVER RD ORRVILLE OH 44667", "lat": 40.918, "lon": -81.768006, "levy": 276.27, "hh": 2, "likely": true, "v1": false}, {"i": 90, "stop": 91, "name": "Male", "addr": "16615  HANOVER RD", "nav": "16615 HANOVER RD ORRVILLE OH 44667", "lat": 40.918, "lon": -81.768006, "levy": 276.27, "hh": 1, "likely": false, "v1": false}];
+var V1C = [[40.938, -81.777255], [40.938, -81.777257], [40.938, -81.777267], [40.938, -81.777273], [40.938, -81.77731], [40.938, -81.777323], [40.938, -81.777327], [40.938, -81.77734], [40.938, -81.777349], [40.938, -81.777371], [40.938, -81.777415], [40.938, -81.777432], [40.938, -81.777432], [40.938, -81.777432], [40.938, -81.777435], [40.938, -81.77744], [40.938, -81.777443], [40.938, -81.777453], [40.938, -81.777456], [40.938, -81.777456], [40.938, -81.77746], [40.938, -81.777464], [40.938, -81.777465], [40.938, -81.77747], [40.938, -81.777475], [40.938, -81.777476], [40.938, -81.777476], [40.938, -81.777481], [40.938, -81.777489], [40.938, -81.777497], [40.938, -81.777502], [40.938, -81.777503], [40.938, -81.777511], [40.938, -81.777517], [40.938, -81.777521], [40.938, -81.77753], [40.938, -81.777554], [40.938, -81.777673], [40.938, -81.777681], [40.938, -81.777687], [40.938, -81.777698], [40.938, -81.777698], [40.938, -81.777718], [40.938, -81.777732], [40.938, -81.777739]];
+var V2C = [[40.938, -81.777743], [40.938, -81.777747], [40.938, -81.777747], [40.938, -81.777747], [40.938, -81.777748], [40.938, -81.777765], [40.938, -81.77777], [40.938, -81.777789], [40.938, -81.77779], [40.938, -81.777803], [40.938, -81.777842], [40.938, -81.777845], [40.938, -81.777849], [40.938, -81.777855], [40.938, -81.777868], [40.938, -81.777868], [40.922, -81.766352], [40.922, -81.766352], [40.922, -81.766347], [40.922, -81.766347], [40.922, -81.766343], [40.922, -81.766343], [40.922, -81.766338], [40.922, -81.766338], [40.922, -81.766334], [40.922, -81.766333], [40.922, -81.76633], [40.922, -81.76633], [40.922, -81.766329], [40.922, -81.766329], [40.922, -81.766329], [40.918, -81.768041], [40.918, -81.76804], [40.918, -81.768037], [40.918, -81.768036], [40.918, -81.768032], [40.918, -81.768032], [40.918, -81.768029], [40.918, -81.768026], [40.918, -81.768024], [40.918, -81.76802], [40.918, -81.768016], [40.918, -81.768009], [40.918, -81.768006], [40.918, -81.768006], [40.918, -81.768006]];
+var CLAT = 40.932066;
+var CLON = -81.774139;
+var V1N = 45;
+var TOTAL = 91;
+var sts = {};   // sts[i] = {code, notes}
+var curIdx = -1;
+var mapReady = false;
+var lmap = null;
+var lmk = [];
+
+// ─── BUILD LIST ──────────────────────────────────────────────
+function buildList() {
+  var con = document.getElementById('lcon');
+  con.innerHTML = '';
+  var h1 = document.createElement('div');
+  h1.className = 'sec'; h1.id = 'hv1';
+  h1.textContent = 'Volunteer A-1  --  Stops 1 to ' + V1N;
+  con.appendChild(h1);
+  var v2done = false;
+  for (var i = 0; i < STOPS.length; i++) {
+    var s = STOPS[i];
+    if (!s.v1 && !v2done) {
+      v2done = true;
+      var h2 = document.createElement('div');
+      h2.className = 'sec'; h2.id = 'hv2';
+      h2.textContent = 'Volunteer A-2  --  Stops ' + (V1N + 1) + ' to ' + STOPS.length;
+      con.appendChild(h2);
+    }
+    var card = makeCard(i);
+    con.appendChild(card);
+  }
+}
+
+function makeCard(i) {
+  var s = STOPS[i];
+  var card = document.createElement('div');
+  card.className = 'sc';
+  card.id = 'card' + i;
+  card.setAttribute('data-i', '' + i);
+  card.setAttribute('data-v', s.v1 ? 'v1' : 'v2');
+  card.setAttribute('data-l', s.likely ? '1' : '0');
+
+  // left
+  var L = document.createElement('div'); L.className = 'sc-left';
+  var num = document.createElement('div'); num.className = 'sc-num';
+  num.id = 'num' + i;
+  num.textContent = '' + s.stop;
+  num.style.cssText = 'background:' + (s.likely ? '#FFD700' : '#C1121F') +
+    ';color:' + (s.likely ? '#1a1a1a' : '#fff') +
+    ';opacity:' + (s.v1 ? '1' : '0.65') +
+    ';border:2.5px solid rgba(255,255,255,.3);';
+  var vl = document.createElement('div'); vl.className = 'sc-vl';
+  vl.textContent = s.v1 ? 'A-1' : 'A-2';
+  L.appendChild(num); L.appendChild(vl);
+  card.appendChild(L);
+
+  // body
+  var B = document.createElement('div'); B.className = 'sc-body';
+  var r1 = document.createElement('div'); r1.className = 'sc-row1';
+  var nm = document.createElement('span'); nm.className = 'sc-name'; nm.textContent = s.name;
+  r1.appendChild(nm);
+  if (s.likely) { var bl = document.createElement('span'); bl.className = 'bdg bL'; bl.textContent = 'LIKELY'; r1.appendChild(bl); }
+  var bh = document.createElement('span'); bh.className = 'bdg bH'; bh.textContent = 'HO'; r1.appendChild(bh);
+  var ad = document.createElement('div'); ad.className = 'sc-addr'; ad.textContent = s.addr;
+  var mt = document.createElement('div'); mt.className = 'sc-meta';
+  mt.textContent = '$' + s.levy.toFixed(2) + '/yr  -  ' + s.hh + ' voter' + (s.hh > 1 ? 's' : '');
+  var sl = document.createElement('div'); sl.className = 'sc-sts'; sl.id = 'sl' + i;
+  B.appendChild(r1); B.appendChild(ad); B.appendChild(mt); B.appendChild(sl);
+  card.appendChild(B);
+
+  // right
+  var R = document.createElement('div'); R.className = 'sc-right';
+  var nb = document.createElement('button'); nb.className = 'nav-btn'; nb.title = 'Navigate';
+  nb.innerHTML = '<svg viewBox="0 0 24 24"><path d="M21 3L3 10.53v.98l6.84 2.65L12.48 21h.98L21 3z"/></svg>';
+  (function(idx) {
+    nb.addEventListener('click', function(e) { e.stopPropagation(); openStop(idx); });
+    card.addEventListener('click', function() { openStop(idx); });
+  })(i);
+  R.appendChild(nb); card.appendChild(R);
+  return card;
+}
+
+// ─── STOP MODAL ──────────────────────────────────────────────
+function openStop(idx) {
+  var s = STOPS[idx]; curIdx = idx;
+  var rec = sts[idx] || {};
+  document.getElementById('mc-lbl').textContent = 'Stop ' + s.stop + '  -  Volunteer ' + (s.v1 ? 'A-1' : 'A-2');
+  document.getElementById('mc-name').textContent = s.name;
+  document.getElementById('mc-addr').textContent = s.addr;
+  document.getElementById('mc-levy').textContent = 'Annual levy: $' + s.levy.toFixed(2) + '  ($' + (s.levy / 12).toFixed(2) + '/mo)  -  ' + s.hh + ' voter' + (s.hh > 1 ? 's' : '');
+
+  var bd = document.getElementById('mc-badges'); bd.innerHTML = '';
+  if (s.likely) { var b1 = document.createElement('span'); b1.className = 'mc-bdg mcbL'; b1.textContent = 'LIKELY VOTER'; bd.appendChild(b1); }
+  var b2 = document.createElement('span'); b2.className = 'mc-bdg mcbH'; b2.textContent = 'PERSONALIZED HANDOUT'; bd.appendChild(b2);
+  var b3 = document.createElement('span'); b3.className = 'mc-bdg mcbV'; b3.textContent = 'Volunteer ' + (s.v1 ? 'A-1' : 'A-2'); bd.appendChild(b3);
+
+  document.getElementById('btn-gm').onclick = function() {
+    window.open('https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(s.nav) + '&travelmode=driving', '_blank');
+  };
+  document.getElementById('btn-am').onclick = function() {
+    window.location.href = 'maps://maps.apple.com/?daddr=' + encodeURIComponent(s.nav) + '&dirflg=d';
+  };
+
+  var ta = document.getElementById('mc-notes');
+  ta.value = rec.notes || '';
+  ta.oninput = function() { saveNote(idx, ta.value); };
+
+  var sr = document.getElementById('mc-sts'); sr.innerHTML = '';
+  var opts = [{k:'Y',t:'Yes'},{k:'N',t:'No'},{k:'NH',t:'Not Home'},{k:'U',t:'Unsure'}];
+  var cur = rec.code || '';
+  opts.forEach(function(o) {
+    var b = document.createElement('button');
+    b.className = 'sb' + (cur === o.k ? ' sb' + o.k : '');
+    b.textContent = o.t;
+    b.addEventListener('click', function() { markStop(idx, o.k); });
+    sr.appendChild(b);
+  });
+
+  document.getElementById('stop-modal').classList.add('open');
+}
+
+function saveNote(idx, val) {
+  if (!sts[idx]) sts[idx] = {};
+  sts[idx].notes = val.trim();
+  refreshLabel(idx);
+}
+
+function markStop(idx, code) {
+  if (!sts[idx]) sts[idx] = {};
+  sts[idx].code = (sts[idx].code === code) ? '' : code;
+  refreshLabel(idx);
+  updateProgress();
+  if (lmk[idx]) lmk[idx].setIcon(mkIcon(STOPS[idx]));
+  openStop(idx); // refresh buttons
+}
+
+function refreshLabel(idx) {
+  var rec = sts[idx] || {};
+  var el = document.getElementById('sl' + idx);
+  if (!el) return;
+  var code = rec.code || '';
+  var notes = rec.notes || '';
+  var cmap = {Y:'Yes - Will Vote YES', N:'No', NH:'Not Home', U:'Unsure - Follow Up'};
+  var txt = cmap[code] || '';
+  if (notes) txt = txt + (txt ? ' | ' : '') + notes.substring(0, 28) + (notes.length > 28 ? '...' : '');
+  el.textContent = txt;
+  el.style.color = code === 'Y' ? '#2da44e' : code === 'N' ? '#da3633' : code === 'NH' ? '#e3b341' : code === 'U' ? '#7c6fcd' : '#6e7681';
+  // Update number circle color to show status
+  var numEl = document.getElementById('num' + idx);
+  if (numEl && code) {
+    var dotColors = {Y:'#2da44e', N:'#da3633', NH:'#e3b341', U:'#7c6fcd'};
+    numEl.style.borderColor = dotColors[code];
+    numEl.style.borderWidth = '3px';
+  }
+}
+
+function updateProgress() {
+  var done = Object.keys(sts).filter(function(k) { return sts[k] && sts[k].code; }).length;
+  document.getElementById('done-n').textContent = done;
+  var txt = done + ' of ' + TOTAL + ' stops marked';
+  var el = document.getElementById('exp-summary-line');
+  if (el) el.textContent = txt;
+}
+
+// ─── FILTER + SEARCH ─────────────────────────────────────────
+function setF(btn) {
+  document.querySelectorAll('.fp').forEach(function(b) { b.classList.remove('on'); });
+  btn.classList.add('on');
+  applyF();
+}
+
+function applyF() {
+  var q = document.getElementById('srch').value.toLowerCase();
+  var cf = (document.querySelector('.fp.on') || {}).getAttribute ? document.querySelector('.fp.on').getAttribute('data-f') : 'all';
+  var cards = document.querySelectorAll('.sc');
+  var v1v = false, v2v = false;
+  cards.forEach(function(card) {
+    var i = parseInt(card.getAttribute('data-i'));
+    var s = STOPS[i]; var code = (sts[i] && sts[i].code) || '';
+    var show = true;
+    if (cf === 'v1') show = s.v1;
+    else if (cf === 'v2') show = !s.v1;
+    else if (cf === 'likely') show = s.likely;
+    else if (cf === 'todo') show = !code;
+    else if (cf === 'done') show = !!code;
+    if (show && q) show = (s.name + ' ' + s.addr).toLowerCase().indexOf(q) >= 0;
+    card.style.display = show ? '' : 'none';
+    if (show) { if (s.v1) v1v = true; else v2v = true; }
+  });
+  var h1 = document.getElementById('hv1'), h2 = document.getElementById('hv2');
+  if (h1) h1.style.display = v1v ? '' : 'none';
+  if (h2) h2.style.display = v2v ? '' : 'none';
+}
+document.getElementById('srch').addEventListener('input', applyF);
+
+// ─── MODALS ──────────────────────────────────────────────────
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  curIdx = -1;
+}
+function modalBgClick(e) {
+  if (e.target === e.currentTarget) {
+    e.currentTarget.classList.remove('open');
+    curIdx = -1;
+  }
+}
+
+// ─── MAP ─────────────────────────────────────────────────────
+function openMap() {
+  document.getElementById('map-overlay').classList.add('open');
+  if (!mapReady) {
+    mapReady = true;
+    lmap = L.map('map', {center:[CLAT,CLON], zoom:13, zoomControl:false, tap:true});
+    L.control.zoom({position:'bottomright'}).addTo(lmap);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      {attribution:'(c) OpenStreetMap', maxZoom:19}).addTo(lmap);
+    if (V1C.length > 1) L.polyline(V1C, {color:'#C1121F', weight:4, opacity:.8}).addTo(lmap);
+    if (V2C.length > 1) L.polyline(V2C, {color:'#C1121F', weight:3, opacity:.4, dashArray:'10 7'}).addTo(lmap);
+    STOPS.forEach(function(s) {
+      if (!s.lat || !s.lon) { lmk.push(null); return; }
+      var m = L.marker([s.lat, s.lon], {icon: mkIcon(s)}).addTo(lmap);
+      (function(idx) {
+        m.on('click', function(e) {
+          L.DomEvent.stopPropagation(e);
+          openStop(idx);
+          lmap.setView([s.lat, s.lon], Math.max(lmap.getZoom(), 16));
+        });
+      })(s.i);
+      lmk.push(m);
+    });
+    var coords = STOPS.filter(function(s){return s.lat&&s.lon;}).map(function(s){return[s.lat,s.lon];});
+    if (coords.length) lmap.fitBounds(L.latLngBounds(coords), {padding:[20,20]});
+  }
+  setTimeout(function() { if (lmap) lmap.invalidateSize(); }, 80);
+}
+
+function closeMap() {
+  document.getElementById('map-overlay').classList.remove('open');
+}
+
+function mkIcon(s) {
+  var sv = (sts[s.i] && sts[s.i].code) || '';
+  var bg = s.likely ? '#FFD700' : '#C1121F';
+  var tc = s.likely ? '#1a1a1a' : '#fff';
+  var op = s.v1 ? 1 : .65;
+  var bc = sv==='Y'?'#2da44e':sv==='N'?'#da3633':sv==='NH'?'#e3b341':sv==='U'?'#7c6fcd':'#228B22';
+  var bs = sv||'V';
+  return L.divIcon({
+    html:'<div style="position:relative;opacity:'+op+'"><div style="background:'+bg+';color:'+tc+
+      ';width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;'+
+      'font-weight:800;font-size:12px;border:3px solid '+(s.v1?'#fff':'rgba(255,255,255,.5)')+
+      ';box-shadow:0 2px 10px rgba(0,0,0,.6)">'+s.stop+'</div>'+
+      '<div style="position:absolute;bottom:-4px;right:-4px;background:'+bc+
+      ';border-radius:50%;width:14px;height:14px;display:flex;align-items:center;justify-content:center;'+
+      'font-size:9px;color:#fff;font-weight:900;border:1.5px solid #fff">'+bs+'</div></div>',
+    iconSize:[34,38], iconAnchor:[17,17], className:''
+  });
+}
+
+// ─── EXPORT ──────────────────────────────────────────────────
+function buildCSV() {
+  var now = new Date();
+  var dateStr = now.toLocaleDateString('en-US');
+  var timeStr = now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  var cmap = {Y:'Yes - Will Vote YES', N:'No - Declined', NH:'Not Home', U:'Unsure - Follow Up'};
+  var rows = [
+    ['Baughman Township 1.75 Mill Levy - Team A Results'],
+    ['Exported: ' + dateStr + ' ' + timeStr],
+    [''],
+    ['Stop','Volunteer','Name','Address','Likely Voter','HH Voters','Annual Levy','Response','Notes']
+  ];
+  for (var i = 0; i < STOPS.length; i++) {
+    var s = STOPS[i]; var rec = sts[i] || {};
+    var code = rec.code || ''; var notes = rec.notes || '';
+    rows.push([s.stop, s.v1?'A-1':'A-2', s.name, s.addr,
+      s.likely?'YES':'', s.hh, '$'+s.levy.toFixed(2),
+      cmap[code]||'Not Visited', notes]);
+  }
+  var yC=0,nC=0,nhC=0,uC=0,nvC=0;
+  for (var i = 0; i < STOPS.length; i++) {
+    var c=(sts[i]&&sts[i].code)||'';
+    if(c==='Y')yC++;else if(c==='N')nC++;else if(c==='NH')nhC++;else if(c==='U')uC++;else nvC++;
+  }
+  rows.push(['']);
+  rows.push(['--- SUMMARY ---','','','','','','','','']);
+  rows.push(['Yes',yC,'','No',nC,'','Not Home',nhC,'']);
+  rows.push(['Unsure',uC,'','Not Visited',nvC,'','Total',STOPS.length,'']);
+  return rows.map(function(row){
+    return row.map(function(cell){
+      var s=''+cell;
+      if(s.indexOf(',')>=0||s.indexOf('"')>=0||s.indexOf('\n')>=0)
+        s='"'+s.replace(/"/g,'""')+'"';
+      return s;
+    }).join(',');
+  }).join('\r\n');
+}
+
+function openExport() {
+  updateProgress();
+  var csv = buildCSV();
+  document.getElementById('exp-csv-text').value = csv;
+  document.getElementById('exp-modal').classList.add('open');
+}
+
+function copyCSV() {
+  var ta = document.getElementById('exp-csv-text');
+  ta.select();
+  try {
+    var ok = document.execCommand('copy');
+    if (ok) { showToast('Copied! Paste into Excel or email to campaign HQ.'); return; }
+  } catch(e) {}
+  try {
+    navigator.clipboard.writeText(ta.value).then(function() {
+      showToast('Copied to clipboard!');
+    });
+  } catch(e) {
+    showToast('Select all text above and copy manually.');
+  }
+}
+
+function tryDownload() {
+  var csv = document.getElementById('exp-csv-text').value;
+  var now = new Date();
+  var fname = 'TeamA_Results_' + now.toLocaleDateString('en-US').replace(/\//g,'-') + '.csv';
+  try {
+    var blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = fname;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('CSV downloaded!');
+  } catch(e) {
+    // Fallback: data URI
+    var uri = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+    window.open(uri, '_blank');
+    showToast('Opening CSV - save from your browser.');
+  }
+}
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.style.display = 'block';
+  setTimeout(function(){t.style.display='none';}, 3500);
+}
+
+// ─── INIT ─────────────────────────────────────────────────────
+buildList();
+</script>
+</body>
+</html>
