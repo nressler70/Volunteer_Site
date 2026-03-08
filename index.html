@@ -2,553 +2,991 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<title>Team A - Burkhart Road</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Baughman Township Fire &amp; EMS Levy — Volunteer Campaign HQ</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Oswald:wght@400;600;700&family=Source+Sans+3:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0d1117;color:#f0f6fc;min-height:100vh;}
+:root{--navy:#0f1928;--navy-mid:#1a2e44;--navy-light:#243d58;--red:#c0392b;--red-light:#e74c3c;--gold:#c9962a;--gold-light:#f4a460;--cream:#f5f0e8;--cream-dark:#e8e0d0;--green:#1e7a4a;--green-light:#27ae60;--blue:#1a5276;--blue-light:#2e86c1;--white:#ffffff;--text:#2c2c2c;--text-light:#5a5a5a;--border:#d4c9b0;--gray:#8a9bb0}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}body{font-family:'Source Sans 3',sans-serif;background:var(--navy);color:var(--cream);line-height:1.65}
+.top-banner{background:var(--blue);padding:9px 24px;text-align:center;font-size:.85rem;font-weight:600;color:#e0f0ff;letter-spacing:.02em;border-bottom:2px solid rgba(255,255,255,.1)}
+.top-banner a{color:#f4d89a;text-decoration:underline}.tbi{display:inline-flex;align-items:center;gap:20px;flex-wrap:wrap;justify-content:center}
+.tb-pill{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:20px;padding:2px 11px;font-size:.78rem;white-space:nowrap}
+nav{background:var(--navy);border-bottom:3px solid var(--red);position:sticky;top:0;z-index:1000}
+.nav-inner{max-width:1300px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:54px}
+.nav-brand{font-family:'Playfair Display',serif;font-size:.9rem;font-weight:700;color:var(--cream);text-decoration:none;white-space:nowrap}
+.nav-links{display:flex;gap:2px;list-style:none;overflow-x:auto;scrollbar-width:none}
+.nav-links a{color:#8a9bb0;text-decoration:none;font-size:.73rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:5px 9px;border-radius:3px;white-space:nowrap;transition:color .2s,background .2s}
+.nav-links a:hover{color:var(--cream);background:rgba(255,255,255,.07)}
+.nav-links a.nav-ev{background:var(--blue);color:#aee2ff}.nav-links a.nav-ev:hover{background:var(--blue-light);color:white}
+.hero{background:linear-gradient(135deg,var(--navy) 0%,#1a2e44 55%,#1e3a52 100%);padding:72px 24px 60px;text-align:center;position:relative;overflow:hidden;border-bottom:4px solid var(--gold)}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(192,57,43,.15) 0%,transparent 55%),radial-gradient(ellipse at 80% 30%,rgba(201,150,42,.08) 0%,transparent 50%)}
+.hero-inner{position:relative;z-index:1;max-width:900px;margin:0 auto}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:10px;margin-bottom:22px}
+.hero-badge{background:var(--red);color:white;font-family:'Oswald',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:5px 14px;border-radius:2px}
+.hero-badge-blue{background:var(--blue);color:#aee2ff;font-family:'Oswald',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:5px 14px;border-radius:2px;border:1px solid rgba(46,134,193,.5)}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(2.2rem,5.5vw,4rem);font-weight:900;line-height:1.08;color:white;letter-spacing:-.02em;margin-bottom:18px}
+.hero h1 em{color:var(--gold-light);font-style:italic}
+.hero-sub{font-family:'Playfair Display',serif;font-style:italic;font-size:1.1rem;color:#c0ccdd;max-width:680px;margin:0 auto 36px;line-height:1.65}
+.hero-stats{display:flex;justify-content:center;gap:32px;flex-wrap:wrap;margin-bottom:36px}
+.hstat{text-align:center}.hstat .num{font-family:'Playfair Display',serif;font-size:2.3rem;font-weight:700;color:var(--gold-light);display:block;line-height:1}
+.hstat .lbl{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:#6677aa;margin-top:4px;display:block}
+.hdivider{width:1px;background:rgba(255,255,255,.12);height:52px;align-self:center}
+.hero-early{display:inline-block;background:linear-gradient(135deg,var(--blue) 0%,#154360 100%);border:1px solid rgba(46,134,193,.5);border-radius:10px;padding:18px 32px;max-width:640px;width:100%;text-align:left;margin-bottom:28px}
+.hero-early-label{font-family:'Oswald',sans-serif;font-size:.65rem;letter-spacing:.16em;text-transform:uppercase;color:#7ec8e3;display:block;margin-bottom:6px}
+.hero-early p{font-size:.92rem;color:#ddeeff;line-height:1.6}.hero-early strong{color:#f4d89a}
+.hero-early-btn{display:inline-block;margin-top:12px;background:var(--blue-light);color:white;font-family:'Oswald',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:7px 18px;border-radius:4px;text-decoration:none}
+.hero-cd{margin:0 auto;display:inline-flex;flex-direction:column;align-items:center;gap:10px;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:22px 48px}
+.hero-cd-label{font-family:'Oswald',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#7ec8e3}
+.hero-cd-blocks{display:flex;align-items:center;gap:14px}
+.hero-cd-block{text-align:center;min-width:68px}
+.hero-cd-num{font-family:'Playfair Display',serif;font-size:3.2rem;font-weight:700;color:var(--gold-light);display:block;line-height:1;letter-spacing:-.02em}
+.hero-cd-unit{font-family:'Oswald',sans-serif;font-size:.6rem;text-transform:uppercase;letter-spacing:.12em;color:#445566;margin-top:3px;display:block}
+.hero-cd-colon{font-family:'Playfair Display',serif;font-size:2.6rem;color:rgba(255,255,255,.18);line-height:1;padding-bottom:16px}
+.hero-cd-tag{font-size:.78rem;font-weight:600;color:#aee2ff;padding:4px 14px;background:rgba(46,134,193,.18);border:1px solid rgba(46,134,193,.3);border-radius:12px}
+.cta-bar{background:var(--red);padding:14px 24px;text-align:center;font-size:.95rem;font-weight:600;color:white}
+.cta-bar a{color:#f4d89a;text-decoration:underline;text-underline-offset:2px}
+.sec{max-width:1300px;margin:0 auto;padding:64px 28px}
+.sec-label{font-family:'Oswald',sans-serif;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:10px;color:var(--gold-light)}
+.sec-label::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.1);max-width:180px}
+.sec-label.dark-label{color:var(--red)}.sec-label.dark-label::after{background:var(--border)}
+h2{font-family:'Playfair Display',serif;font-size:clamp(1.7rem,3.5vw,2.6rem);font-weight:700;line-height:1.15;margin-bottom:20px;color:var(--cream)}
+h2.dark{color:var(--navy)}h2 em{color:var(--gold-light);font-style:italic}h2.dark em{color:var(--gold)}
+.lead{font-size:1rem;line-height:1.75;margin-bottom:36px;color:var(--gray);max-width:760px}.lead.dark{color:var(--text-light)}
+.ev-section{background:linear-gradient(160deg,#0c1d2e 0%,#1a3a58 60%,#0f2640 100%);border-top:1px solid rgba(46,134,193,.25);border-bottom:1px solid rgba(46,134,193,.25)}
+.ev-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:36px}
+.ev-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:28px;position:relative;overflow:hidden}
+.ev-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px}
+.ev-card.ev-inperson::before{background:var(--gold-light)}.ev-card.ev-mail::before{background:var(--blue-light)}
+.ev-icon{font-size:2.2rem;margin-bottom:10px;display:block}.ev-card h3{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--cream);margin-bottom:6px}
+.ev-sub{font-family:'Oswald',sans-serif;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px}
+.ev-inperson .ev-sub{color:var(--gold-light)}.ev-mail .ev-sub{color:#aee2ff}
+.ev-card p{font-size:.9rem;color:#9aafcc;line-height:1.7;margin-bottom:10px}.ev-card strong{color:var(--cream)}
+.ev-btn{display:inline-block;margin-top:8px;font-family:'Oswald',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:7px 16px;border-radius:4px;text-decoration:none}
+.ev-inperson .ev-btn{background:rgba(244,164,96,.15);color:var(--gold-light);border:1px solid rgba(244,164,96,.3)}
+.ev-mail .ev-btn{background:rgba(46,134,193,.15);color:#aee2ff;border:1px solid rgba(46,134,193,.3)}
+.sched-wrap{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;overflow:hidden}
+.sched-hdr{background:rgba(0,0,0,.3);padding:14px 22px;border-bottom:1px solid rgba(255,255,255,.08)}
+.sched-hdr h3{font-family:'Oswald',sans-serif;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:#7ec8e3}
+.sched-hdr span{font-size:.78rem;color:var(--gray)}
+.sched-table{width:100%;border-collapse:collapse}
+.sched-table th{font-family:'Oswald',sans-serif;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:#556677;padding:10px 20px;text-align:left;border-bottom:1px solid rgba(255,255,255,.06)}
+.sched-table td{padding:10px 20px;border-bottom:1px solid rgba(255,255,255,.04);font-size:.88rem;color:#c0ccdd;vertical-align:middle}
+.sched-table tr:last-child td{border-bottom:none}.sched-table td:first-child{font-weight:600;color:var(--cream)}
+.sbadge{display:inline-block;font-family:'Oswald',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border-radius:3px;margin-left:6px}
+.sb-start{background:rgba(39,174,96,.2);color:#5ce08a;border:1px solid rgba(39,174,96,.3)}
+.sb-ext{background:rgba(244,164,96,.15);color:var(--gold-light);border:1px solid rgba(244,164,96,.3)}
+.sb-elect{background:rgba(192,57,43,.3);color:#ff8a7a;border:1px solid rgba(192,57,43,.5)}
+.cream-section{background:var(--cream)}.cream-dark-section{background:var(--cream-dark);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.ballot-box{background:var(--cream);border:2px solid var(--navy);border-radius:6px;padding:26px 30px;margin:36px 0;font-family:'Playfair Display',serif;font-style:italic;color:var(--navy);font-size:.98rem;line-height:1.8;position:relative}
+.ballot-box::before{content:'OFFICIAL BALLOT LANGUAGE';font-family:'Source Sans 3',sans-serif;font-style:normal;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--text-light);display:block;margin-bottom:12px}
+.facts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px;margin:36px 0}
+.fact-card{background:white;border:1px solid var(--border);border-top:4px solid var(--navy);padding:22px;border-radius:0 0 6px 6px}
+.fact-card .big{font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:700;color:var(--navy);display:block;line-height:1;margin-bottom:5px}
+.fact-card p{font-size:.88rem;color:var(--text-light);line-height:1.5}
+.fact-card.accent{border-top-color:var(--red)}.fact-card.accent .big{color:var(--red)}
+.fact-card.gold{border-top-color:var(--gold)}.fact-card.gold .big{color:var(--gold)}
+.alert-box{background:var(--navy);border-left:6px solid var(--red);color:var(--cream);padding:24px 28px;border-radius:0 6px 6px 0;margin:36px 0}
+.alert-box h3{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--gold-light);margin-bottom:8px}
+.alert-box p{font-size:.92rem;line-height:1.7;color:#c8d4e8}
+.pc-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.08)}
+.pc-yes{background:white}.pc-no{background:#faf9f7;border-left:1px solid var(--border)}
+.pc-head{padding:18px 26px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)}
+.pc-head.yes-head{background:#e8f5ee}.pc-head.no-head{background:#fdf0ee}
+.pc-icon{width:33px;height:33px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;color:white;flex-shrink:0}
+.yes-icon{background:var(--green)}.no-icon{background:var(--red)}
+.pc-head h3{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--navy)}.pc-head p{font-size:.78rem;color:var(--text-light)}
+.pc-list{list-style:none;padding:18px 26px 26px}
+.pc-list li{display:flex;gap:10px;padding:12px 0;border-bottom:1px solid #ede8df;font-size:.9rem;line-height:1.55;color:var(--text);align-items:flex-start}
+.pc-list li:last-child{border-bottom:none}
+.pc-yes .pc-list li::before{content:'✓';color:var(--green);font-weight:700;flex-shrink:0;margin-top:1px}
+.pc-no .pc-list li::before{content:'–';color:var(--red);font-weight:700;font-size:1.1rem;flex-shrink:0;line-height:1.4}
+.pc-list li strong{display:block;color:var(--navy);font-weight:600;margin-bottom:2px}
+.cost-wrap{overflow-x:auto;border-radius:8px;border:1px solid var(--border);box-shadow:0 2px 14px rgba(0,0,0,.06);margin-bottom:24px}
+.cost-table{width:100%;border-collapse:collapse;background:white}
+.cost-table th{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;padding:12px 18px;text-align:left;border-bottom:2px solid var(--border)}
+.cost-table th:first-child{background:#f0ecf3;color:var(--navy)}.cost-table th.lvy{background:#e8f5ee;color:var(--green)}.cost-table th.no{background:#fdf0ee;color:var(--red)}
+.cost-table td{padding:12px 18px;border-bottom:1px solid #ede8df;font-size:.9rem;color:var(--text)}
+.cost-table tr:last-child td{border-bottom:none}.cost-table td:first-child{font-weight:600;color:var(--navy)}
+.cost-table td.lvy{background:#f0faf4;color:var(--green);font-weight:700}.cost-table td.no{background:#fef8f7;color:var(--red);font-weight:700}
+.strat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}
+.strat-card{background:var(--navy-mid);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:20px}
+.strat-card h3{font-family:'Oswald',sans-serif;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.strat-card .snum{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:white;display:block;line-height:1;margin-bottom:5px}
+.strat-card p{font-size:.84rem;color:#9aafcc;line-height:1.6}
+.prec-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:28px}
+.prec-card{background:var(--navy-mid);border-radius:10px;padding:24px;border-top:4px solid}
+.prec-card.ba1{border-color:var(--gold)}.prec-card.ba2{border-color:#74c69d}
+.prec-card h3{font-family:'Playfair Display',serif;font-size:1.15rem;margin-bottom:14px}
+.prec-card.ba1 h3{color:var(--gold)}.prec-card.ba2 h3{color:#74c69d}
+.prec-row{display:flex;justify-content:space-between;font-size:.84rem;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.06);color:#9aafcc}
+.prec-row strong{color:white}.prec-card .prec-note{font-size:.81rem;color:#7a9ab8;line-height:1.65;margin-top:12px}
+.teams-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+.team-card{background:var(--navy-mid);border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,.07);transition:transform .2s}
+.team-card:hover{transform:translateY(-2px)}
+.team-hdr{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;padding:14px 18px}
+.team-num{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;width:48px;height:48px;border-radius:50%;background:rgba(0,0,0,.22);display:flex;align-items:center;justify-content:center;color:white;flex-shrink:0}
+.team-title h3{font-family:'Oswald',sans-serif;font-size:1rem;font-weight:700;color:white;letter-spacing:.03em}
+.team-title p{font-size:.75rem;color:rgba(255,255,255,.55);margin-top:2px;font-style:italic}
+.team-doors{font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:700;padding:4px 8px;border-radius:4px;background:rgba(0,0,0,.25);color:white;text-align:center;line-height:1.5;flex-shrink:0}
+.team-body{padding:16px 18px}
+.team-map{width:100%;height:200px;border-radius:8px;overflow:hidden;margin-bottom:12px;border:1px solid rgba(255,255,255,.08)}
+.team-map iframe{width:100%;height:100%;border:none}
+.map-directions-btn{display:block;margin-bottom:12px;text-align:center;background:rgba(46,134,193,.15);color:#aee2ff;border:1px solid rgba(46,134,193,.35);border-radius:6px;padding:8px 12px;font-family:'Oswald',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;text-decoration:none}
+.map-directions-btn:hover{background:rgba(46,134,193,.3);color:white}
+.streets{list-style:none;display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.streets li{display:flex;justify-content:space-between;align-items:center;font-size:.82rem;padding:6px 9px;background:rgba(0,0,0,.18);border-radius:5px}
+.st-name{color:var(--cream)}.st-ct{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--gold);font-weight:700}
+.st-pri{font-family:'Oswald',sans-serif;font-size:.6rem;letter-spacing:.05em;padding:2px 6px;border-radius:3px}
+.pri-h{background:rgba(192,57,43,.28);color:#ff8a7a}.pri-m{background:rgba(201,150,42,.2);color:var(--gold-light)}.pri-v{background:rgba(39,174,96,.2);color:#74c69d}
+.team-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07)}
+.tstat{text-align:center}.tstat-num{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:700;color:var(--gold);display:block}
+.tstat-lbl{font-size:.6rem;text-transform:uppercase;letter-spacing:.06em;color:var(--gray)}
+.route-note{margin-top:10px;padding:8px 10px;border-radius:6px;font-size:.78rem;line-height:1.6}
+.t1 .team-hdr{background:linear-gradient(135deg,#c0392b,#a93226)}.t2 .team-hdr{background:linear-gradient(135deg,#e67e22,#ca6f1e)}
+.t3 .team-hdr{background:linear-gradient(135deg,#c9962a,#a87b22)}.t4 .team-hdr{background:linear-gradient(135deg,#229954,#1a7a42)}
+.t5 .team-hdr{background:linear-gradient(135deg,#2980b9,#1a6fa5)}.t6 .team-hdr{background:linear-gradient(135deg,#8e44ad,#7d3c98)}
+.t7 .team-hdr{background:linear-gradient(135deg,#2e86c1,#1a6fa5)}.t8 .team-hdr{background:linear-gradient(135deg,#17a589,#138d75)}
+.t9 .team-hdr{background:linear-gradient(135deg,#6c3483,#5b2c6f)}.t10 .team-hdr{background:linear-gradient(135deg,#444,#2a2a2a)}
+.sum-table{width:100%;border-collapse:collapse}
+.sum-table th{font-family:'Oswald',sans-serif;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:10px 14px;text-align:left;border-bottom:2px solid rgba(201,150,42,.25);background:var(--navy-light)}
+.sum-table td{padding:9px 14px;border-bottom:1px solid rgba(255,255,255,.05);font-size:.85rem;color:var(--cream)}
+.sum-table tr:hover td{background:rgba(255,255,255,.03)}.sum-table td:first-child{font-family:'JetBrains Mono',monospace;font-weight:700}
+.talk-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.talk-card{background:var(--navy-mid);border-radius:10px;padding:22px;border:1px solid rgba(255,255,255,.07)}
+.talk-card h3{font-family:'Oswald',sans-serif;font-size:.85rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid}
+.talk-card.opener h3{color:var(--gold);border-color:var(--gold)}.talk-card.cost h3{color:#74c69d;border-color:#74c69d}
+.talk-card.objection h3{color:#ff8a7a;border-color:#ff8a7a}.talk-card.close h3{color:#aee2ff;border-color:#aee2ff}
+.talk-card ul{padding-left:18px;font-size:.85rem;line-height:1.8;color:#9aafcc}.talk-card li{margin-bottom:4px}
+.script-box{background:rgba(0,0,0,.28);border-left:3px solid var(--gold);padding:10px 14px;border-radius:0 6px 6px 0;font-style:italic;font-size:.85rem;color:var(--cream);line-height:1.7;margin:10px 0}
+.timeline{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative;margin:28px 0}
+.timeline::before{content:'';position:absolute;top:26px;left:12.5%;right:12.5%;height:2px;background:linear-gradient(to right,var(--gold),rgba(201,150,42,.2));z-index:0}
+.tl-item{text-align:center;padding:0 12px;position:relative;z-index:1}
+.tl-dot{width:52px;height:52px;border-radius:50%;background:var(--navy-mid);border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:1.4rem}
+.tl-item h4{font-family:'Oswald',sans-serif;font-size:.82rem;color:var(--gold);letter-spacing:.05em;text-transform:uppercase}
+.tl-item p{font-size:.78rem;color:var(--gray);margin-top:4px;line-height:1.5}
+.tips-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}
+.tip-card{background:var(--navy-mid);border-radius:10px;padding:20px;border:1px solid rgba(255,255,255,.06)}
+.tip-icon{font-size:1.8rem;margin-bottom:8px;display:block}
+.tip-card h4{font-family:'Oswald',sans-serif;font-size:.82rem;color:var(--gold);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.tip-card p{font-size:.81rem;color:#8899bb;line-height:1.65}
+.tracker-table{width:100%;border-collapse:collapse}
+.tracker-table th{font-family:'Oswald',sans-serif;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 12px;text-align:left;border-bottom:2px solid rgba(201,150,42,.25);background:var(--navy-light)}
+.tracker-table td{padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.05);color:var(--cream)}
 
-/* ── PAGE HEADER ── */
-.pg-header{background:#C1121F;padding:12px 14px;display:flex;align-items:center;gap:10px;}
-.pg-badge{background:rgba(255,255,255,.22);border-radius:8px;padding:5px 12px;font-weight:800;font-size:22px;color:#fff;flex-shrink:0;}
-.pg-info{flex:1;min-width:0;}
-.pg-info h1{font-size:15px;font-weight:700;color:#fff;}
-.pg-info p{font-size:11px;color:rgba(255,255,255,.8);margin-top:1px;}
-.pg-stats{display:flex;gap:6px;flex-shrink:0;}
-.pstat{background:rgba(255,255,255,.18);border-radius:14px;padding:4px 9px;text-align:center;}
-.pstat .n{font-size:16px;font-weight:800;color:#fff;line-height:1;}
-.pstat .l{font-size:9px;color:rgba(255,255,255,.8);}
-.pstat.gn{background:rgba(40,164,78,.6);}
+.contacts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:22px;margin-top:36px}
+.vol-contacts-section{background:linear-gradient(160deg,#0c1d2e 0%,#152a40 100%);border-top:2px solid rgba(201,150,42,.2);border-bottom:2px solid rgba(201,150,42,.2)}
+.vol-contacts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:32px}
+.vc-card{background:var(--navy-mid);border:1px solid rgba(255,255,255,.09);border-radius:10px;padding:22px;border-top:4px solid var(--gold);transition:transform .2s,box-shadow .2s}
+.vc-card:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(0,0,0,.35)}
+.vc-card.vc-blue{border-top-color:var(--blue-light)}
+.vc-card.vc-green{border-top-color:#27ae60}
+.vc-card.vc-red{border-top-color:var(--red-light)}
+.vc-name{font-family:'Playfair Display',serif;font-size:1.15rem;color:var(--cream);margin-bottom:2px}
+.vc-role{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--gold);margin-bottom:14px}
+.vc-blue .vc-role{color:#aee2ff}.vc-green .vc-role{color:#74c69d}.vc-red .vc-role{color:#ff8a7a}
+.vc-info{display:flex;align-items:center;gap:9px;margin-bottom:8px;font-size:.88rem}
+.vc-info .icon{font-size:.95rem;flex-shrink:0}
+.vc-info a{color:var(--cream);text-decoration:none}.vc-info a:hover{color:var(--gold-light)}
+.vc-info span{color:#8a9bb0}
+.vc-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.07)}
+.vc-tag{font-family:'Oswald',sans-serif;font-size:.6rem;letter-spacing:.07em;text-transform:uppercase;padding:3px 8px;border-radius:3px;background:rgba(201,150,42,.12);color:var(--gold-light);border:1px solid rgba(201,150,42,.2)}
+.vc-tag.tag-any{background:rgba(39,174,96,.15);color:#74c69d;border-color:rgba(39,174,96,.25)}
+.contact-card{border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:28px;background:var(--navy-mid);border-top:4px solid var(--gold)}
+.contact-card.cc-blue{border-top-color:var(--blue-light)}
+.contact-card h4{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--cream);margin-bottom:4px}
+.contact-card .role{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:18px}
+.cc-blue .role{color:#aee2ff}.ci{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
+.ci .icon{font-size:1rem;flex-shrink:0;margin-top:1px}.ci a{font-size:.92rem;color:var(--cream);text-decoration:none}
+.ci a:hover{color:var(--gold-light)}.ci span{font-size:.9rem;color:#9aafcc}
+footer{background:var(--navy);border-top:3px solid var(--red);padding:30px 24px;text-align:center}
+footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#7788aa}
+.print-bar{background:var(--navy-mid);border-top:2px solid rgba(255,255,255,.07);padding:14px 24px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.pbtn{font-family:'Oswald',sans-serif;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;padding:8px 20px;border-radius:5px;cursor:pointer;border:none;text-decoration:none;display:inline-block}
+.pbtn-gold{background:var(--gold);color:var(--navy);font-weight:700}.pbtn-out{background:transparent;color:var(--gold);border:2px solid var(--gold)}
+@media(max-width:900px){.teams-grid,.prec-grid,.ev-grid,.strat-grid,.talk-grid,.pc-grid{grid-template-columns:1fr}.tips-grid{grid-template-columns:1fr 1fr}.timeline{grid-template-columns:1fr 1fr}.nav-links{display:none}.hdivider{display:none}}
+@media(max-width:600px){.form-grid,.cb-group,.tips-grid,.strat-grid{grid-template-columns:1fr}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.hero-inner>*{animation:fadeUp .7s ease both}
+.hero-eyebrow{animation-delay:.1s}.hero h1{animation-delay:.22s}.hero-sub{animation-delay:.34s}.hero-stats{animation-delay:.44s}.hero-early{animation-delay:.54s}.hero-cd{animation-delay:.64s}
+@media print{nav,.top-banner,.cta-bar,.print-bar,.vol-section{display:none}body{background:white;color:black}}
 
-/* ── ACTION TOOLBAR ── */
-.toolbar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:#161b22;border-bottom:1px solid #21262d;flex-wrap:wrap;}
-.toolbar input{flex:1;min-width:120px;padding:8px 12px;background:#0d1117;border:1.5px solid #30363d;border-radius:8px;color:#f0f6fc;font-size:14px;outline:none;-webkit-appearance:none;}
-.toolbar input::placeholder{color:#6e7681;}
-.exp-btn{padding:9px 14px;background:#2da44e;border:none;border-radius:8px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px;flex-shrink:0;}
-.exp-btn svg{width:16px;height:16px;fill:#fff;}
-.map-btn{padding:9px 14px;background:#1D3557;border:none;border-radius:8px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;}
-
-/* ── FILTER PILLS ── */
-.filters{display:flex;gap:6px;padding:8px 12px;background:#0d1117;border-bottom:1px solid #21262d;overflow-x:auto;-webkit-overflow-scrolling:touch;}
-.fp{flex-shrink:0;padding:6px 12px;border-radius:16px;border:1.5px solid #30363d;background:transparent;color:rgba(255,255,255,.55);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;}
-.fp.on{background:#C1121F;border-color:#C1121F;color:#fff;}
-
-/* ── SECTION HEADER ── */
-.sec{padding:8px 14px;font-size:11px;font-weight:700;color:#6e7681;letter-spacing:.8px;text-transform:uppercase;background:#161b22;border-bottom:1px solid #21262d;border-top:1px solid #21262d;}
-
-/* ── STOP CARD ── */
-.sc{display:flex;align-items:stretch;border-bottom:1px solid #161b22;background:#0d1117;cursor:pointer;}
-.sc:active{background:#161b22;}
-.sc-left{width:54px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px;border-right:3px solid #1e2a38;}
-.sc-num{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;}
-.sc-vl{font-size:9px;font-weight:700;margin-top:4px;color:rgba(255,255,255,.4);}
-.sc-body{flex:1;padding:10px 10px 10px 12px;min-width:0;}
-.sc-row1{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:3px;}
-.sc-name{font-size:15px;font-weight:700;color:#f0f6fc;}
-.bdg{font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;}
-.bL{background:#FFD700;color:#1a1a1a;}
-.bH{background:#1a6b2a;color:#fff;}
-.sc-addr{font-size:12px;color:#8b949e;margin-bottom:2px;}
-.sc-meta{font-size:11px;color:#58a6a0;font-weight:600;}
-.sc-sts{font-size:11px;font-weight:700;margin-top:3px;}
-.sc-right{width:50px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
-.nav-btn{width:38px;height:38px;border-radius:50%;background:#C1121F;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.4);}
-.nav-btn svg{width:20px;height:20px;fill:#fff;}
-
-/* ── MODAL OVERLAY ── */
-.modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:5000;background:rgba(0,0,0,.7);-webkit-overflow-scrolling:touch;}
-.modal.open{display:flex;align-items:flex-end;}
-.modal-sheet{background:#161b22;border-radius:16px 16px 0 0;width:100%;max-height:88vh;overflow-y:auto;padding:16px 16px 40px;border-top:3px solid #C1121F;box-shadow:0 -6px 30px rgba(0,0,0,.8);}
-.modal-close{float:right;background:rgba(255,255,255,.1);border:none;color:#aaa;width:32px;height:32px;border-radius:50%;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-.mc-lbl{font-size:11px;font-weight:700;color:#C1121F;text-transform:uppercase;margin-bottom:3px;clear:both;}
-.mc-name{font-size:24px;font-weight:800;color:#f0f6fc;margin-bottom:3px;line-height:1.1;}
-.mc-addr{font-size:14px;color:#8b949e;margin-bottom:5px;}
-.mc-levy{font-size:13px;color:#58a6a0;font-weight:700;margin-bottom:10px;}
-.mc-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
-.mc-bdg{font-size:12px;font-weight:700;padding:4px 10px;border-radius:6px;}
-.mcbL{background:#FFD700;color:#1a1a1a;}
-.mcbH{background:#1a6b2a;color:#fff;}
-.mcbV{background:#1D3557;color:#fff;}
-.nav-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
-.nb{padding:14px 8px;border-radius:12px;border:none;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;}
-.nb svg{width:20px;height:20px;fill:currentColor;}
-.nb:active{opacity:.8;}
-.nbG{background:#4285F4;color:#fff;}
-.nbA{background:#e8e8ed;color:#1d1d1f;}
-.field-lbl{font-size:11px;font-weight:700;color:#6e7681;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
-.notes-ta{width:100%;padding:10px 12px;background:#0d1117;border:1.5px solid #30363d;border-radius:10px;color:#f0f6fc;font-size:14px;outline:none;resize:none;font-family:inherit;margin-bottom:14px;}
-.sts-row{display:flex;gap:8px;margin-bottom:4px;}
-.sb{flex:1;padding:12px 4px;border-radius:10px;border:1.5px solid #30363d;background:transparent;color:rgba(255,255,255,.5);font-size:12px;font-weight:700;cursor:pointer;}
-.sbY{background:#1a6b2a !important;border-color:#1a6b2a !important;color:#fff !important;}
-.sbN{background:#6b1a1a !important;border-color:#6b1a1a !important;color:#fff !important;}
-.sbNH{background:#6b4e1a !important;border-color:#6b4e1a !important;color:#fff !important;}
-.sbU{background:#3d3880 !important;border-color:#3d3880 !important;color:#fff !important;}
-
-/* ── MAP OVERLAY ── */
-#map-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:4000;flex-direction:column;}
-#map-overlay.open{display:flex;}
-#map-topbar{background:#C1121F;height:50px;display:flex;align-items:center;padding:0 12px;gap:10px;flex-shrink:0;}
-#map-topbar button{background:rgba(255,255,255,.2);border:none;color:#fff;padding:7px 14px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;}
-#map-topbar span{color:#fff;font-size:14px;font-weight:700;flex:1;}
-#map{flex:1;width:100%;}
-
-/* ── EXPORT MODAL ── */
-#exp-modal .modal-sheet{max-height:80vh;}
-#exp-csv-text{width:100%;height:180px;background:#0d1117;border:1.5px solid #30363d;border-radius:8px;color:#58a6a0;font-size:11px;padding:10px;font-family:monospace;resize:none;margin-bottom:10px;}
-.copy-btn{width:100%;padding:14px;background:#2da44e;border:none;border-radius:10px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:8px;}
-.copy-btn:active{opacity:.85;}
-.dl-hint{font-size:12px;color:#6e7681;text-align:center;line-height:1.5;}
-
-/* ── TOAST ── */
-#toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#2da44e;color:#fff;font-size:13px;font-weight:700;padding:10px 20px;border-radius:20px;z-index:99999;display:none;box-shadow:0 4px 16px rgba(0,0,0,.5);white-space:nowrap;}
+/* ── LIVE EARLY VOTING COUNTER STRIP ── */
+#ev-counter-strip{
+  background:linear-gradient(90deg,#0d2137 0%,#0f3460 40%,#0d2137 100%);
+  border-bottom:3px solid var(--gold);
+  padding:10px 20px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+#ev-counter-strip::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 50%,rgba(201,150,42,.08) 0%,transparent 70%);
+  pointer-events:none;
+}
+.ev-strip-inner{
+  display:inline-flex;align-items:center;gap:22px;flex-wrap:wrap;justify-content:center;position:relative;z-index:1;
+}
+.ev-strip-label{
+  font-family:'Oswald',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-light);white-space:nowrap;
+}
+.ev-strip-blocks{
+  display:flex;align-items:center;gap:6px;
+}
+.ev-strip-block{
+  text-align:center;background:rgba(0,0,0,.35);border:1px solid rgba(201,150,42,.3);border-radius:6px;padding:4px 10px;min-width:52px;
+}
+.ev-strip-num{
+  font-family:'Playfair Display',serif;font-size:1.55rem;font-weight:700;color:var(--gold-light);display:block;line-height:1;
+}
+.ev-strip-unit{
+  font-family:'Oswald',sans-serif;font-size:.5rem;text-transform:uppercase;letter-spacing:.12em;color:#556688;display:block;margin-top:1px;
+}
+.ev-strip-colon{
+  font-family:'Playfair Display',serif;font-size:1.4rem;color:rgba(201,150,42,.4);padding-bottom:10px;line-height:1;
+}
+.ev-strip-status{
+  font-family:'Oswald',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 14px;border-radius:14px;white-space:nowrap;
+}
+.ev-strip-status.ev-waiting{
+  background:rgba(201,150,42,.18);color:var(--gold-light);border:1px solid rgba(201,150,42,.4);
+}
+.ev-strip-status.ev-open{
+  background:rgba(39,174,96,.2);color:#5ce08a;border:1px solid rgba(39,174,96,.4);
+  animation:pulse-green 1.8s ease-in-out infinite;
+}
+.ev-strip-status.ev-closed{
+  background:rgba(255,255,255,.08);color:#778899;border:1px solid rgba(255,255,255,.15);
+}
+@keyframes pulse-green{
+  0%,100%{box-shadow:0 0 0 0 rgba(39,174,96,.35)}
+  50%{box-shadow:0 0 0 6px rgba(39,174,96,0)}
+}
+.ev-strip-link{
+  font-family:'Oswald',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#aee2ff;text-decoration:none;border-bottom:1px solid rgba(174,226,255,.3);padding-bottom:1px;white-space:nowrap;
+}
+.ev-strip-link:hover{color:white;border-color:white;}
+@media(max-width:600px){
+  .ev-strip-label{display:none}
+  .ev-strip-num{font-size:1.2rem}
+  .ev-strip-block{min-width:42px;padding:3px 7px}
+}
+@media print{#ev-counter-strip{display:none}}
 </style>
 </head>
 <body>
+<div class="top-banner"><div class="tbi"><span>🗳️ <strong>Early voting starts April 8, 2026</strong> — No lines, no waiting</span><span class="tb-pill">Wayne County BOE · 200 Vanover St, Wooster</span><span class="tb-pill">📞 330-287-5480</span><a href="#early-voting">Full schedule →</a></div></div>
 
-<!-- PAGE HEADER -->
-<div class="pg-header">
-  <div class="pg-badge">A</div>
-  <div class="pg-info">
-    <h1>Burkhart Road Corridor</h1>
-    <p>A-1: stops 1&ndash;45 &middot; A-2: stops 46&ndash;91</p>
-  </div>
-  <div class="pg-stats">
-    <div class="pstat"><div class="n">91</div><div class="l">STOPS</div></div>
-    <div class="pstat"><div class="n">58</div><div class="l">LIKELY</div></div>
-    <div class="pstat gn"><div class="n" id="done-n">0</div><div class="l">DONE</div></div>
-  </div>
-</div>
-
-<!-- TOOLBAR -->
-<div class="toolbar">
-  <input type="search" id="srch" placeholder="Search name or address..." autocomplete="off">
-  <button class="map-btn" onclick="openMap()">Map</button>
-  <button class="exp-btn" onclick="openExport()">
-    <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-    Export
-  </button>
-</div>
-
-<!-- FILTERS -->
-<div class="filters">
-  <button class="fp on" data-f="all" onclick="setF(this)">All (91)</button>
-  <button class="fp" data-f="v1" onclick="setF(this)">A-1 (45)</button>
-  <button class="fp" data-f="v2" onclick="setF(this)">A-2 (46)</button>
-  <button class="fp" data-f="likely" onclick="setF(this)">&#9733; Likely (58)</button>
-  <button class="fp" data-f="todo" onclick="setF(this)">Pending</button>
-  <button class="fp" data-f="done" onclick="setF(this)">Visited</button>
-</div>
-
-<!-- STOP LIST -->
-<div id="lcon"></div>
-
-<!-- STOP DETAIL MODAL -->
-<div class="modal" id="stop-modal" onclick="modalBgClick(event)">
-  <div class="modal-sheet">
-    <button class="modal-close" onclick="closeModal('stop-modal')">X</button>
-    <div class="mc-lbl" id="mc-lbl"></div>
-    <div class="mc-name" id="mc-name"></div>
-    <div class="mc-addr" id="mc-addr"></div>
-    <div class="mc-levy" id="mc-levy"></div>
-    <div class="mc-badges" id="mc-badges"></div>
-    <div class="nav-btns">
-      <button class="nb nbG" id="btn-gm">
-        <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-        Google Maps
-      </button>
-      <button class="nb nbA" id="btn-am">
-        <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-        Apple Maps
-      </button>
+<!-- ── LIVE EARLY VOTING COUNTER STRIP ── -->
+<div id="ev-counter-strip">
+  <div class="ev-strip-inner">
+    <span class="ev-strip-label" id="ev-strip-label">🗳 Early Voting Opens In</span>
+    <div class="ev-strip-blocks">
+      <div class="ev-strip-block"><span class="ev-strip-num" id="ev-s-d">--</span><span class="ev-strip-unit">Days</span></div>
+      <span class="ev-strip-colon">:</span>
+      <div class="ev-strip-block"><span class="ev-strip-num" id="ev-s-h">--</span><span class="ev-strip-unit">Hrs</span></div>
+      <span class="ev-strip-colon">:</span>
+      <div class="ev-strip-block"><span class="ev-strip-num" id="ev-s-m">--</span><span class="ev-strip-unit">Min</span></div>
+      <span class="ev-strip-colon">:</span>
+      <div class="ev-strip-block"><span class="ev-strip-num" id="ev-s-s">--</span><span class="ev-strip-unit">Sec</span></div>
     </div>
-    <div class="field-lbl">Notes (optional):</div>
-    <textarea class="notes-ta" id="mc-notes" rows="2" placeholder="Yard sign request, call back, etc..."></textarea>
-    <div class="field-lbl">Mark this stop:</div>
-    <div class="sts-row" id="mc-sts"></div>
+    <span class="ev-strip-status ev-waiting" id="ev-strip-status">April 8 – May 5</span>
+    <a href="#early-voting" class="ev-strip-link">See voting hours →</a>
   </div>
 </div>
 
-<!-- MAP OVERLAY -->
-<div id="map-overlay">
-  <div id="map-topbar">
-    <span>Team A Map</span>
-    <button onclick="closeMap()">&#8592; Back to List</button>
+<nav><div class="nav-inner"><a href="#" class="nav-brand">🔥 Baughman Township Fire &amp; EMS Levy</a><ul class="nav-links"><li><a href="#early-voting" class="nav-ev">🗳 Vote Early</a></li><li><a href="#about">Levy Info</a></li><li><a href="#pros-cons">Pros &amp; Cons</a></li><li><a href="#costs">Costs</a></li><li><a href="#strategy">Strategy</a></li><li><a href="#teams">5 Teams</a></li><li><a href="#talking">Scripts</a></li><li><a href="#timeline">Schedule</a></li><li><a href="#vol-contacts" style="color:#74c69d">👥 Team</a></li><li><a href="#contact">Contact</a></li></ul></div></nav>
+
+<section class="hero"><div class="hero-inner">
+  <div class="hero-eyebrow"><span class="hero-badge">🗳 May 6, 2026 · Wayne County Ohio</span><span class="hero-badge-blue">Early Voting · April 8 – May 5</span></div>
+  <h1>Baughman Township<br><em>Fire &amp; EMS Levy</em></h1>
+  <p class="hero-sub">A 5-year, 1.75-mill levy to fund fire and emergency medical services. Without it, there is <strong style="color:#f4a460">no guaranteed fire or EMS coverage</strong> for township residents. This is the complete volunteer campaign guide — levy facts, walking maps, talking points, and early voting information.</p>
+  <div class="hero-stats">
+    <div class="hstat"><span class="num">1.75</span><span class="lbl">Mills</span></div>
+    <div class="hdivider"></div>
+    <div class="hstat"><span class="num">$61</span><span class="lbl">Per $100K / Year</span></div>
+    <div class="hdivider"></div>
+    <div class="hstat"><span class="num">5</span><span class="lbl">Years · Expires 2031</span></div>
   </div>
-  <div id="map"></div>
-</div>
-
-<!-- EXPORT MODAL -->
-<div class="modal" id="exp-modal" onclick="modalBgClick(event)">
-  <div class="modal-sheet">
-    <button class="modal-close" onclick="closeModal('exp-modal')">X</button>
-    <div class="mc-lbl">Export Results - Team A</div>
-    <div class="mc-name" style="font-size:16px;margin-bottom:12px;" id="exp-summary-line">0 of 91 stops marked</div>
-    <div class="field-lbl">Your CSV data:</div>
-    <textarea id="exp-csv-text" readonly></textarea>
-    <button class="copy-btn" onclick="copyCSV()">Copy All to Clipboard</button>
-    <button class="copy-btn" style="background:#1D3557;" onclick="tryDownload()">Download CSV File</button>
-    <div class="dl-hint" id="dl-hint">Paste into a new spreadsheet, or share this text with campaign HQ.</div>
+  <div class="hero-early">
+    <span class="hero-early-label">🗳 Vote Early — No Lines, No Waiting, Your Choice of Days</span>
+    <p>Don't wait for Election Day. <strong>In-person early voting begins April 8</strong> at the Wayne County Board of Elections in Wooster — open weekdays with Saturday &amp; Sunday hours. Or request a <strong>mail-in absentee ballot</strong> — no reason required under Ohio law.</p>
+    <a href="#early-voting" class="hero-early-btn">See full voting schedule →</a>
   </div>
+  <div class="hero-cd">
+    <div class="hero-cd-label" id="cd-label">Loading countdown...</div>
+    <div class="hero-cd-blocks" id="cd-blocks">
+      <div class="hero-cd-block"><span class="hero-cd-num" id="cd-d">--</span><span class="hero-cd-unit">Days</span></div>
+      <span class="hero-cd-colon">:</span>
+      <div class="hero-cd-block"><span class="hero-cd-num" id="cd-h">--</span><span class="hero-cd-unit">Hours</span></div>
+      <span class="hero-cd-colon">:</span>
+      <div class="hero-cd-block"><span class="hero-cd-num" id="cd-m">--</span><span class="hero-cd-unit">Min</span></div>
+      <span class="hero-cd-colon">:</span>
+      <div class="hero-cd-block"><span class="hero-cd-num" id="cd-s">--</span><span class="hero-cd-unit">Sec</span></div>
+    </div>
+    <div class="hero-cd-tag" id="cd-tag">Until April 8 early voting start</div>
+  </div>
+</div></section>
+
+<div class="cta-bar">📅 <strong>Election Day: Tuesday, May 6, 2026</strong> &nbsp;·&nbsp; Early voting: <strong>April 8 – May 5</strong> &nbsp;·&nbsp; Questions? <a href="#contact">Contact the campaign team</a></div>
+<!-- EARLY VOTING -->
+<section id="early-voting" class="ev-section"><div class="sec">
+  <div class="sec-label">How to Vote</div>
+  <h2>Vote Early — <em>Three Ways to Cast Your Ballot</em></h2>
+  <p class="lead">You don't have to wait until May 6th. Every registered Ohio voter may vote early in person or by mail — no excuse required. Locking in your vote early means life can't get in the way on Election Day.</p>
+  <div class="ev-grid">
+    <div class="ev-card ev-inperson"><span class="ev-icon">🏛️</span><h3>Vote Early In Person</h3><div class="ev-sub">April 8 – May 5, 2026 · Wayne County BOE</div><p>Go to the <strong>Wayne County Board of Elections</strong> any time during early voting hours. Bring a photo ID. No appointment needed.</p><p><strong>📍 200 Vanover St Suite 1, Wooster, OH 44691</strong></p><p><strong>📞 330-287-5480</strong></p><a href="tel:3302875480" class="ev-btn">📞 Call to Confirm Hours</a></div>
+    <div class="ev-card ev-mail"><span class="ev-icon">📬</span><h3>Vote by Absentee Mail Ballot</h3><div class="ev-sub">Request by May 3 · Return by May 5 postmark</div><p>Any registered voter can request an absentee ballot — <strong>no reason required</strong>. The BOE mails it to your home. Fill it out and mail it back, or drop off at the BOE.</p><p><strong>Request deadline: Saturday, May 3, 2026</strong></p><p><strong>Return: Postmarked by May 5, or hand-delivered by 7:30 PM on May 6</strong></p><a href="tel:3302875480" class="ev-btn">📬 Request Your Ballot Now</a></div>
+  </div>
+  <div class="sched-wrap">
+    <div class="sched-hdr"><h3>📅 Complete Early Voting Schedule — Wayne County Board of Elections</h3><span>200 Vanover St Suite 1, Wooster · 330-287-5480 · Confirm hours before visiting</span></div>
+    <table class="sched-table"><thead><tr><th>Date(s)</th><th>Day(s)</th><th>Hours</th><th>Notes</th></tr></thead><tbody>
+      <tr><td>April 8 <span class="sbadge sb-start">First Day</span></td><td>Tuesday</td><td>8:00 AM – 5:00 PM</td><td>Early voting opens — bring valid photo ID</td></tr>
+      <tr><td>April 9 – 17</td><td>Weekdays</td><td>8:00 AM – 5:00 PM</td><td>Regular hours</td></tr>
+      <tr><td>April 18–19</td><td>Sat – Sun</td><td>Sat 8 AM–12 PM · Sun Closed</td><td>First weekend hours available</td></tr>
+      <tr><td>April 20 – 24</td><td>Weekdays</td><td>8:00 AM – 5:00 PM</td><td>Regular hours</td></tr>
+      <tr><td>April 25–26</td><td>Sat – Sun</td><td>Sat 8 AM–12 PM · Sun 1–5 PM</td><td>Weekend hours</td></tr>
+      <tr><td>April 27 – May 1 <span class="sbadge sb-ext">Extended</span></td><td>Weekdays</td><td>8:00 AM – 6:00 PM</td><td>Extended hours begin</td></tr>
+      <tr><td>May 2 – 3</td><td>Sat – Sun</td><td>Sat 8 AM–12 PM · Sun 1–5 PM</td><td>Last weekend · Absentee request deadline May 3</td></tr>
+      <tr><td>May 4 <span class="sbadge sb-ext">Extended</span></td><td>Monday</td><td>8:00 AM – 8:00 PM</td><td>Final extended evening</td></tr>
+      <tr><td>May 5</td><td>Tuesday</td><td>8:00 AM – 5:00 PM</td><td>Last day of early in-person voting</td></tr>
+      <tr><td>May 6 <span class="sbadge sb-elect">Election Day</span></td><td>Wednesday</td><td>6:30 AM – 7:30 PM</td><td>Vote at your assigned precinct polling location</td></tr>
+    </tbody></table>
+  </div>
+  <p style="margin-top:14px;font-size:.8rem;color:#556677">⚠️ Confirm hours with Wayne County BOE at <strong style="color:var(--gold-light)">330-287-5480</strong> before traveling.</p>
+</div></section>
+
+<!-- LEVY INFO -->
+<section id="about" class="cream-section"><div class="sec">
+  <div class="sec-label dark-label">About the Levy</div>
+  <h2 class="dark">What Is Being Voted On?</h2>
+  <p class="lead dark">Baughman Township funds fire and EMS by contracting with three neighboring departments — paid entirely from the General Fund, which has run a deficit every year since 2020.</p>
+  <div class="ballot-box">An additional tax for the benefit of the Unincorporated Baughman Township Fire District for the purpose of fire and emergency medical services that the county auditor estimates will collect $195,049 annually at a rate not exceeding 1.75 mills for each $1 of taxable value, which amounts to $61 for each $100,000 of the county auditor's appraised value, for five (5) years, commencing in 2026, first due in 2027.</div>
+  <div class="facts-grid">
+    <div class="fact-card"><span class="big">$195,049</span><p>Collected annually, certified by the Wayne County Auditor. Restricted by law to fire &amp; EMS contracts only.</p></div>
+    <div class="fact-card accent"><span class="big">51%</span><p>Of General Fund spending consumed by fire protection every year — squeezing every other township service.</p></div>
+    <div class="fact-card gold"><span class="big">0</span><p>Other Wayne County townships without a fire levy. Baughman stands alone. Neighbors levy 2 to 6.75 mills.</p></div>
+    <div class="fact-card"><span class="big">2031</span><p>When this levy expires automatically. Not permanent — no renewal unless residents vote to extend it.</p></div>
+    <div class="fact-card accent"><span class="big">3</span><p>Contracted departments: Orrville, Marshallville, and North Lawrence — each receiving approximately $60,000/year.</p></div>
+    <div class="fact-card gold"><span class="big">$61</span><p>Annual cost per $100,000 of home value. That is $5.08 per month — less than a streaming subscription.</p></div>
+  </div>
+  <div class="alert-box"><h3>⚠️ Without the Levy: No Guaranteed Coverage</h3><p>Ohio law does not require townships to provide fire or EMS service (Ohio AG Opinion 94-067). If the levy fails and the General Fund is depleted, the township may be unable to meet contract obligations — and contracted departments are under no legal obligation to continue responding without payment.</p></div>
+</div></section>
+
+<!-- PROS & CONS -->
+<section id="pros-cons" class="cream-dark-section"><div class="sec">
+  <div class="sec-label dark-label">Both Sides</div>
+  <h2 class="dark">Arguments For and <em style="color:var(--gold)">Against</em> the Levy</h2>
+  <p class="lead dark">This page presents both sides of the levy debate fairly. Residents deserve complete, honest information to make their own informed decision.</p>
+  <div class="pc-grid">
+    <div class="pc-yes"><div class="pc-head yes-head"><div class="pc-icon yes-icon">✓</div><div><h3>Reasons to Vote YES</h3><p>Arguments in favor of the levy</p></div></div>
+    <ul class="pc-list">
+      <li><div><strong>Guarantees continued fire &amp; EMS service</strong>All three contracted departments receive stable, dedicated funding — maintaining response agreements that protect every resident.</div></li>
+      <li><div><strong>Ends deficit spending on fire protection</strong>The General Fund has run a deficit every year since 2020, with fire eating 51% of all expenditures.</div></li>
+      <li><div><strong>Cheapest fire levy in Wayne County</strong>At 1.75 mills, this would be the lowest among all neighboring townships. Neighbors levy 2 to 6.75 mills.</div></li>
+      <li><div><strong>Only $61/year per $100K of home value</strong>Less than $1.20 per week. One ambulance call without coverage costs many times more out of pocket.</div></li>
+      <li><div><strong>5 years only — not permanent</strong>Automatically expires in 2031. The township is not locked in forever.</div></li>
+      <li><div><strong>Funds restricted by law</strong>Every dollar can only be spent on fire and EMS contracts — it cannot be redirected to other township uses.</div></li>
+      <li><div><strong>Protects your homeowners insurance ISO rating</strong>Loss of organized fire coverage can raise ISO ratings, directly increasing homeowners insurance premiums.</div></li>
+    </ul></div>
+    <div class="pc-no"><div class="pc-head no-head"><div class="pc-icon no-icon">–</div><div><h3>Reasons to Vote NO</h3><p>Arguments against the levy</p></div></div>
+    <ul class="pc-list">
+      <li><div><strong>Tax increases burden fixed-income residents</strong>Even a modest levy adds to property tax bills that some residents — particularly seniors on fixed incomes — find difficult to absorb.</div></li>
+      <li><div><strong>Government should manage within existing budgets</strong>Some believe the township should reduce other spending rather than add a new dedicated tax.</div></li>
+      <li><div><strong>Contract costs are rising faster than the levy</strong>Contracts projected to increase: $180K → $189K → $198K over three years. The levy may not fully cover future costs.</div></li>
+      <li><div><strong>May set precedent for future levies</strong>Some residents are concerned this opens the door to future millage requests as costs continue to rise.</div></li>
+      <li><div><strong>Questions about service accountability</strong>Some residents have raised concerns about oversight of how contracted departments report performance.</div></li>
+    </ul></div>
+  </div>
+</div></section>
+
+<!-- COSTS -->
+<section id="costs"><div class="sec">
+  <div class="sec-label">Cost Comparison</div>
+  <h2>The Levy vs. <em>The Alternative</em></h2>
+  <p class="lead">The annual cost of the levy for most homeowners is less than a single emergency service call — which could arrive without warning and carries no price cap in Ohio.</p>
+  <div class="cost-wrap"><table class="cost-table">
+    <thead><tr><th>Home Value</th><th class="lvy">✓ Annual Levy Cost</th><th class="no">✗ One Ambulance Call (est.)</th><th class="no">✗ Structure Fire (est.)</th></tr></thead>
+    <tbody>
+      <tr><td>$100,000</td><td class="lvy">$61 / year</td><td class="no">$1,500 – $3,500</td><td class="no">$10,000 – $20,000+</td></tr>
+      <tr><td>$150,000</td><td class="lvy">$91 / year</td><td class="no">$1,500 – $3,500</td><td class="no">$10,000 – $20,000+</td></tr>
+      <tr><td>$200,000</td><td class="lvy">$122 / year</td><td class="no">$1,500 – $3,500</td><td class="no">$10,000 – $20,000+</td></tr>
+      <tr><td>$250,000</td><td class="lvy">$152 / year</td><td class="no">$1,500 – $3,500</td><td class="no">$10,000 – $20,000+</td></tr>
+      <tr><td>$300,000</td><td class="lvy">$183 / year</td><td class="no">$1,500 – $3,500</td><td class="no">$10,000 – $20,000+</td></tr>
+    </tbody>
+  </table></div>
+  <div class="cost-wrap"><table class="cost-table">
+    <thead><tr><th>Emergency Type</th><th class="lvy">✓ With Levy</th><th class="no">✗ Without Levy (per-call est.)</th></tr></thead>
+    <tbody>
+      <tr><td>BLS Ambulance Transport</td><td class="lvy">No direct charge to resident</td><td class="no">$500 – $2,000+</td></tr>
+      <tr><td>ALS Ambulance Transport</td><td class="lvy">No direct charge to resident</td><td class="no">$850 – $3,500+</td></tr>
+      <tr><td>Mileage to Wooster (~12 mi)</td><td class="lvy">Included</td><td class="no">$120 – $600 additional</td></tr>
+      <tr><td>Fire Response (minimum)</td><td class="lvy">No direct charge to resident</td><td class="no">$1,500+</td></tr>
+      <tr><td>Structure Fire Response</td><td class="lvy">No direct charge to resident</td><td class="no">$10,000 – $20,000+</td></tr>
+      <tr><td>Unpaid Bill Consequence</td><td class="lvy">N/A</td><td class="no">Property lien or wage garnishment</td></tr>
+    </tbody>
+  </table></div>
+  <p style="font-size:.8rem;color:var(--gray);font-style:italic">Ohio has no law capping ambulance surprise billing. The federal No Surprises Act does not cover ground ambulance. Medicare covers ~80% of approved EMS amounts — leaving 20% plus deductibles out of pocket.</p>
+</div></section>
+<!-- STRATEGY -->
+<section id="strategy" style="background:var(--navy-mid);border-top:1px solid rgba(255,255,255,.06)"><div class="sec">
+  <div style="background:rgba(192,57,43,.12);border:1px solid rgba(192,57,43,.4);border-left:5px solid var(--red);border-radius:8px;padding:18px 22px;margin-bottom:28px;display:flex;gap:14px;align-items:center"><span style="font-size:1.8rem">🚨</span><div><strong style="font-family:'Oswald',sans-serif;font-size:1rem;letter-spacing:.05em;color:#ff8a7a;display:block">CRITICAL: This Is a 101-Voter Election — You Control the Electorate</strong><span style="font-size:.88rem;color:#c0d0e0">November 2025 levy failed 329–445 (lost by 116 votes). May 2026 expected turnout: 80–120 total voters. The 101 people in this voter file voted in BOTH May 2025 AND November 2025 — they are nearly the entire electorate. Win them and you win the levy.</span></div></div>
+  <div class="sec-label">Campaign Strategy</div>
+  <h2>Field <em>Operations Plan</em></h2>
+  <p class="lead">The math is simple and winnable. 5 two-person teams contact 101 targeted, high-propensity voters by name. Lock in 61 YES votes and the levy passes.</p>
+  <div class="strat-grid">
+    <div class="strat-card"><h3>Voter File Target</h3><span class="snum">101</span><p>Every one of the 101 voters in this file voted in both May 2025 AND November 2025. They are nearly the entire May 2026 electorate. This is who you contact — by name.</p></div>
+    <div class="strat-card"><h3>YES Votes Needed</h3><span class="snum">41–61</span><p>Expected total votes: 80–120. You only need 41–61 YES votes to win. This isn't a mass persuasion campaign — it's a precision turnout operation.</p></div>
+    <div class="strat-card"><h3>Your YES Base</h3><span class="snum">16</span><p>All 16 Democrats in the file are Priority 1. They almost certainly voted YES in November. Your ONLY job with them is to make sure they show up on May 6.</p></div>
+    <div class="strat-card"><h3>Republicans Needed</h3><span class="snum">~43</span><p>With 16 Dem YES votes + 1 unaffiliated, you need ~43 more from 84 Republicans in the file. There are 44 Priority 1 Republicans — if they all vote YES, you win.</p></div>
+    <div class="strat-card"><h3>Early Vote Push</h3><span class="snum">Apr 8</span><p>At every door, push early voting at Wayne County BOE starting April 8. Early voters are locked in — they can't forget or get busy on Election Day.</p></div>
+    <div class="strat-card"><h3>Priority Score</h3><span class="snum">P1→P3</span><p>Every voter is scored P1 (must-win), P2 (persuade), or P3 (contact once). Spend your second-wave time on P1 and P2 only. Never return to a confirmed NO.</p></div>
+  </div>
+  <div style="margin-top:28px;background:rgba(201,150,42,.07);border:1px solid rgba(201,150,42,.2);border-radius:10px;padding:24px 28px">
+    <div class="sec-label" style="margin-bottom:14px">The Winning Math</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">
+      <div style="background:rgba(39,174,96,.1);border:1px solid rgba(39,174,96,.25);border-radius:8px;padding:14px;text-align:center"><div style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;color:#74c69d">16</div><div style="font-size:.75rem;color:#9aafcc;text-transform:uppercase;letter-spacing:.08em;margin-top:4px">Democrat YES (near certain)</div></div>
+      <div style="background:rgba(46,134,193,.1);border:1px solid rgba(46,134,193,.25);border-radius:8px;padding:14px;text-align:center"><div style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;color:#aee2ff">1</div><div style="font-size:.75rem;color:#9aafcc;text-transform:uppercase;letter-spacing:.08em;margin-top:4px">Unaffiliated (persuade Negulic)</div></div>
+      <div style="background:rgba(201,150,42,.1);border:1px solid rgba(201,150,42,.25);border-radius:8px;padding:14px;text-align:center"><div style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;color:var(--gold-light)">~43</div><div style="font-size:.75rem;color:#9aafcc;text-transform:uppercase;letter-spacing:.08em;margin-top:4px">P1 Republicans needed</div></div>
+      <div style="background:rgba(192,57,43,.15);border:1px solid rgba(192,57,43,.35);border-radius:8px;padding:14px;text-align:center"><div style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;color:#ff8a7a">44</div><div style="font-size:.75rem;color:#9aafcc;text-transform:uppercase;letter-spacing:.08em;margin-top:4px">P1 Republicans in file — enough to WIN</div></div>
+    </div>
+    <p style="font-size:.82rem;color:#7a9ab8;margin-top:14px;line-height:1.65">If all 16 Democrats vote YES + 1 unaffiliated + 44 Priority 1 Republicans vote YES → <strong style="color:#74c69d">YOU WIN 61–39+</strong>. Priority 2 Republicans (24 more) are your cushion.</p>
+  </div>
+</div></section>
+
+<!-- PRECINCTS -->
+<section id="precincts"><div class="sec">
+  <div class="sec-label">Precinct Analysis</div>
+  <h2>Two Precincts, <em>Two Strategies</em></h2>
+  <p class="lead">Baughman Township has two precincts. Based on voter file analysis, 41 high-propensity voters are targeted in Ba-1 and 60 in Ba-2. These are the only voters that matter in May.</p>
+  <div class="prec-grid">
+    <div class="prec-card ba1"><h3>⭐ Precinct Ba-1 — Rural Core / Dalton LSD</h3>
+      <div class="prec-row"><span>Registered voters</span><strong>~996</strong></div>
+      <div class="prec-row"><span>Nov 2025 turnout</span><strong>42.47% — Highest in township</strong></div>
+      <div class="prec-row"><span>Targeted voters in file</span><strong>41 voters</strong></div>
+      <div class="prec-row"><span>Priority 1 voters</span><strong>31 P1 MUST-WIN</strong></div>
+      <div class="prec-row"><span>Priority 2 voters</span><strong>7 P2 Persuade</strong></div>
+      <div class="prec-row"><span>Teams assigned</span><strong>Teams 1, 2, 3</strong></div>
+      <div class="prec-row"><span>Priority</span><strong>🔴 Highest — Heaviest P1 load (T1 &amp; T2 critical)</strong></div>
+      <p class="prec-note">Ba-1 carries the most Priority 1 voters. Teams 1 and 2 cover Burkhart Rd, Church Rd, and Hanover — the highest-density zones. Assign your most experienced canvassers to T1 and T2. Every P1 voter here is a potential confirmed YES — focus on turnout over persuasion.</p>
+    </div>
+    <div class="prec-card ba2"><h3>🟢 Precinct Ba-2 — Marshallville Area</h3>
+      <div class="prec-row"><span>Registered voters</span><strong>~1,255</strong></div>
+      <div class="prec-row"><span>Nov 2025 turnout</span><strong>37.85%</strong></div>
+      <div class="prec-row"><span>Targeted voters in file</span><strong>60 voters</strong></div>
+      <div class="prec-row"><span>Priority 1 voters</span><strong>30 P1 MUST-WIN</strong></div>
+      <div class="prec-row"><span>Priority 2 voters</span><strong>17 P2 Persuade</strong></div>
+      <div class="prec-row"><span>Teams assigned</span><strong>Teams 3, 4, 5</strong></div>
+      <div class="prec-row"><span>Priority</span><strong>🟡 High — Village walkable + rural routes</strong></div>
+      <p class="prec-note">Ba-2 has a compact Marshallville Village grid (Teams 3 &amp; 4) plus rural roads (Team 5). The village is the single most time-efficient zone — one afternoon on foot covers multiple targeted voters. Team 5 handles Back Massillon, Coal Bank, Fosnight, and Wadsworth.</p>
+    </div>
+  </div>
+</div></section>
+<!-- 5 TEAMS -->
+<section id="teams" style="background:var(--navy-mid);border-top:1px solid rgba(255,255,255,.06)"><div class="sec">
+  <div class="sec-label">Walking Maps</div>
+  <h2>5-Team <em>Voter File Assignments</em></h2>
+  <p class="lead">Each two-person team is assigned specific named voters from the 101-voter file. This is not a blanket canvass — you are knocking only on the doors of people confirmed to vote in low-turnout elections. Estimated 2–3 hours per route.</p>
+
+  <!-- PRIORITY LEGEND -->
+  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:28px">
+    <div style="display:flex;align-items:center;gap:8px;background:rgba(39,174,96,.12);border:1px solid rgba(39,174,96,.3);border-radius:6px;padding:8px 14px"><span style="font-family:'Oswald',sans-serif;font-size:.8rem;font-weight:700;color:#74c69d">P1 ★★★ MUST-WIN</span><span style="font-size:.78rem;color:#9aafcc">Lock in + turn out. 61 voters. These are your YES base.</span></div>
+    <div style="display:flex;align-items:center;gap:8px;background:rgba(46,134,193,.1);border:1px solid rgba(46,134,193,.25);border-radius:6px;padding:8px 14px"><span style="font-family:'Oswald',sans-serif;font-size:.8rem;font-weight:700;color:#aee2ff">P2 ★★☆ HIGH VALUE</span><span style="font-size:.78rem;color:#9aafcc">Persuade + turn out. 24 voters. Leave levy card, follow up if undecided.</span></div>
+    <div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:8px 14px"><span style="font-family:'Oswald',sans-serif;font-size:.8rem;font-weight:700;color:#8a9bb0">P3 ★☆☆ CONTACT</span><span style="font-size:.78rem;color:#9aafcc">Visit once. Door hanger only. Skip in second wave unless they expressed support.</span></div>
+  </div>
+
+  <div class="teams-grid">
+    <!-- TEAM 1 -->
+    <div class="team-card t1"><div class="team-hdr"><div class="team-num">1</div><div class="team-title"><h3>Burkhart Rd Full + Church Rd + Hanover</h3><p>Ba-1 · 33 targeted voters · Heaviest P1 load</p></div><div class="team-doors">33<br>voters</div></div><div class="team-body">
+      <div class="team-map"><iframe src="https://www.openstreetmap.org/export/embed.html?bbox=-81.860%2C40.830%2C-81.770%2C40.910&layer=mapnik" allowfullscreen loading="lazy"></iframe></div>
+      <a href="https://www.google.com/maps/dir/12517+Church+Rd,+Dalton,+OH/15601+Burkhart+Rd,+Orrville,+OH/16450+Hanover+Rd,+Orrville,+OH" target="_blank" class="map-directions-btn">🗺️ Open Turn-by-Turn Directions</a>
+      <ul class="streets">
+        <li><span class="st-name">Burkhart Rd (full length)</span><span class="st-ct">5 voters</span><span class="st-pri pri-h">P1</span></li>
+        <li><span class="st-name">Church Rd (12517–12904)</span><span class="st-ct">4 voters</span><span class="st-pri pri-h">P1/P2</span></li>
+        <li><span class="st-name">Hanover Rd (16450)</span><span class="st-ct">1 voter</span><span class="st-pri pri-h">P1</span></li>
+        <li><span class="st-name">Kohler Rd, Krug Rd, others</span><span class="st-ct">23 voters</span><span class="st-pri pri-h">P1/P2</span></li>
+      </ul>
+      <div style="background:rgba(39,174,96,.1);border:1px solid rgba(39,174,96,.2);border-radius:6px;padding:10px 12px;margin-bottom:10px;font-size:.8rem;color:#c0ccdd"><strong style="color:#74c69d">24 P1 voters / 7 P2 voters</strong> — 2 volunteers needed. T1 carries the HEAVIEST Priority 1 load. Assign most experienced canvassers here. Notable same-door households: <strong style="color:white">Hoover pair (15601 Burkhart)</strong>, <strong style="color:white">Hilty pair (12904 Church)</strong>, <strong style="color:white">McPeek pair (1645 Kohler)</strong>, <strong style="color:white">Workman pair (18222 Krug)</strong>.</div>
+      <div class="team-stats"><div class="tstat"><span class="tstat-num">33</span><span class="tstat-lbl">Voters</span></div><div class="tstat"><span class="tstat-num">Ba-1</span><span class="tstat-lbl">Precinct</span></div><div class="tstat"><span class="tstat-num">2–3h</span><span class="tstat-lbl">Est. Time</span></div></div>
+      <div class="route-note" style="background:rgba(192,57,43,.1);color:#ffaaaa">🗺️ <strong>Start:</strong> Church Rd / Burkhart Rd junction. Work north then loop Hanover Rd. Rural drives — pull in if gate is open, park at mailbox otherwise.</div>
+    </div></div>
+
+    <!-- TEAM 2 -->
+    <div class="team-card t2"><div class="team-hdr"><div class="team-num">2</div><div class="team-title"><h3>York, Tannerville, Mt Eaton, Burton City, Krug</h3><p>Ba-1 · 22 targeted voters</p></div><div class="team-doors">22<br>voters</div></div><div class="team-body">
+      <div class="team-map"><iframe src="https://www.openstreetmap.org/export/embed.html?bbox=-81.830%2C40.820%2C-81.740%2C40.880&layer=mapnik" allowfullscreen loading="lazy"></iframe></div>
+      <a href="https://www.google.com/maps/dir/2420+Tannerville+Rd,+Orrville,+OH/3727+N+Mt+Eaton+Rd,+Orrville,+OH/18277+Huprick+Rd,+Dalton,+OH" target="_blank" class="map-directions-btn">🗺️ Open Turn-by-Turn Directions</a>
+      <ul class="streets">
+        <li><span class="st-name">Tannerville Rd (Ba-1)</span><span class="st-ct">1 voter</span><span class="st-pri pri-h">P1</span></li>
+        <li><span class="st-name">N Mt Eaton Rd (3727, 3903)</span><span class="st-ct">3 voters</span><span class="st-pri pri-h">P1 DEM</span></li>
+        <li><span class="st-name">Burton City Rd (15191)</span><span class="st-ct">1 voter</span><span class="st-pri pri-m">P2</span></li>
+        <li><span class="st-name">Huprick Rd, Krug Rd, others</span><span class="st-ct">17 voters</span><span class="st-pri pri-h">P1/P2</span></li>
+      </ul>
+      <div style="background:rgba(39,174,96,.1);border:1px solid rgba(39,174,96,.2);border-radius:6px;padding:10px 12px;margin-bottom:10px;font-size:.8rem;color:#c0ccdd"><strong style="color:#74c69d">15 P1 voters / 5 P2 voters</strong> — 3903 N Mt Eaton Rd has TWO Democratic P1 voters (Pagano + Sands) — one knock, two votes. Same for <strong style="color:white">Forrer pair (18277 Huprick)</strong>, <strong style="color:white">Brown pair (2797 Paradise Ext)</strong>, <strong style="color:white">Workman pair (18222 Krug)</strong>.</div>
+      <div class="team-stats"><div class="tstat"><span class="tstat-num">22</span><span class="tstat-lbl">Voters</span></div><div class="tstat"><span class="tstat-num">Ba-1</span><span class="tstat-lbl">Precinct</span></div><div class="tstat"><span class="tstat-num">2–3h</span><span class="tstat-lbl">Est. Time</span></div></div>
+      <div class="route-note" style="background:rgba(230,126,34,.1);color:#ffcc99">🗺️ <strong>Start:</strong> Tannerville Rd near Orrville. Loop east to Mt Eaton Rd, then north to Huprick and Krug. Spread-out rural zone — plan driving time between stops.</div>
+    </div></div>
+
+    <!-- TEAM 3 -->
+    <div class="team-card t3"><div class="team-hdr"><div class="team-num">3</div><div class="team-title"><h3>Dalton Fox Lake, Rehm, Market/Euclid (Mshvl Village)</h3><p>Ba-1 + Ba-2 · 16 targeted voters · Split precinct</p></div><div class="team-doors">16<br>voters</div></div><div class="team-body">
+      <div class="team-map"><iframe src="https://www.openstreetmap.org/export/embed.html?bbox=-81.960%2C40.855%2C-81.880%2C40.905&layer=mapnik" allowfullscreen loading="lazy"></iframe></div>
+      <a href="https://www.google.com/maps/dir/1548+Dalton+Fox+Lake+Rd,+Dalton,+OH/14959+Rehm+Rd,+Dalton,+OH/19+W+Market+St,+Marshallville,+OH" target="_blank" class="map-directions-btn">🗺️ Open Turn-by-Turn Directions</a>
+      <ul class="streets">
+        <li><span class="st-name">Dalton Fox Lake Rd</span><span class="st-ct">7 voters</span><span class="st-pri pri-h">P1/P2</span></li>
+        <li><span class="st-name">Rehm Rd (13797, 14959)</span><span class="st-ct">3 voters</span><span class="st-pri pri-h">P1</span></li>
+        <li><span class="st-name">Market St + Euclid (Mshvl)</span><span class="st-ct">6 voters</span><span class="st-pri pri-h">P1/P2</span></li>
+      </ul>
+      <div style="background:rgba(39,174,96,.1);border:1px solid rgba(39,174,96,.2);border-radius:6px;padding:10px 12px;margin-bottom:10px;font-size:.8rem;color:#c0ccdd"><strong style="color:#74c69d">10 P1 voters / 5 P2 voters</strong> — Team 3 bridges Ba-1 and Ba-2. Notable households: <strong style="color:white">Jameson pair (1868 Dalton Fox Lake — DEM P1)</strong>, <strong style="color:white">Strasbaurgh pair (1548 Dalton Fox Lake)</strong>, <strong style="color:white">Calame pair (13797 Rehm)</strong>, <strong style="color:white">Musser pair (19 W Market)</strong>.</div>
+      <div class="team-stats"><div class="tstat"><span class="tstat-num">16</span><span class="tstat-lbl">Voters</span></div><div class="tstat"><span class="tstat-num">Ba-1+2</span><span class="tstat-lbl">Precinct</span></div><div class="tstat"><span class="tstat-num">2–3h</span><span class="tstat-lbl">Est. Time</span></div></div>
+      <div class="route-note" style="background:rgba(201,150,42,.1);color:#ffe088">🗺️ <strong>Start:</strong> Dalton Fox Lake Rd at OH-94. Work the road, then south on Rehm, then finish in Marshallville Village on Market/Euclid on foot.</div>
+    </div></div>
+
+    <!-- TEAM 4 -->
+    <div class="team-card t4"><div class="team-hdr"><div class="team-num">4</div><div class="team-title"><h3>Marshallville Village — Church, Main, Westview, Fox Lake</h3><p>Ba-2 · 13 targeted voters · Walkable village grid</p></div><div class="team-doors">13<br>voters</div></div><div class="team-body">
+      <div class="team-map"><iframe src="https://www.openstreetmap.org/export/embed.html?bbox=-81.968%2C40.888%2C-81.925%2C40.918&layer=mapnik" allowfullscreen loading="lazy"></iframe></div>
+      <a href="https://www.google.com/maps/dir/5+E+Church+St,+Marshallville,+OH/40+N+Main+St,+Marshallville,+OH/12+Westview+Dr,+Marshallville,+OH" target="_blank" class="map-directions-btn">🗺️ Open Turn-by-Turn Directions</a>
+      <ul class="streets">
+        <li><span class="st-name">Church St (E + W)</span><span class="st-ct">3 voters</span><span class="st-pri pri-h">P1/P2</span></li>
+        <li><span class="st-name">N Main St (22, 40)</span><span class="st-ct">2 voters</span><span class="st-pri pri-h">P1/P3</span></li>
+        <li><span class="st-name">Westview Dr (12, 17)</span><span class="st-ct">2 voters</span><span class="st-pri pri-h">P1/P2</span></li>
+        <li><span class="st-name">Fox Lake Rd + Chestnut St</span><span class="st-ct">6 voters</span><span class="st-pri pri-h">P1/P2</span></li>
+      </ul>
+      <div style="background:rgba(39,174,96,.1);border:1px solid rgba(39,174,96,.2);border-radius:6px;padding:10px 12px;margin-bottom:10px;font-size:.8rem;color:#c0ccdd"><strong style="color:#74c69d">7 P1 voters / 4 P2 voters</strong> — Compact walkable zone. Park near Village Hall and walk the entire grid. Notable households: <strong style="color:white">Ault pair (14314 Fox Lake)</strong>, <strong style="color:white">Sniff pair (16939 Fulton)</strong>, <strong style="color:white">Gonzalez (17424 Fulton — DEM P1)</strong>. Finney at 7677 N Mt Eaton: one P3 + one P2 — visit once.</div>
+      <div class="team-stats"><div class="tstat"><span class="tstat-num">13</span><span class="tstat-lbl">Voters</span></div><div class="tstat"><span class="tstat-num">Ba-2</span><span class="tstat-lbl">Precinct</span></div><div class="tstat"><span class="tstat-num">2h</span><span class="tstat-lbl">Est. Time</span></div></div>
+      <div class="route-note" style="background:rgba(34,153,84,.1);color:#aaffcc">🗺️ <strong>Start:</strong> Church St at N Main St. Walk the entire village grid — most time-efficient zone. Teams 3 &amp; 4 together cover all Marshallville village voters in one afternoon.</div>
+    </div></div>
+
+    <!-- TEAM 5 -->
+    <div class="team-card t5"><div class="team-hdr"><div class="team-num">5</div><div class="team-title"><h3>Back Massillon, Coal Bank, Fosnight, Tannerville, Wadsworth</h3><p>Ba-2 · 17 targeted voters · South rural cluster</p></div><div class="team-doors">17<br>voters</div></div><div class="team-body">
+      <div class="team-map"><iframe src="https://www.openstreetmap.org/export/embed.html?bbox=-81.940%2C40.795%2C-81.840%2C40.865&layer=mapnik" allowfullscreen loading="lazy"></iframe></div>
+      <a href="https://www.google.com/maps/dir/8013+Ault+Rd,+Orrville,+OH/18226+Back+Massillon+Rd,+Dalton,+OH/14566+Fosnight+Rd,+Marshallville,+OH/6681+Wadsworth+Rd,+Orrville,+OH" target="_blank" class="map-directions-btn">🗺️ Open Turn-by-Turn Directions</a>
+      <ul class="streets">
+        <li><span class="st-name">Back Massillon Rd (14928, 17327, 18226)</span><span class="st-ct">4 voters</span><span class="st-pri pri-h">P1/P3</span></li>
+        <li><span class="st-name">Coal Bank Rd (5043, 5564, 6669, 7635)</span><span class="st-ct">5 voters</span><span class="st-pri pri-h">P1/P2</span></li>
+        <li><span class="st-name">Fosnight Rd (14557, 14566, 14657, 14756)</span><span class="st-ct">5 voters</span><span class="st-pri pri-h">P1/P2</span></li>
+        <li><span class="st-name">Wadsworth Rd + Ault Rd + Keck Rd</span><span class="st-ct">8 voters</span><span class="st-pri pri-h">P1/P2</span></li>
+      </ul>
+      <div style="background:rgba(39,174,96,.1);border:1px solid rgba(39,174,96,.2);border-radius:6px;padding:10px 12px;margin-bottom:10px;font-size:.8rem;color:#c0ccdd"><strong style="color:#74c69d">5 P1 voters / 3 P2 voters</strong> (plus P3s) — Large geographic spread. Notable: <strong style="color:white">Fulks pair (18226 Back Massillon — DEM P1 MUST VISIT)</strong>, <strong style="color:white">Davis pair (5564 Coal Bank)</strong>, <strong style="color:white">Darr pair (7819 Black Diamond)</strong>, <strong style="color:white">Geiser pair (7355 Keck)</strong>. Lizarraga pair at 14657 Fosnight = 2 voters in 1 stop.</div>
+      <div class="team-stats"><div class="tstat"><span class="tstat-num">17</span><span class="tstat-lbl">Voters</span></div><div class="tstat"><span class="tstat-num">Ba-2</span><span class="tstat-lbl">Precinct</span></div><div class="tstat"><span class="tstat-num">3h</span><span class="tstat-lbl">Est. Time</span></div></div>
+      <div class="route-note" style="background:rgba(41,128,185,.1);color:#aaddff">🗺️ <strong>Start:</strong> Ault Rd, then sweep Back Massillon north-to-south. Take Fosnight Rd east. Finish Wadsworth and Keck. Largest territory — bring water and budget extra driving time.</div>
+    </div></div>
+  </div>
+
+  <!-- SAME-ADDRESS HOUSEHOLDS CALLOUT -->
+  <div style="margin-top:36px;background:rgba(201,150,42,.06);border:1px solid rgba(201,150,42,.2);border-radius:10px;padding:24px 28px">
+    <div class="sec-label" style="margin-bottom:12px">⚡ Efficiency Tip</div>
+    <h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--gold-light);margin-bottom:10px">Same-Address Households — One Knock, Two Voters</h3>
+    <p style="font-size:.85rem;color:#9aafcc;margin-bottom:14px;line-height:1.7">These households have TWO voters at a single address — your time-per-vote ratio is cut in half. Always confirm both people support the levy in the same visit.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:8px">
+      <div style="background:rgba(0,0,0,.2);border-radius:5px;padding:8px 12px;font-size:.8rem;color:#c0ccdd"><strong style="color:var(--gold)">T1</strong> Hoover II + Mary K — 15601 Burkhart Rd <span style="color:#74c69d;font-size:.7rem">P1+P1</span></div>
+      <div style="background:rgba(0,0,0,.2);border-radius:5px;padding:8px 12px;font-size:.8rem;color:#c0ccdd"><strong style="color:var(--gold)">T1</strong> Hilty, Nolan + Sharon — 12904 Church Rd <span style="color:#aee2ff;font-size:.7rem">P2+P2</span></div>
+      <div style="background:rgba(0,0,0,.2);border-radius:5px;padding:8px 12px;font-size:.8rem;color:#c0ccdd"><strong style="color:var(--gold)">T1</strong> McPeek, Ann + David — 1645 N Kohler Rd <span style="color:#74c69d;font-size:.7rem">P1+P1 DEM</span></div>
+      <div style="background:rgba(0,0,0,.2);border-radius:5px;padding:8px 12px;font-size:.8rem;color:#c0ccdd"><strong style="color:var(--gold)">T1</strong> Workman, Connie + Steven — 18222 Krug Rd <span style="color:#74c69d;font-size:.7rem">P1+P1</span></div>
+      <div style="background:rgba(0,0,0,.2);border-radius:5px;padding:8px 12px;font-size:.8rem;color:#c0ccdd"><strong style="color:#e67e22">T2</strong> Forrer, Linda + Todd — 18277 Huprick Rd <span style="color:#74c69d;font-size:.7rem">P1+P1</span></div>
+      <div style="background:rgba(0,0,0,.2);border-radius:5px;padding:8px 12px;font-size:.8rem;color:#c0ccdd"><strong style="color:#e67e22">T2</strong> Brown, Dawn + Jarrod — 2797 E Paradise Ext <span style="color:#74c69d;font-size:.7rem">P1+P1</span></div>
+      <div style="background:rgba(0,0,0,.2);border-radius:5px;padding:8px 12px;font-size:.8rem;color:#c0ccdd"><strong style="color:#e67e22">T2</strong> Pagano + Sands — 3903 N Mt Eaton Rd <span style="color:#74c69d;font-size:.7rem">P1+P1 DEM</span></div>
+      <div style="background:rgba(0,0,0,.2);border-radius:5px;padding:8px 12px;font-size:.8rem;color:#c0ccdd"><strong style="color:#c9962a">T3</strong> Jameson, Dianna + Gary — 1868 Dalton Fox Lake <span style="color:#74c69d;font-size:.7rem">P1+P1 DEM</span></div>
+      <div style="background:rgba(0,0,0,.2);border-radius:5px;padding:8px 12px;font-size:.8rem;color:#c0ccdd"><strong style="color:#c9962a">T3</strong> Calame, Hazel + Howard — 13797 Rehm Rd <span style="color:#74c69d;font-size:.7rem">P1+P1</span></div>
+      <div style="background:rgba(0,0,0,.2);border-radius:5px;padding:8px 12px;font-size:.8rem;color:#c0ccdd"><strong style="color:#c9962a">T3</strong> Swartzentruber, M + S — 2118 W Lebanon Rd <span style="color:#74c69d;font-size:.7rem">P1+P1</span></div>
+      <div style="background:rgba(0,0,0,.2);border-radius:5px;padding:8px 12px;font-size:.8rem;color:#c0ccdd"><strong style="color:#27ae60">T4</strong> Sniff, Margaret + Robert — 16939 Fulton Rd <span style="color:#74c69d;font-size:.7rem">P1+P1 DEM</span></div>
+      <div style="background:rgba(0,0,0,.2);border-radius:5px;padding:8px 12px;font-size:.8rem;color:#c0ccdd"><strong style="color:#27ae60">T4</strong> Ault, April + Mitchell — 14314 Fox Lake Rd <span style="color:#aee2ff;font-size:.7rem">P2+P2</span></div>
+      <div style="background:rgba(0,0,0,.2);border-radius:5px;padding:8px 12px;font-size:.8rem;color:#c0ccdd"><strong style="color:#2980b9">T5</strong> Fulks, Donna + Roger — 18226 Back Massillon <span style="color:#74c69d;font-size:.7rem">P1+P1 DEM — MUST VISIT</span></div>
+      <div style="background:rgba(0,0,0,.2);border-radius:5px;padding:8px 12px;font-size:.8rem;color:#c0ccdd"><strong style="color:#2980b9">T5</strong> Davis, Donna + James — 5564 Coal Bank Rd <span style="color:#74c69d;font-size:.7rem">P1+P1</span></div>
+      <div style="background:rgba(0,0,0,.2);border-radius:5px;padding:8px 12px;font-size:.8rem;color:#c0ccdd"><strong style="color:#2980b9">T5</strong> Geiser, Mark + Stephanie — 7355 Keck Rd <span style="color:#74c69d;font-size:.7rem">P1+P1</span></div>
+      <div style="background:rgba(0,0,0,.2);border-radius:5px;padding:8px 12px;font-size:.8rem;color:#c0ccdd"><strong style="color:#2980b9">T5</strong> Lizarraga, Renae + Santiago — 14657 Fosnight Rd <span style="color:#aee2ff;font-size:.7rem">P2+P2</span></div>
+    </div>
+  </div>
+
+  <!-- SUMMARY TABLE -->
+  <div style="margin-top:40px"><div class="sec-label">Team Summary</div><h2>All 5 Teams at a Glance</h2>
+  <div style="overflow-x:auto;border-radius:10px;border:1px solid rgba(255,255,255,.08);margin-top:18px"><table class="sum-table">
+    <thead><tr><th>#</th><th>Zone Name</th><th>Precinct</th><th>Key Streets</th><th>P1 ★★★</th><th>P2 ★★☆</th><th>Total Voters</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr><td style="color:#e74c3c">1</td><td>Burkhart Full + Church + Hanover</td><td>Ba-1</td><td>Burkhart Rd, Church Rd, Kohler, Krug</td><td style="color:#74c69d;font-family:'JetBrains Mono',monospace">24</td><td style="color:#aee2ff;font-family:'JetBrains Mono',monospace">7</td><td style="color:var(--gold);font-family:'JetBrains Mono',monospace">33</td><td>Rural/Drive</td></tr>
+      <tr><td style="color:#e67e22">2</td><td>York, Tannerville, Mt Eaton, Burton City</td><td>Ba-1</td><td>N Mt Eaton, Huprick, Krug, Burton City</td><td style="color:#74c69d;font-family:'JetBrains Mono',monospace">15</td><td style="color:#aee2ff;font-family:'JetBrains Mono',monospace">5</td><td style="color:var(--gold);font-family:'JetBrains Mono',monospace">22</td><td>Rural/Drive</td></tr>
+      <tr><td style="color:#c9962a">3</td><td>Dalton Fox Lake + Rehm + Market/Euclid</td><td>Ba-1+2</td><td>Dalton Fox Lake, Rehm, W Market, Euclid</td><td style="color:#74c69d;font-family:'JetBrains Mono',monospace">10</td><td style="color:#aee2ff;font-family:'JetBrains Mono',monospace">5</td><td style="color:var(--gold);font-family:'JetBrains Mono',monospace">16</td><td>Rural+Village</td></tr>
+      <tr><td style="color:#27ae60">4</td><td>Marshallville Village — Church/Main/Westview</td><td>Ba-2</td><td>Church St, Main St, Westview, Fox Lake</td><td style="color:#74c69d;font-family:'JetBrains Mono',monospace">7</td><td style="color:#aee2ff;font-family:'JetBrains Mono',monospace">4</td><td style="color:var(--gold);font-family:'JetBrains Mono',monospace">13</td><td>Village/Walk</td></tr>
+      <tr><td style="color:#2980b9">5</td><td>Back Massillon + Coal Bank + Fosnight + Wads</td><td>Ba-2</td><td>Back Massillon, Coal Bank, Fosnight, Wadsworth</td><td style="color:#74c69d;font-family:'JetBrains Mono',monospace">5</td><td style="color:#aee2ff;font-family:'JetBrains Mono',monospace">3</td><td style="color:var(--gold);font-family:'JetBrains Mono',monospace">17</td><td>Rural/Drive</td></tr>
+      <tr style="background:rgba(201,150,42,.07)"><td colspan="4" style="text-align:right;font-family:'Oswald',sans-serif;letter-spacing:.06em;color:var(--gold);font-size:.85rem">TOTAL TARGETED VOTERS</td><td style="color:#74c69d;font-family:'JetBrains Mono',monospace;font-weight:700">61 P1</td><td style="color:#aee2ff;font-family:'JetBrains Mono',monospace;font-weight:700">24 P2</td><td style="color:var(--gold);font-family:'JetBrains Mono',monospace;font-weight:700;font-size:1.1rem">101</td><td></td></tr>
+    </tbody>
+  </table></div></div>
+</div></section>
+</div></section>
+<!-- TALKING POINTS -->
+<section id="talking"><div class="sec">
+  <div class="sec-label">Door Scripts</div>
+  <h2>Talking Points <em>&amp; Scripts</em></h2>
+  <p class="lead">Every volunteer uses the same core message. Practice these before you go out. The goal is a conversation — not a speech.</p>
+  <div class="talk-grid">
+    <div class="talk-card opener"><h3>🚪 Door Opener — First 15 Seconds</h3><div class="script-box">"Hi, I'm [NAME] — I live here in Baughman Township. I'm talking to neighbors about the fire and EMS levy on the May 6th ballot. Do you have just a minute?"</div><ul><li>Always say you're a <em>neighbor</em> — local credibility matters most</li><li>Stand relaxed, step back from the door — don't hold clipboard at chest height</li><li>Smile and make eye contact — this is a conversation, not a presentation</li><li>If no answer after two knocks, leave a door hanger and note the time</li></ul></div>
+    <div class="talk-card cost"><h3>💰 The Cost Argument</h3><div class="script-box" style="border-left-color:#74c69d">"The levy costs $61 a year for a $100,000 home — about $5 a month, less than a pizza. Without it, a single ambulance call can run $1,500 to $3,500 out of pocket. One house fire could cost $10,000 or more."</div><ul><li>Personalize it: "At $200K, that's $122 a year."</li><li>Medicare doesn't fully cover ground ambulance — there's always a gap</li><li>Unpaid bills can be liened directly to your property taxes</li><li>Levy is only 5 years — NOT permanent. Expires 2031.</li></ul></div>
+    <div class="talk-card objection"><h3>🛑 Handling Objections</h3><ul><li><strong>"I pay too many taxes already"</strong> — "This is the lowest fire levy in Wayne County at 1.75 mills. Every other township levies 2–6.75 mills. Baughman is the ONLY township without one."</li><li><strong>"The fire departments will still come"</strong> — "Not guaranteed. Without a contract, no department is legally required to respond."</li><li><strong>"It's permanent"</strong> — "It's not — it expires automatically after 5 years in 2031."</li><li><strong>"Why didn't they plan better?"</strong> — "The General Fund is nearly depleted. Fire protection eats 51 cents of every dollar spent."</li></ul></div>
+    <div class="talk-card close"><h3>✅ Closing the Conversation</h3><div class="script-box" style="border-left-color:#aee2ff">"Can we count on your YES vote? Did you know you can vote early starting April 8th at the Wayne County BOE in Wooster — no lines, any weekday? You can also request a mail ballot by calling 330-287-5480."</div><ul><li>Record response: Strong YES / Leaning YES / Undecided / Leaning NO / Hard NO</li><li>Leave a levy card at every door regardless of response</li><li>Push early voting at every door — April 8 start at BOE, 330-287-5480</li><li>Never argue with a Hard NO — thank them and move on immediately</li></ul></div>
+  </div>
+</div></section>
+
+<!-- TIMELINE -->
+<section id="timeline" style="background:var(--navy-mid);border-top:1px solid rgba(255,255,255,.06)"><div class="sec">
+  <div class="sec-label">Campaign Schedule</div>
+  <h2>Timeline to <em>May 6th</em></h2>
+  <p class="lead">Four phases from now to Election Day. Early voting starting April 8 changes the canvassing game — push it at every door from the first wave onward.</p>
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-dot">📋</div><h4>Now – Apr 5</h4><p>Print scored voter list by team. Assign volunteers. Review door script. Print levy cards and door hangers. Know your zone and <strong style="color:var(--gold-light)">Priority 1 voters by name</strong>.</p></div>
+    <div class="tl-item"><div class="tl-dot">🚪</div><h4>Apr 5 – Apr 19</h4><p>Wave 1 — all 5 teams knock every door on their list. Early voting <strong style="color:var(--gold-light)">OPENS April 8</strong> — mention at every door. Mark each door: YES / Undecided / NO / No Answer. Report results to campaign after your route.</p></div>
+    <div class="tl-item"><div class="tl-dot">🔁</div><h4>Apr 19 – May 3</h4><p>Wave 2 targets <strong style="color:var(--gold-light)">undecided voters ONLY</strong>. Skip confirmed NOs. Call/text Priority 1 voters who haven't voted early yet. Last absentee request deadline: <strong style="color:var(--gold-light)">May 3</strong>.</p></div>
+    <div class="tl-item"><div class="tl-dot">🗳️</div><h4>May 6 — Election Day</h4><p>Polls 6:30 AM – 7:30 PM. Text/call every confirmed YES voter <strong style="color:var(--gold-light)">by 10 AM</strong>. Offer rides. Station a volunteer near the polling location all day.</p></div>
+  </div>
+</div></section>
+
+<!-- FIELD TIPS -->
+<section id="logistics"><div class="sec">
+  <div class="sec-label">Field Logistics</div>
+  <h2>Tips for <em>Every Volunteer</em></h2>
+  <div class="tips-grid">
+    <div class="tip-card"><span class="tip-icon">🕐</span><h4>Best Hours to Knock</h4><p>Saturdays 10 AM–6 PM and Sundays 1–5 PM are peak. Weekdays after 5 PM work for rural routes. Avoid mornings before 9 AM and after dark.</p></div>
+    <div class="tip-card"><span class="tip-icon">📋</span><h4>What to Bring</h4><p>Printed walk list with names &amp; addresses. Levy info cards (50+ per team). Clipboard &amp; pen to mark responses. Water bottle. Door hanger bags for no-answers.</p></div>
+    <div class="tip-card"><span class="tip-icon">🗳️</span><h4>Push Early Voting</h4><p>At every single door, mention early voting starts April 8 at the Wayne County BOE in Wooster. "You can vote any weekday — no lines." Absentee: call 330-287-5480.</p></div>
+    <div class="tip-card"><span class="tip-icon">🚗</span><h4>Rural Route Tips</h4><p>Rural houses have long driveways — drive in if gate is open. Park at the mailbox if uncertain. Dogs are common. Amish residents don't vote — skip those homes.</p></div>
+    <div class="tip-card"><span class="tip-icon">📝</span><h4>Track Every Door</h4><p>Mark every house: ✓ YES, ~ Undecided, ✗ NO, ∅ No answer. Return no-answers on a different day. Second-wave canvassers focus only on undecideds.</p></div>
+    <div class="tip-card"><span class="tip-icon">🔠</span><h4>Capital X vs Lowercase x</h4><p>On your voter list: Capital <strong>X</strong> = voted in person at polls. Respond best to door knocks and early voting reminders. Lowercase <strong>x</strong> = absentee/mail voter. Push them toward mail ballots (330-287-5480) or early in-person at BOE April 8–May 5.</p></div>
+    <div class="tip-card"><span class="tip-icon">🟢</span><h4>Democrats = Near-Certain YES</h4><p>All 16 Democrats in the voter file are Priority 1. Do NOT try to persuade them — they almost certainly voted YES in November. Your ONLY job: confirm they're voting and offer a ride or absentee ballot if needed.</p></div>
+    <div class="tip-card"><span class="tip-icon">🏘️</span><h4>Marshallville Village</h4><p>Teams 6 &amp; 7 park once near Village Hall and walk the entire grid. 237 voters in a compact walkable area — the single most time-efficient canvassing zone.</p></div>
+  </div>
+  <div class="sec-label" style="margin-top:20px">Volunteer Tracker</div>
+  <h2>Assignment <em>Log</em></h2>
+  <p class="lead" style="margin-bottom:18px">Print this section and fill in volunteer names at your kickoff meeting. Each team needs 2 people.</p>
+  <div style="overflow-x:auto;border-radius:10px;border:1px solid rgba(255,255,255,.08)"><table class="tracker-table">
+    <thead><tr><th>Team</th><th>Zone</th><th>P1 Voters</th><th>Total Voters</th><th>Volunteer 1</th><th>Phone</th><th>Volunteer 2</th><th>Phone</th><th>Date Out</th><th>Doors Hit</th><th>YES Count</th></tr></thead>
+    <tbody>
+      <tr><td style="color:#e74c3c;font-weight:700">1</td><td>Burkhart Full + Church + Hanover (Ba-1)</td><td style="color:#74c69d;font-weight:700">24</td><td style="color:var(--gold);font-weight:700">33</td><td style="color:#334">__________________</td><td style="color:#334">______________</td><td style="color:#334">__________________</td><td style="color:#334">______________</td><td style="color:#334">________</td><td style="color:#334">_____</td><td style="color:#334">_____</td></tr>
+      <tr><td style="color:#e67e22;font-weight:700">2</td><td>York, Tannerville, Mt Eaton, Burton City (Ba-1)</td><td style="color:#74c69d;font-weight:700">15</td><td style="color:var(--gold);font-weight:700">22</td><td style="color:#334">__________________</td><td style="color:#334">______________</td><td style="color:#334">__________________</td><td style="color:#334">______________</td><td style="color:#334">________</td><td style="color:#334">_____</td><td style="color:#334">_____</td></tr>
+      <tr><td style="color:#c9962a;font-weight:700">3</td><td>Dalton Fox Lake + Rehm + Market/Euclid (Ba-1+2)</td><td style="color:#74c69d;font-weight:700">10</td><td style="color:var(--gold);font-weight:700">16</td><td style="color:#334">__________________</td><td style="color:#334">______________</td><td style="color:#334">__________________</td><td style="color:#334">______________</td><td style="color:#334">________</td><td style="color:#334">_____</td><td style="color:#334">_____</td></tr>
+      <tr><td style="color:#27ae60;font-weight:700">4</td><td>Marshallville Village Church/Main/Westview (Ba-2)</td><td style="color:#74c69d;font-weight:700">7</td><td style="color:var(--gold);font-weight:700">13</td><td style="color:#334">__________________</td><td style="color:#334">______________</td><td style="color:#334">__________________</td><td style="color:#334">______________</td><td style="color:#334">________</td><td style="color:#334">_____</td><td style="color:#334">_____</td></tr>
+      <tr><td style="color:#2980b9;font-weight:700">5</td><td>Back Massillon + Coal Bank + Fosnight + Wadsworth (Ba-2)</td><td style="color:#74c69d;font-weight:700">5</td><td style="color:var(--gold);font-weight:700">17</td><td style="color:#334">__________________</td><td style="color:#334">______________</td><td style="color:#334">__________________</td><td style="color:#334">______________</td><td style="color:#334">________</td><td style="color:#334">_____</td><td style="color:#334">_____</td></tr>
+    </tbody>
+  </table></div>
+</div></section>
+
+
+<!-- VOLUNTEER CONTACTS -->
+<section id="vol-contacts" class="vol-contacts-section"><div class="sec">
+  <div class="sec-label">Volunteer Team</div>
+  <h2>Meet the <em>Volunteer Team</em></h2>
+  <p class="lead">These neighbors have stepped up to help get the word out. Reach out directly to coordinate canvassing routes, yard signs, rides to the polls, or just to connect with someone in your area.</p>
+  <div class="vol-contacts-grid">
+
+    <div class="vc-card vc-green">
+      <div class="vc-name">Robin Coppola</div>
+      <div class="vc-role">Volunteer</div>
+      <div class="vc-info"><span class="icon">📞</span><a href="tel:3302013020">330-201-3020</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:robin.coppola2@gmail.com">robin.coppola2@gmail.com</a></div>
+      <div class="vc-tags">
+        <span class="vc-tag">🚶 Canvass</span>
+        <span class="vc-tag">📞 Phone</span>
+        <span class="vc-tag">🪧 Yard Signs</span>
+        <span class="vc-tag tag-any">✋ Anything</span>
+      </div>
+    </div>
+
+    <div class="vc-card vc-green">
+      <div class="vc-name">Shelly Brenner</div>
+      <div class="vc-role">Volunteer</div>
+      <div class="vc-info"><span class="icon">📞</span><a href="tel:3306212421">330-621-2421</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:shellybrenner381@gmail.com">shellybrenner381@gmail.com</a></div>
+      <div class="vc-tags">
+        <span class="vc-tag">🚶 Canvass</span>
+        <span class="vc-tag">📞 Phone</span>
+        <span class="vc-tag">🪧 Yard Signs</span>
+        <span class="vc-tag">🚗 Rides</span>
+        <span class="vc-tag">📬 Absentee</span>
+        <span class="vc-tag tag-any">✋ Anything</span>
+      </div>
+    </div>
+
+    <div class="vc-card">
+      <div class="vc-name">David Stoll</div>
+      <div class="vc-role">Volunteer</div>
+      <div class="vc-info"><span class="icon">📞</span><a href="tel:3304662409">330-466-2409</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:dnhstoll@gmail.com">dnhstoll@gmail.com</a></div>
+      <div class="vc-tags">
+        <span class="vc-tag">📞 Phone</span>
+        <span class="vc-tag">🪧 Yard Signs</span>
+      </div>
+    </div>
+
+    <div class="vc-card">
+      <div class="vc-name">Pat Turchiano</div>
+      <div class="vc-role">Volunteer</div>
+      <div class="vc-info"><span class="icon">📞</span><span>—</span></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:pdjtrch1@zoominternet.net">pdjtrch1@zoominternet.net</a></div>
+      <div class="vc-tags">
+        <span class="vc-tag">📞 Phone / Text</span>
+        <span class="vc-tag">🪧 Yard Signs</span>
+      </div>
+    </div>
+
+    <div class="vc-card vc-red">
+      <div class="vc-name">Matt Slicker</div>
+      <div class="vc-role">Volunteer</div>
+      <div class="vc-info"><span class="icon">📞</span><a href="tel:3308542557">330-854-2557</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:matt@slickerfarms.com">matt@slickerfarms.com</a></div>
+      <div class="vc-tags">
+        <span class="vc-tag">🚶 Canvass</span>
+        <span class="vc-tag">📞 Phone / Text</span>
+        <span class="vc-tag">🪧 Yard Signs</span>
+      </div>
+    </div>
+
+    <div class="vc-card vc-blue">
+      <div class="vc-name">Diane Jarrett</div>
+      <div class="vc-role">Volunteer</div>
+      <div class="vc-info"><span class="icon">📞</span><a href="tel:3304654110">330-465-4110</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:djarrett@gojarrett.com">djarrett@gojarrett.com</a></div>
+      <div class="vc-tags">
+        <span class="vc-tag" style="color:#8a9bb0;border-color:rgba(138,155,176,.2);background:rgba(138,155,176,.08)">Contact for details</span>
+      </div>
+    </div>
+
+    <div class="vc-card vc-green">
+      <div class="vc-name">Joe Rubino</div>
+      <div class="vc-role">Volunteer</div>
+      <div class="vc-info"><span class="icon">📞</span><a href="tel:3306214717">330-621-4717</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:jjrubino@gmail.com">jjrubino@gmail.com</a></div>
+      <div class="vc-tags">
+        <span class="vc-tag">🚶 Canvass</span>
+        <span class="vc-tag">📞 Phone</span>
+        <span class="vc-tag">🪧 Yard Signs</span>
+        <span class="vc-tag">🚗 Rides</span>
+        <span class="vc-tag">📬 Absentee</span>
+        <span class="vc-tag tag-any">✋ Anything</span>
+      </div>
+    </div>
+
+    <div class="vc-card vc-blue">
+      <div class="vc-name">Cathy Pamer</div>
+      <div class="vc-role">Volunteer</div>
+      <div class="vc-info"><span class="icon">📞</span><a href="tel:3307494073">330-749-4073</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:capamer1983@gmail.com">capamer1983@gmail.com</a></div>
+      <div class="vc-tags">
+        <span class="vc-tag" style="color:#8a9bb0;border-color:rgba(138,155,176,.2);background:rgba(138,155,176,.08)">Contact for details</span>
+      </div>
+    </div>
+
+  </div>
+  <div style="margin-top:32px;padding:20px 26px;background:rgba(201,150,42,.07);border:1px solid rgba(201,150,42,.2);border-radius:8px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+    <span style="font-size:1.6rem">🙋</span>
+    <p style="font-size:.9rem;color:#c0ccdd;line-height:1.65;flex:1;min-width:200px">Want to join the team? <a href="#contact" style="color:var(--gold-light);text-decoration:underline;text-underline-offset:2px">Reach out to the campaign team</a> and the coordinators will be in touch. Every pair of hands helps.</p>
+  </div>
+</div></section>
+
+<!-- CONTACTS -->
+<section id="contact"><div class="sec">
+  <div class="sec-label">Campaign Team</div>
+  <h2>Get in <em>Touch</em></h2>
+  <p class="lead">Questions about the levy, want to volunteer, need a walk list printed, or looking for absentee ballot request forms? Reach the campaign team directly.</p>
+  <div class="contacts-grid">
+    <div class="contact-card">
+      <h4>Noelle Ressler</h4><div class="role">Campaign Support</div>
+      <div class="ci"><span class="icon">📞</span><a href="tel:2162948358">216-294-8358</a></div>
+      <div class="ci"><span class="icon">📧</span><a href="mailto:noeller@rbrconsulting.biz">noeller@rbrconsulting.biz</a></div>
+    </div>
+    <div class="contact-card">
+      <h4>John Rutter</h4><div class="role">Campaign Support</div>
+      <div class="ci"><span class="icon">📞</span><a href="tel:3304659001">330-465-9001</a></div>
+      <div class="ci"><span class="icon">📧</span><a href="mailto:jrutter@hypercrawl.com">jrutter@hypercrawl.com</a></div>
+    </div>
+    <div class="contact-card cc-blue">
+      <h4>Wayne County Board of Elections</h4>
+      <div class="role" style="color:#aee2ff">Early Voting · Absentee Ballots · Official Info</div>
+      <div class="ci"><span class="icon">📞</span><a href="tel:3302875480">330-287-5480</a></div>
+      <div class="ci"><span class="icon">📍</span><span>200 Vanover St Suite 1, Wooster OH 44691</span></div>
+      <div class="ci"><span class="icon">🗳️</span><span><strong style="color:var(--cream)">Early voting: April 8 – May 5</strong><br>Election Day: May 6, 6:30 AM – 7:30 PM</span></div>
+      <div class="ci"><span class="icon">📬</span><span>Absentee ballots — no reason required. Request by May 3.</span></div>
+    </div>
+  </div>
+  <div style="margin-top:44px;padding:26px 30px;background:var(--navy-mid);border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center">
+    <p style="font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--cream);font-style:italic;line-height:1.8;max-width:680px;margin:0 auto">"You don't need to convince everyone. You need to find the neighbors who already believe in protecting this community — and make sure they vote. Early voting starting April 8 makes that easier than ever."</p>
+    <p style="font-size:.78rem;color:var(--gray);margin-top:10px;letter-spacing:.07em;text-transform:uppercase">— Baughman Township Fire &amp; EMS Levy Campaign</p>
+  </div>
+</div></section>
+
+<footer><p><strong>Baughman Township Fire &amp; EMS Levy — May 6, 2026 · Early Voting April 8 – May 5</strong><br>Paid for by concerned residents of Baughman Township, Wayne County, Ohio.<br>This site presents factual information drawn from official Wayne County Board of Elections data, Township financial records, and publicly available sources.<br>Early voting hours should be confirmed with the Wayne County BOE at 330-287-5480 before traveling.</p></footer>
+
+<div class="print-bar">
+  <button class="pbtn pbtn-gold" onclick="window.print()">🖨️ Print Full Plan</button>
+  <a class="pbtn pbtn-out" href="#early-voting">🗳 Voting Schedule</a>
+  <a class="pbtn pbtn-out" href="#teams">🗺 5 Teams &amp; Maps</a>
+  <button class="pbtn pbtn-out" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Top</button>
 </div>
-
-<div id="toast"></div>
-
 <script>
-var STOPS = [{"i": 0, "stop": 1, "name": "Graber", "addr": "15034  BURKHART RD", "nav": "15034 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777255, "levy": 148.69, "hh": 4, "likely": true, "v1": true}, {"i": 1, "stop": 2, "name": "Becker", "addr": "15045  BURKHART RD", "nav": "15045 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777257, "levy": 156.07, "hh": 1, "likely": false, "v1": true}, {"i": 2, "stop": 3, "name": "Mcconnell", "addr": "15111  BURKHART RD", "nav": "15111 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777267, "levy": 147.53, "hh": 2, "likely": true, "v1": true}, {"i": 3, "stop": 4, "name": "Geib", "addr": "15155  BURKHART RD", "nav": "15155 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777273, "levy": 126.43, "hh": 2, "likely": true, "v1": true}, {"i": 4, "stop": 5, "name": "Amstutz", "addr": "15403  BURKHART RD", "nav": "15403 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.77731, "levy": 168.94, "hh": 2, "likely": true, "v1": true}, {"i": 5, "stop": 6, "name": "Firby", "addr": "15487  BURKHART RD", "nav": "15487 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777323, "levy": 97.99, "hh": 2, "likely": true, "v1": true}, {"i": 6, "stop": 7, "name": "Geiser", "addr": "15515  BURKHART RD", "nav": "15515 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777327, "levy": 171.0, "hh": 1, "likely": false, "v1": true}, {"i": 7, "stop": 8, "name": "Hoover", "addr": "15601  BURKHART RD", "nav": "15601 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.77734, "levy": 165.97, "hh": 2, "likely": true, "v1": true}, {"i": 8, "stop": 9, "name": "Curtis", "addr": "15660  BURKHART RD", "nav": "15660 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777349, "levy": 185.31, "hh": 3, "likely": true, "v1": true}, {"i": 9, "stop": 10, "name": "Jackson", "addr": "15808  BURKHART RD", "nav": "15808 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777371, "levy": 104.66, "hh": 1, "likely": false, "v1": true}, {"i": 10, "stop": 11, "name": "Masters", "addr": "16101  BURKHART RD", "nav": "16101 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777415, "levy": 282.37, "hh": 2, "likely": true, "v1": true}, {"i": 11, "stop": 12, "name": "Graber", "addr": "16210  BURKHART RD", "nav": "16210 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777432, "levy": 275.71, "hh": 1, "likely": false, "v1": true}, {"i": 12, "stop": 13, "name": "Mcgrew", "addr": "16210  BURKHART RD", "nav": "16210 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777432, "levy": 275.71, "hh": 1, "likely": false, "v1": true}, {"i": 13, "stop": 14, "name": "Tomassetti", "addr": "16210  BURKHART RD", "nav": "16210 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777432, "levy": 275.71, "hh": 1, "likely": false, "v1": true}, {"i": 14, "stop": 15, "name": "Saxer", "addr": "16230  BURKHART RD", "nav": "16230 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777435, "levy": 299.85, "hh": 4, "likely": true, "v1": true}, {"i": 15, "stop": 16, "name": "Masters", "addr": "16265  BURKHART RD", "nav": "16265 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.77744, "levy": 161.76, "hh": 1, "likely": false, "v1": true}, {"i": 16, "stop": 17, "name": "Kaserman", "addr": "16284  BURKHART RD", "nav": "16284 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777443, "levy": 342.1, "hh": 2, "likely": true, "v1": true}, {"i": 17, "stop": 18, "name": "Clark", "addr": "16355  BURKHART RD", "nav": "16355 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777453, "levy": 166.44, "hh": 2, "likely": true, "v1": true}, {"i": 18, "stop": 19, "name": "Lehman", "addr": "16376  BURKHART RD", "nav": "16376 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777456, "levy": 190.08, "hh": 1, "likely": false, "v1": true}, {"i": 19, "stop": 20, "name": "Miller", "addr": "16376  BURKHART RD", "nav": "16376 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777456, "levy": 190.08, "hh": 1, "likely": false, "v1": true}, {"i": 20, "stop": 21, "name": "Stutzman", "addr": "16400  BURKHART RD", "nav": "16400 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.77746, "levy": 240.98, "hh": 2, "likely": true, "v1": true}, {"i": 21, "stop": 22, "name": "Waitkunas", "addr": "16424  BURKHART RD", "nav": "16424 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777464, "levy": 207.54, "hh": 1, "likely": false, "v1": true}, {"i": 22, "stop": 23, "name": "Williams", "addr": "16435  BURKHART RD", "nav": "16435 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777465, "levy": 151.43, "hh": 1, "likely": false, "v1": true}, {"i": 23, "stop": 24, "name": "Staley", "addr": "16466  BURKHART RD", "nav": "16466 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.77747, "levy": 224.23, "hh": 2, "likely": true, "v1": true}, {"i": 24, "stop": 25, "name": "Tenney", "addr": "16500  BURKHART RD", "nav": "16500 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777475, "levy": 161.72, "hh": 3, "likely": true, "v1": true}, {"i": 25, "stop": 26, "name": "Cardinal", "addr": "16507  BURKHART RD", "nav": "16507 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777476, "levy": 364.79, "hh": 2, "likely": true, "v1": true}, {"i": 26, "stop": 27, "name": "Cardinal", "addr": "16507  BURKHART RD", "nav": "16507 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777476, "levy": 117.78, "hh": 2, "likely": true, "v1": true}, {"i": 27, "stop": 28, "name": "Scheufler", "addr": "16542  BURKHART RD", "nav": "16542 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777481, "levy": 164.34, "hh": 2, "likely": true, "v1": true}, {"i": 28, "stop": 29, "name": "Franks", "addr": "16590  BURKHART RD", "nav": "16590 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777489, "levy": 192.38, "hh": 2, "likely": true, "v1": true}, {"i": 29, "stop": 30, "name": "Smith", "addr": "16644  BURKHART RD", "nav": "16644 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777497, "levy": 163.91, "hh": 1, "likely": false, "v1": true}, {"i": 30, "stop": 31, "name": "Peters", "addr": "16677  BURKHART RD", "nav": "16677 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777502, "levy": 187.25, "hh": 1, "likely": false, "v1": true}, {"i": 31, "stop": 32, "name": "Chupp", "addr": "16686  BURKHART RD", "nav": "16686 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777503, "levy": 181.51, "hh": 1, "likely": false, "v1": true}, {"i": 32, "stop": 33, "name": "Egli", "addr": "16740  BURKHART RD", "nav": "16740 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777511, "levy": 213.66, "hh": 2, "likely": true, "v1": true}, {"i": 33, "stop": 34, "name": "Geiser", "addr": "16780  BURKHART RD", "nav": "16780 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777517, "levy": 214.39, "hh": 2, "likely": true, "v1": true}, {"i": 34, "stop": 35, "name": "Ressler", "addr": "16808  BURKHART RD", "nav": "16808 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777521, "levy": 156.4, "hh": 2, "likely": true, "v1": true}, {"i": 35, "stop": 36, "name": "Ressler", "addr": "16865  BURKHART RD", "nav": "16865 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.77753, "levy": 213.91, "hh": 2, "likely": true, "v1": true}, {"i": 36, "stop": 37, "name": "Regier", "addr": "17027  BURKHART RD", "nav": "17027 BURKHART RD ORRVILLE OH 44667", "lat": 40.938, "lon": -81.777554, "levy": 141.64, "hh": 1, "likely": false, "v1": true}, {"i": 37, "stop": 38, "name": "Longworth", "addr": "17817  BURKHART RD", "nav": "17817 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777673, "levy": 181.55, "hh": 2, "likely": true, "v1": true}, {"i": 38, "stop": 39, "name": "Rohr", "addr": "17872  BURKHART RD", "nav": "17872 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777681, "levy": 138.8, "hh": 2, "likely": true, "v1": true}, {"i": 39, "stop": 40, "name": "Haer", "addr": "17910  BURKHART RD", "nav": "17910 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777687, "levy": 124.91, "hh": 2, "likely": true, "v1": true}, {"i": 40, "stop": 41, "name": "Hutchison", "addr": "17984  BURKHART RD", "nav": "17984 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777698, "levy": 183.43, "hh": 1, "likely": false, "v1": true}, {"i": 41, "stop": 42, "name": "Wright", "addr": "17984  BURKHART RD", "nav": "17984 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777698, "levy": 183.43, "hh": 1, "likely": false, "v1": true}, {"i": 42, "stop": 43, "name": "Hall", "addr": "18121  BURKHART RD", "nav": "18121 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777718, "levy": 229.65, "hh": 3, "likely": true, "v1": true}, {"i": 43, "stop": 44, "name": "Weikert", "addr": "18215  BURKHART RD", "nav": "18215 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777732, "levy": 160.24, "hh": 1, "likely": false, "v1": true}, {"i": 44, "stop": 45, "name": "Maston", "addr": "18261  BURKHART RD", "nav": "18261 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777739, "levy": 179.06, "hh": 2, "likely": true, "v1": true}, {"i": 45, "stop": 46, "name": "Jaquet", "addr": "18285  BURKHART RD", "nav": "18285 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777743, "levy": 241.49, "hh": 2, "likely": true, "v1": false}, {"i": 46, "stop": 47, "name": "Byall", "addr": "18314  BURKHART RD", "nav": "18314 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777747, "levy": 196.05, "hh": 1, "likely": false, "v1": false}, {"i": 47, "stop": 48, "name": "Kidd", "addr": "18314  BURKHART RD", "nav": "18314 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777747, "levy": 196.05, "hh": 1, "likely": false, "v1": false}, {"i": 48, "stop": 49, "name": "Knepp", "addr": "18314  BURKHART RD", "nav": "18314 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777747, "levy": 196.05, "hh": 1, "likely": false, "v1": false}, {"i": 49, "stop": 50, "name": "Lecon", "addr": "18321  BURKHART RD", "nav": "18321 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777748, "levy": 167.15, "hh": 2, "likely": true, "v1": false}, {"i": 50, "stop": 51, "name": "Oberlin", "addr": "18435  BURKHART RD", "nav": "18435 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777765, "levy": 172.42, "hh": 1, "likely": false, "v1": false}, {"i": 51, "stop": 52, "name": "Ketler", "addr": "18468  BURKHART RD", "nav": "18468 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.77777, "levy": 148.75, "hh": 2, "likely": true, "v1": false}, {"i": 52, "stop": 53, "name": "Jones", "addr": "18591  BURKHART RD", "nav": "18591 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777789, "levy": 326.79, "hh": 4, "likely": true, "v1": false}, {"i": 53, "stop": 54, "name": "Ketler", "addr": "18598  BURKHART RD", "nav": "18598 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.77779, "levy": 374.42, "hh": 1, "likely": false, "v1": false}, {"i": 54, "stop": 55, "name": "Ediger", "addr": "18687  BURKHART RD", "nav": "18687 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777803, "levy": 126.2, "hh": 2, "likely": true, "v1": false}, {"i": 55, "stop": 56, "name": "Byall", "addr": "18947  BURKHART RD", "nav": "18947 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777842, "levy": 150.79, "hh": 2, "likely": true, "v1": false}, {"i": 56, "stop": 57, "name": "Rossiter", "addr": "18964  BURKHART RD", "nav": "18964 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777845, "levy": 168.97, "hh": 2, "likely": true, "v1": false}, {"i": 57, "stop": 58, "name": "Lintern", "addr": "18991  BURKHART RD", "nav": "18991 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777849, "levy": 114.11, "hh": 2, "likely": true, "v1": false}, {"i": 58, "stop": 59, "name": "Swartzentruber", "addr": "19035  BURKHART RD", "nav": "19035 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777855, "levy": 132.25, "hh": 1, "likely": false, "v1": false}, {"i": 59, "stop": 60, "name": "Lengi", "addr": "19120  BURKHART RD", "nav": "19120 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777868, "levy": 147.86, "hh": 1, "likely": false, "v1": false}, {"i": 60, "stop": 61, "name": "Wirt", "addr": "19120  BURKHART RD", "nav": "19120 BURKHART RD DALTON OH 44618", "lat": 40.938, "lon": -81.777868, "levy": 147.86, "hh": 1, "likely": false, "v1": false}, {"i": 61, "stop": 62, "name": "Smith", "addr": "16479  EMMITSBURG RD", "nav": "16479 EMMITSBURG RD ORRVILLE OH 44667", "lat": 40.922, "lon": -81.766352, "levy": 254.54, "hh": 1, "likely": false, "v1": false}, {"i": 62, "stop": 63, "name": "Galehouse", "addr": "16480  EMMITSBURG RD", "nav": "16480 EMMITSBURG RD ORRVILLE OH 44667", "lat": 40.922, "lon": -81.766352, "levy": 195.17, "hh": 2, "likely": true, "v1": false}, {"i": 63, "stop": 64, "name": "Bell", "addr": "16525  EMMITSBURG RD", "nav": "16525 EMMITSBURG RD ORRVILLE OH 44667", "lat": 40.922, "lon": -81.766347, "levy": 197.68, "hh": 2, "likely": true, "v1": false}, {"i": 64, "stop": 65, "name": "Jones", "addr": "16526  EMMITSBURG RD", "nav": "16526 EMMITSBURG RD ORRVILLE OH 44667", "lat": 40.922, "lon": -81.766347, "levy": 227.24, "hh": 2, "likely": true, "v1": false}, {"i": 65, "stop": 66, "name": "Stitt", "addr": "16574  EMMITSBURG RD", "nav": "16574 EMMITSBURG RD ORRVILLE OH 44667", "lat": 40.922, "lon": -81.766343, "levy": 220.99, "hh": 3, "likely": true, "v1": false}, {"i": 66, "stop": 67, "name": "Daugherty", "addr": "16575  EMMITSBURG RD", "nav": "16575 EMMITSBURG RD ORRVILLE OH 44667", "lat": 40.922, "lon": -81.766343, "levy": 186.82, "hh": 4, "likely": true, "v1": false}, {"i": 67, "stop": 68, "name": "Isler", "addr": "16619  EMMITSBURG RD", "nav": "16619 EMMITSBURG RD ORRVILLE OH 44667", "lat": 40.922, "lon": -81.766338, "levy": 288.12, "hh": 1, "likely": false, "v1": false}, {"i": 68, "stop": 69, "name": "Hills", "addr": "16620  EMMITSBURG RD", "nav": "16620 EMMITSBURG RD ORRVILLE OH 44667", "lat": 40.922, "lon": -81.766338, "levy": 232.34, "hh": 2, "likely": true, "v1": false}, {"i": 69, "stop": 70, "name": "Shatto", "addr": "16665  EMMITSBURG RD", "nav": "16665 EMMITSBURG RD ORRVILLE OH 44667", "lat": 40.922, "lon": -81.766334, "levy": 236.25, "hh": 2, "likely": true, "v1": false}, {"i": 70, "stop": 71, "name": "Copeland", "addr": "16666  EMMITSBURG RD", "nav": "16666 EMMITSBURG RD ORRVILLE OH 44667", "lat": 40.922, "lon": -81.766333, "levy": 173.7, "hh": 3, "likely": true, "v1": false}, {"i": 71, "stop": 72, "name": "Andrew", "addr": "16695  EMMITSBURG RD", "nav": "16695 EMMITSBURG RD ORRVILLE OH 44667", "lat": 40.922, "lon": -81.76633, "levy": 230.82, "hh": 4, "likely": true, "v1": false}, {"i": 72, "stop": 73, "name": "Amstutz", "addr": "16696  EMMITSBURG RD", "nav": "16696 EMMITSBURG RD ORRVILLE OH 44667", "lat": 40.922, "lon": -81.76633, "levy": 199.32, "hh": 2, "likely": true, "v1": false}, {"i": 73, "stop": 74, "name": "Robinson", "addr": "PO BOX 302", "nav": "16705 EMMITSBURG RD ORRVILLE OH 44667", "lat": 40.922, "lon": -81.766329, "levy": 264.64, "hh": 1, "likely": false, "v1": false}, {"i": 74, "stop": 75, "name": "Robinson", "addr": "16705  EMMITSBURG RD", "nav": "16705 EMMITSBURG RD ORRVILLE OH 44667", "lat": 40.922, "lon": -81.766329, "levy": 264.64, "hh": 1, "likely": false, "v1": false}, {"i": 75, "stop": 76, "name": "Congo", "addr": "16710  EMMITSBURG RD", "nav": "16710 EMMITSBURG RD ORRVILLE OH 44667", "lat": 40.922, "lon": -81.766329, "levy": 188.5, "hh": 2, "likely": true, "v1": false}, {"i": 76, "stop": 77, "name": "Hershberger", "addr": "16325  HANOVER RD", "nav": "16325 HANOVER RD ORRVILLE OH 44667", "lat": 40.918, "lon": -81.768041, "levy": 213.27, "hh": 2, "likely": true, "v1": false}, {"i": 77, "stop": 78, "name": "Carpenter", "addr": "16334  HANOVER RD", "nav": "16334 HANOVER RD ORRVILLE OH 44667", "lat": 40.918, "lon": -81.76804, "levy": 269.29, "hh": 2, "likely": true, "v1": false}, {"i": 78, "stop": 79, "name": "Watkins", "addr": "16361  HANOVER RD", "nav": "16361 HANOVER RD ORRVILLE OH 44667", "lat": 40.918, "lon": -81.768037, "levy": 231.77, "hh": 2, "likely": true, "v1": false}, {"i": 79, "stop": 80, "name": "Erb", "addr": "16370  HANOVER RD", "nav": "16370 HANOVER RD ORRVILLE OH 44667", "lat": 40.918, "lon": -81.768036, "levy": 264.21, "hh": 2, "likely": true, "v1": false}, {"i": 80, "stop": 81, "name": "Perna", "addr": "16400  HANOVER RD", "nav": "16400 HANOVER RD ORRVILLE OH 44667", "lat": 40.918, "lon": -81.768032, "levy": 198.39, "hh": 1, "likely": false, "v1": false}, {"i": 81, "stop": 82, "name": "Smith Perna", "addr": "16400  HANOVER RD", "nav": "16400 HANOVER RD ORRVILLE OH 44667", "lat": 40.918, "lon": -81.768032, "levy": 198.39, "hh": 1, "likely": false, "v1": false}, {"i": 82, "stop": 83, "name": "Stillings", "addr": "16429  HANOVER RD", "nav": "16429 HANOVER RD ORRVILLE OH 44667", "lat": 40.918, "lon": -81.768029, "levy": 180.69, "hh": 2, "likely": true, "v1": false}, {"i": 83, "stop": 84, "name": "Morgan", "addr": "16450  HANOVER RD", "nav": "16450 HANOVER RD ORRVILLE OH 44667", "lat": 40.918, "lon": -81.768026, "levy": 271.1, "hh": 2, "likely": true, "v1": false}, {"i": 84, "stop": 85, "name": "Miller", "addr": "16469  HANOVER RD", "nav": "16469 HANOVER RD ORRVILLE OH 44667", "lat": 40.918, "lon": -81.768024, "levy": 218.33, "hh": 4, "likely": true, "v1": false}, {"i": 85, "stop": 86, "name": "Baer", "addr": "16501  HANOVER RD", "nav": "16501 HANOVER RD ORRVILLE OH 44667", "lat": 40.918, "lon": -81.76802, "levy": 234.94, "hh": 4, "likely": true, "v1": false}, {"i": 86, "stop": 87, "name": "Butts", "addr": "16530  HANOVER RD", "nav": "16530 HANOVER RD ORRVILLE OH 44667", "lat": 40.918, "lon": -81.768016, "levy": 234.96, "hh": 2, "likely": true, "v1": false}, {"i": 87, "stop": 88, "name": "Jones", "addr": "16591  HANOVER RD", "nav": "16591 HANOVER RD ORRVILLE OH 44667", "lat": 40.918, "lon": -81.768009, "levy": 323.94, "hh": 2, "likely": true, "v1": false}, {"i": 88, "stop": 89, "name": "Bostick", "addr": "16615  HANOVER RD", "nav": "16615 HANOVER RD ORRVILLE OH 44667", "lat": 40.918, "lon": -81.768006, "levy": 276.27, "hh": 2, "likely": true, "v1": false}, {"i": 89, "stop": 90, "name": "Henderson", "addr": "16615  HANOVER RD", "nav": "16615 HANOVER RD ORRVILLE OH 44667", "lat": 40.918, "lon": -81.768006, "levy": 276.27, "hh": 2, "likely": true, "v1": false}, {"i": 90, "stop": 91, "name": "Male", "addr": "16615  HANOVER RD", "nav": "16615 HANOVER RD ORRVILLE OH 44667", "lat": 40.918, "lon": -81.768006, "levy": 276.27, "hh": 1, "likely": false, "v1": false}];
-var V1C = [[40.938, -81.777255], [40.938, -81.777257], [40.938, -81.777267], [40.938, -81.777273], [40.938, -81.77731], [40.938, -81.777323], [40.938, -81.777327], [40.938, -81.77734], [40.938, -81.777349], [40.938, -81.777371], [40.938, -81.777415], [40.938, -81.777432], [40.938, -81.777432], [40.938, -81.777432], [40.938, -81.777435], [40.938, -81.77744], [40.938, -81.777443], [40.938, -81.777453], [40.938, -81.777456], [40.938, -81.777456], [40.938, -81.77746], [40.938, -81.777464], [40.938, -81.777465], [40.938, -81.77747], [40.938, -81.777475], [40.938, -81.777476], [40.938, -81.777476], [40.938, -81.777481], [40.938, -81.777489], [40.938, -81.777497], [40.938, -81.777502], [40.938, -81.777503], [40.938, -81.777511], [40.938, -81.777517], [40.938, -81.777521], [40.938, -81.77753], [40.938, -81.777554], [40.938, -81.777673], [40.938, -81.777681], [40.938, -81.777687], [40.938, -81.777698], [40.938, -81.777698], [40.938, -81.777718], [40.938, -81.777732], [40.938, -81.777739]];
-var V2C = [[40.938, -81.777743], [40.938, -81.777747], [40.938, -81.777747], [40.938, -81.777747], [40.938, -81.777748], [40.938, -81.777765], [40.938, -81.77777], [40.938, -81.777789], [40.938, -81.77779], [40.938, -81.777803], [40.938, -81.777842], [40.938, -81.777845], [40.938, -81.777849], [40.938, -81.777855], [40.938, -81.777868], [40.938, -81.777868], [40.922, -81.766352], [40.922, -81.766352], [40.922, -81.766347], [40.922, -81.766347], [40.922, -81.766343], [40.922, -81.766343], [40.922, -81.766338], [40.922, -81.766338], [40.922, -81.766334], [40.922, -81.766333], [40.922, -81.76633], [40.922, -81.76633], [40.922, -81.766329], [40.922, -81.766329], [40.922, -81.766329], [40.918, -81.768041], [40.918, -81.76804], [40.918, -81.768037], [40.918, -81.768036], [40.918, -81.768032], [40.918, -81.768032], [40.918, -81.768029], [40.918, -81.768026], [40.918, -81.768024], [40.918, -81.76802], [40.918, -81.768016], [40.918, -81.768009], [40.918, -81.768006], [40.918, -81.768006], [40.918, -81.768006]];
-var CLAT = 40.932066;
-var CLON = -81.774139;
-var V1N = 45;
-var TOTAL = 91;
-var sts = {};   // sts[i] = {code, notes}
-var curIdx = -1;
-var mapReady = false;
-var lmap = null;
-var lmk = [];
 
-// ─── BUILD LIST ──────────────────────────────────────────────
-function buildList() {
-  var con = document.getElementById('lcon');
-  con.innerHTML = '';
-  var h1 = document.createElement('div');
-  h1.className = 'sec'; h1.id = 'hv1';
-  h1.textContent = 'Volunteer A-1  --  Stops 1 to ' + V1N;
-  con.appendChild(h1);
-  var v2done = false;
-  for (var i = 0; i < STOPS.length; i++) {
-    var s = STOPS[i];
-    if (!s.v1 && !v2done) {
-      v2done = true;
-      var h2 = document.createElement('div');
-      h2.className = 'sec'; h2.id = 'hv2';
-      h2.textContent = 'Volunteer A-2  --  Stops ' + (V1N + 1) + ' to ' + STOPS.length;
-      con.appendChild(h2);
+// ── LIVE EARLY VOTING COUNTER STRIP ──
+// This runs a separate live countdown specifically for the early voting strip
+// displayed between the top banner and the navigation bar.
+document.addEventListener('DOMContentLoaded', function() {
+
+  // The three key dates for early voting
+  var EV_START    = new Date('2026-04-08T08:00:00');  // Early voting opens April 8
+  var EV_END      = new Date('2026-05-05T17:00:00');  // Early voting closes May 5
+  var ELECTION    = new Date('2026-05-06T19:30:00');  // Election Day ends
+
+  // Helper: always show 2 digits (e.g. 5 → "05")
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  // Helper: grab an element by its id
+  function el(id) { return document.getElementById(id); }
+
+  function tickStrip() {
+    var now = new Date();
+    var target, labelText, statusText, statusClass;
+
+    if (now < EV_START) {
+      // ── PHASE 1: Counting down TO early voting ──
+      // We want to show: how many days/hrs/min/sec until April 8
+      target      = EV_START;
+      labelText   = '🗳 Early Voting Opens In';
+      statusText  = 'April 8 – May 5';
+      statusClass = 'ev-waiting';
+
+    } else if (now < EV_END) {
+      // ── PHASE 2: Early voting IS open right now ──
+      // Switch to counting down how much early voting time is LEFT
+      target      = EV_END;
+      labelText   = '✅ Early Voting OPEN — Closes In';
+      statusText  = '🟢 VOTING OPEN NOW';
+      statusClass = 'ev-open';
+
+    } else if (now < ELECTION) {
+      // ── PHASE 3: Early voting closed, Election Day is today ──
+      target      = ELECTION;
+      labelText   = '⏳ Polls Close In';
+      statusText  = '🔴 Election Day — May 6';
+      statusClass = 'ev-waiting';
+
+    } else {
+      // ── PHASE 4: Election is completely over ──
+      el('ev-strip-label').textContent  = '🗳 Voting has concluded';
+      el('ev-s-d').textContent          = '00';
+      el('ev-s-h').textContent          = '00';
+      el('ev-s-m').textContent          = '00';
+      el('ev-s-s').textContent          = '00';
+      el('ev-strip-status').textContent = 'May 6, 2026';
+      el('ev-strip-status').className   = 'ev-strip-status ev-closed';
+      return; // Stop — no need to keep ticking after election ends
     }
-    var card = makeCard(i);
-    con.appendChild(card);
+
+    // ── Calculate how much time remains until `target` ──
+    var diff = target - now;  // Result is in milliseconds
+
+    if (diff <= 0) {
+      // We just crossed a phase boundary — wait 1 second and re-check
+      setTimeout(tickStrip, 1000);
+      return;
+    }
+
+    // Convert milliseconds into days, hours, minutes, seconds:
+    // 1 day    = 86,400,000 ms  (60 * 60 * 24 * 1000)
+    // 1 hour   =  3,600,000 ms  (60 * 60 * 1000)
+    // 1 minute =     60,000 ms  (60 * 1000)
+    // 1 second =      1,000 ms
+    var days    = Math.floor(diff / 86400000);
+    var hours   = Math.floor((diff % 86400000) / 3600000);
+    var minutes = Math.floor((diff % 3600000)  / 60000);
+    var seconds = Math.floor((diff % 60000)    / 1000);
+
+    // Push the numbers into the four display boxes
+    el('ev-strip-label').textContent  = labelText;
+    el('ev-s-d').textContent          = pad(days);
+    el('ev-s-h').textContent          = pad(hours);
+    el('ev-s-m').textContent          = pad(minutes);
+    el('ev-s-s').textContent          = pad(seconds);
+
+    // Update the status badge text and color class
+    el('ev-strip-status').textContent = statusText;
+    el('ev-strip-status').className   = 'ev-strip-status ' + statusClass;
+
+    // Schedule the next tick in exactly 1 second
+    setTimeout(tickStrip, 1000);
   }
-}
 
-function makeCard(i) {
-  var s = STOPS[i];
-  var card = document.createElement('div');
-  card.className = 'sc';
-  card.id = 'card' + i;
-  card.setAttribute('data-i', '' + i);
-  card.setAttribute('data-v', s.v1 ? 'v1' : 'v2');
-  card.setAttribute('data-l', s.likely ? '1' : '0');
+  // Kick off the strip counter immediately when the page loads
+  tickStrip();
+});
 
-  // left
-  var L = document.createElement('div'); L.className = 'sc-left';
-  var num = document.createElement('div'); num.className = 'sc-num';
-  num.id = 'num' + i;
-  num.textContent = '' + s.stop;
-  num.style.cssText = 'background:' + (s.likely ? '#FFD700' : '#C1121F') +
-    ';color:' + (s.likely ? '#1a1a1a' : '#fff') +
-    ';opacity:' + (s.v1 ? '1' : '0.65') +
-    ';border:2.5px solid rgba(255,255,255,.3);';
-  var vl = document.createElement('div'); vl.className = 'sc-vl';
-  vl.textContent = s.v1 ? 'A-1' : 'A-2';
-  L.appendChild(num); L.appendChild(vl);
-  card.appendChild(L);
+// ── COUNTDOWN CLOCK ──
+// Uses DOMContentLoaded so it runs AFTER the page loads fully,
+// preventing any Cloudflare or other scripts from interfering.
+document.addEventListener('DOMContentLoaded', function() {
 
-  // body
-  var B = document.createElement('div'); B.className = 'sc-body';
-  var r1 = document.createElement('div'); r1.className = 'sc-row1';
-  var nm = document.createElement('span'); nm.className = 'sc-name'; nm.textContent = s.name;
-  r1.appendChild(nm);
-  if (s.likely) { var bl = document.createElement('span'); bl.className = 'bdg bL'; bl.textContent = 'LIKELY'; r1.appendChild(bl); }
-  var bh = document.createElement('span'); bh.className = 'bdg bH'; bh.textContent = 'HO'; r1.appendChild(bh);
-  var ad = document.createElement('div'); ad.className = 'sc-addr'; ad.textContent = s.addr;
-  var mt = document.createElement('div'); mt.className = 'sc-meta';
-  mt.textContent = '$' + s.levy.toFixed(2) + '/yr  -  ' + s.hh + ' voter' + (s.hh > 1 ? 's' : '');
-  var sl = document.createElement('div'); sl.className = 'sc-sts'; sl.id = 'sl' + i;
-  B.appendChild(r1); B.appendChild(ad); B.appendChild(mt); B.appendChild(sl);
-  card.appendChild(B);
+  // Key dates — times are local Ohio time (no timezone conversion needed
+  // because the server clock on the visitor's device is already local)
+  var EARLY_START  = new Date('2026-04-08T08:00:00');  // Early voting opens
+  var EARLY_END    = new Date('2026-05-05T17:00:00');  // Early voting closes
+  var ELECTION_DAY = new Date('2026-05-06T19:30:00');  // Polls close 7:30 PM
 
-  // right
-  var R = document.createElement('div'); R.className = 'sc-right';
-  var nb = document.createElement('button'); nb.className = 'nav-btn'; nb.title = 'Navigate';
-  nb.innerHTML = '<svg viewBox="0 0 24 24"><path d="M21 3L3 10.53v.98l6.84 2.65L12.48 21h.98L21 3z"/></svg>';
-  (function(idx) {
-    nb.addEventListener('click', function(e) { e.stopPropagation(); openStop(idx); });
-    card.addEventListener('click', function() { openStop(idx); });
-  })(i);
-  R.appendChild(nb); card.appendChild(R);
-  return card;
-}
-
-// ─── STOP MODAL ──────────────────────────────────────────────
-function openStop(idx) {
-  var s = STOPS[idx]; curIdx = idx;
-  var rec = sts[idx] || {};
-  document.getElementById('mc-lbl').textContent = 'Stop ' + s.stop + '  -  Volunteer ' + (s.v1 ? 'A-1' : 'A-2');
-  document.getElementById('mc-name').textContent = s.name;
-  document.getElementById('mc-addr').textContent = s.addr;
-  document.getElementById('mc-levy').textContent = 'Annual levy: $' + s.levy.toFixed(2) + '  ($' + (s.levy / 12).toFixed(2) + '/mo)  -  ' + s.hh + ' voter' + (s.hh > 1 ? 's' : '');
-
-  var bd = document.getElementById('mc-badges'); bd.innerHTML = '';
-  if (s.likely) { var b1 = document.createElement('span'); b1.className = 'mc-bdg mcbL'; b1.textContent = 'LIKELY VOTER'; bd.appendChild(b1); }
-  var b2 = document.createElement('span'); b2.className = 'mc-bdg mcbH'; b2.textContent = 'PERSONALIZED HANDOUT'; bd.appendChild(b2);
-  var b3 = document.createElement('span'); b3.className = 'mc-bdg mcbV'; b3.textContent = 'Volunteer ' + (s.v1 ? 'A-1' : 'A-2'); bd.appendChild(b3);
-
-  document.getElementById('btn-gm').onclick = function() {
-    window.open('https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(s.nav) + '&travelmode=driving', '_blank');
-  };
-  document.getElementById('btn-am').onclick = function() {
-    window.location.href = 'maps://maps.apple.com/?daddr=' + encodeURIComponent(s.nav) + '&dirflg=d';
-  };
-
-  var ta = document.getElementById('mc-notes');
-  ta.value = rec.notes || '';
-  ta.oninput = function() { saveNote(idx, ta.value); };
-
-  var sr = document.getElementById('mc-sts'); sr.innerHTML = '';
-  var opts = [{k:'Y',t:'Yes'},{k:'N',t:'No'},{k:'NH',t:'Not Home'},{k:'U',t:'Unsure'}];
-  var cur = rec.code || '';
-  opts.forEach(function(o) {
-    var b = document.createElement('button');
-    b.className = 'sb' + (cur === o.k ? ' sb' + o.k : '');
-    b.textContent = o.t;
-    b.addEventListener('click', function() { markStop(idx, o.k); });
-    sr.appendChild(b);
-  });
-
-  document.getElementById('stop-modal').classList.add('open');
-}
-
-function saveNote(idx, val) {
-  if (!sts[idx]) sts[idx] = {};
-  sts[idx].notes = val.trim();
-  refreshLabel(idx);
-}
-
-function markStop(idx, code) {
-  if (!sts[idx]) sts[idx] = {};
-  sts[idx].code = (sts[idx].code === code) ? '' : code;
-  refreshLabel(idx);
-  updateProgress();
-  if (lmk[idx]) lmk[idx].setIcon(mkIcon(STOPS[idx]));
-  openStop(idx); // refresh buttons
-}
-
-function refreshLabel(idx) {
-  var rec = sts[idx] || {};
-  var el = document.getElementById('sl' + idx);
-  if (!el) return;
-  var code = rec.code || '';
-  var notes = rec.notes || '';
-  var cmap = {Y:'Yes - Will Vote YES', N:'No', NH:'Not Home', U:'Unsure - Follow Up'};
-  var txt = cmap[code] || '';
-  if (notes) txt = txt + (txt ? ' | ' : '') + notes.substring(0, 28) + (notes.length > 28 ? '...' : '');
-  el.textContent = txt;
-  el.style.color = code === 'Y' ? '#2da44e' : code === 'N' ? '#da3633' : code === 'NH' ? '#e3b341' : code === 'U' ? '#7c6fcd' : '#6e7681';
-  // Update number circle color to show status
-  var numEl = document.getElementById('num' + idx);
-  if (numEl && code) {
-    var dotColors = {Y:'#2da44e', N:'#da3633', NH:'#e3b341', U:'#7c6fcd'};
-    numEl.style.borderColor = dotColors[code];
-    numEl.style.borderWidth = '3px';
+  function pad(n) {
+    // Always show 2 digits: 5 → "05", 12 → "12"
+    return String(n).padStart(2, '0');
   }
-}
 
-function updateProgress() {
-  var done = Object.keys(sts).filter(function(k) { return sts[k] && sts[k].code; }).length;
-  document.getElementById('done-n').textContent = done;
-  var txt = done + ' of ' + TOTAL + ' stops marked';
-  var el = document.getElementById('exp-summary-line');
-  if (el) el.textContent = txt;
-}
+  function tick() {
+    var now = new Date();   // Current date/time right now
+    var target, label, tag;
 
-// ─── FILTER + SEARCH ─────────────────────────────────────────
-function setF(btn) {
-  document.querySelectorAll('.fp').forEach(function(b) { b.classList.remove('on'); });
-  btn.classList.add('on');
-  applyF();
-}
+    if (now < EARLY_START) {
+      // Phase 1: Waiting for early voting to open
+      target = EARLY_START;
+      label  = 'Early voting opens in';
+      tag    = '🗳 Until April 8 early voting start';
 
-function applyF() {
-  var q = document.getElementById('srch').value.toLowerCase();
-  var cf = (document.querySelector('.fp.on') || {}).getAttribute ? document.querySelector('.fp.on').getAttribute('data-f') : 'all';
-  var cards = document.querySelectorAll('.sc');
-  var v1v = false, v2v = false;
-  cards.forEach(function(card) {
-    var i = parseInt(card.getAttribute('data-i'));
-    var s = STOPS[i]; var code = (sts[i] && sts[i].code) || '';
-    var show = true;
-    if (cf === 'v1') show = s.v1;
-    else if (cf === 'v2') show = !s.v1;
-    else if (cf === 'likely') show = s.likely;
-    else if (cf === 'todo') show = !code;
-    else if (cf === 'done') show = !!code;
-    if (show && q) show = (s.name + ' ' + s.addr).toLowerCase().indexOf(q) >= 0;
-    card.style.display = show ? '' : 'none';
-    if (show) { if (s.v1) v1v = true; else v2v = true; }
-  });
-  var h1 = document.getElementById('hv1'), h2 = document.getElementById('hv2');
-  if (h1) h1.style.display = v1v ? '' : 'none';
-  if (h2) h2.style.display = v2v ? '' : 'none';
-}
-document.getElementById('srch').addEventListener('input', applyF);
+    } else if (now < EARLY_END) {
+      // Phase 2: Early voting is open — count to Election Day
+      target = ELECTION_DAY;
+      label  = 'Election Day is in';
+      tag    = '📅 Voting NOW open at Wayne County BOE!';
 
-// ─── MODALS ──────────────────────────────────────────────────
-function closeModal(id) {
-  document.getElementById(id).classList.remove('open');
-  curIdx = -1;
-}
-function modalBgClick(e) {
-  if (e.target === e.currentTarget) {
-    e.currentTarget.classList.remove('open');
-    curIdx = -1;
+    } else if (now < ELECTION_DAY) {
+      // Phase 3: Last day — polls are open today
+      target = ELECTION_DAY;
+      label  = 'Polls close in';
+      tag    = '⏳ May 6 — Vote today! Polls close 7:30 PM';
+
+    } else {
+      // Phase 4: Election is over
+      document.getElementById('cd-label').textContent = 'Voting has concluded';
+      document.getElementById('cd-blocks').innerHTML =
+        '<span style="color:var(--gold-light);font-family:\'Playfair Display\',serif;font-size:1.2rem">Thank you for voting! 🗳️</span>';
+      document.getElementById('cd-tag').textContent = 'May 6, 2026';
+      return; // Stop the countdown — no need to keep ticking
+    }
+
+    // Calculate time remaining
+    var diff = target - now;  // Difference in milliseconds
+
+    if (diff <= 0) {
+      // Just crossed a threshold — tick again in 1 second to update phase
+      setTimeout(tick, 1000);
+      return;
+    }
+
+    // Break milliseconds into days, hours, minutes, seconds
+    var days    = Math.floor(diff / 86400000);           // 86400000 ms = 1 day
+    var hours   = Math.floor((diff % 86400000) / 3600000); // remainder ÷ 1 hour
+    var minutes = Math.floor((diff % 3600000)  / 60000);   // remainder ÷ 1 min
+    var seconds = Math.floor((diff % 60000)    / 1000);    // remainder ÷ 1 sec
+
+    // Update the page elements by their id
+    document.getElementById('cd-label').textContent = label;
+    document.getElementById('cd-d').textContent = pad(days);
+    document.getElementById('cd-h').textContent = pad(hours);
+    document.getElementById('cd-m').textContent = pad(minutes);
+    document.getElementById('cd-s').textContent = pad(seconds);
+    document.getElementById('cd-tag').textContent = tag;
+
+    // Schedule next tick in 1 second
+    setTimeout(tick, 1000);
   }
-}
 
-// ─── MAP ─────────────────────────────────────────────────────
-function openMap() {
-  document.getElementById('map-overlay').classList.add('open');
-  if (!mapReady) {
-    mapReady = true;
-    lmap = L.map('map', {center:[CLAT,CLON], zoom:13, zoomControl:false, tap:true});
-    L.control.zoom({position:'bottomright'}).addTo(lmap);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      {attribution:'(c) OpenStreetMap', maxZoom:19}).addTo(lmap);
-    if (V1C.length > 1) L.polyline(V1C, {color:'#C1121F', weight:4, opacity:.8}).addTo(lmap);
-    if (V2C.length > 1) L.polyline(V2C, {color:'#C1121F', weight:3, opacity:.4, dashArray:'10 7'}).addTo(lmap);
-    STOPS.forEach(function(s) {
-      if (!s.lat || !s.lon) { lmk.push(null); return; }
-      var m = L.marker([s.lat, s.lon], {icon: mkIcon(s)}).addTo(lmap);
-      (function(idx) {
-        m.on('click', function(e) {
-          L.DomEvent.stopPropagation(e);
-          openStop(idx);
-          lmap.setView([s.lat, s.lon], Math.max(lmap.getZoom(), 16));
-        });
-      })(s.i);
-      lmk.push(m);
-    });
-    var coords = STOPS.filter(function(s){return s.lat&&s.lon;}).map(function(s){return[s.lat,s.lon];});
-    if (coords.length) lmap.fitBounds(L.latLngBounds(coords), {padding:[20,20]});
-  }
-  setTimeout(function() { if (lmap) lmap.invalidateSize(); }, 80);
-}
-
-function closeMap() {
-  document.getElementById('map-overlay').classList.remove('open');
-}
-
-function mkIcon(s) {
-  var sv = (sts[s.i] && sts[s.i].code) || '';
-  var bg = s.likely ? '#FFD700' : '#C1121F';
-  var tc = s.likely ? '#1a1a1a' : '#fff';
-  var op = s.v1 ? 1 : .65;
-  var bc = sv==='Y'?'#2da44e':sv==='N'?'#da3633':sv==='NH'?'#e3b341':sv==='U'?'#7c6fcd':'#228B22';
-  var bs = sv||'V';
-  return L.divIcon({
-    html:'<div style="position:relative;opacity:'+op+'"><div style="background:'+bg+';color:'+tc+
-      ';width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;'+
-      'font-weight:800;font-size:12px;border:3px solid '+(s.v1?'#fff':'rgba(255,255,255,.5)')+
-      ';box-shadow:0 2px 10px rgba(0,0,0,.6)">'+s.stop+'</div>'+
-      '<div style="position:absolute;bottom:-4px;right:-4px;background:'+bc+
-      ';border-radius:50%;width:14px;height:14px;display:flex;align-items:center;justify-content:center;'+
-      'font-size:9px;color:#fff;font-weight:900;border:1.5px solid #fff">'+bs+'</div></div>',
-    iconSize:[34,38], iconAnchor:[17,17], className:''
-  });
-}
-
-// ─── EXPORT ──────────────────────────────────────────────────
-function buildCSV() {
-  var now = new Date();
-  var dateStr = now.toLocaleDateString('en-US');
-  var timeStr = now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
-  var cmap = {Y:'Yes - Will Vote YES', N:'No - Declined', NH:'Not Home', U:'Unsure - Follow Up'};
-  var rows = [
-    ['Baughman Township 1.75 Mill Levy - Team A Results'],
-    ['Exported: ' + dateStr + ' ' + timeStr],
-    [''],
-    ['Stop','Volunteer','Name','Address','Likely Voter','HH Voters','Annual Levy','Response','Notes']
-  ];
-  for (var i = 0; i < STOPS.length; i++) {
-    var s = STOPS[i]; var rec = sts[i] || {};
-    var code = rec.code || ''; var notes = rec.notes || '';
-    rows.push([s.stop, s.v1?'A-1':'A-2', s.name, s.addr,
-      s.likely?'YES':'', s.hh, '$'+s.levy.toFixed(2),
-      cmap[code]||'Not Visited', notes]);
-  }
-  var yC=0,nC=0,nhC=0,uC=0,nvC=0;
-  for (var i = 0; i < STOPS.length; i++) {
-    var c=(sts[i]&&sts[i].code)||'';
-    if(c==='Y')yC++;else if(c==='N')nC++;else if(c==='NH')nhC++;else if(c==='U')uC++;else nvC++;
-  }
-  rows.push(['']);
-  rows.push(['--- SUMMARY ---','','','','','','','','']);
-  rows.push(['Yes',yC,'','No',nC,'','Not Home',nhC,'']);
-  rows.push(['Unsure',uC,'','Not Visited',nvC,'','Total',STOPS.length,'']);
-  return rows.map(function(row){
-    return row.map(function(cell){
-      var s=''+cell;
-      if(s.indexOf(',')>=0||s.indexOf('"')>=0||s.indexOf('\n')>=0)
-        s='"'+s.replace(/"/g,'""')+'"';
-      return s;
-    }).join(',');
-  }).join('\r\n');
-}
-
-function openExport() {
-  updateProgress();
-  var csv = buildCSV();
-  document.getElementById('exp-csv-text').value = csv;
-  document.getElementById('exp-modal').classList.add('open');
-}
-
-function copyCSV() {
-  var ta = document.getElementById('exp-csv-text');
-  ta.select();
-  try {
-    var ok = document.execCommand('copy');
-    if (ok) { showToast('Copied! Paste into Excel or email to campaign HQ.'); return; }
-  } catch(e) {}
-  try {
-    navigator.clipboard.writeText(ta.value).then(function() {
-      showToast('Copied to clipboard!');
-    });
-  } catch(e) {
-    showToast('Select all text above and copy manually.');
-  }
-}
-
-function tryDownload() {
-  var csv = document.getElementById('exp-csv-text').value;
-  var now = new Date();
-  var fname = 'TeamA_Results_' + now.toLocaleDateString('en-US').replace(/\//g,'-') + '.csv';
-  try {
-    var blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url; a.download = fname;
-    document.body.appendChild(a); a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    showToast('CSV downloaded!');
-  } catch(e) {
-    // Fallback: data URI
-    var uri = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-    window.open(uri, '_blank');
-    showToast('Opening CSV - save from your browser.');
-  }
-}
-
-function showToast(msg) {
-  var t = document.getElementById('toast');
-  t.textContent = msg; t.style.display = 'block';
-  setTimeout(function(){t.style.display='none';}, 3500);
-}
-
-// ─── INIT ─────────────────────────────────────────────────────
-buildList();
+  // Start the hero countdown immediately
+  tick();
+});
 </script>
-</body>
-</html>
