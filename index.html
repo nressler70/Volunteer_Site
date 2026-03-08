@@ -275,6 +275,60 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 </style>
 </head>
 <body>
+
+<!-- ── PASSWORD GATE ── -->
+<div id="pg-overlay" style="display:none;position:fixed;inset:0;z-index:99999;background:linear-gradient(135deg,#0a0e1a 0%,#111827 60%,#0d1f0f 100%);display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif">
+  <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:48px 40px;max-width:400px;width:90%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.6)">
+    <div style="font-size:2.4rem;margin-bottom:12px">🔒</div>
+    <h2 style="color:#f0e6c8;font-size:1.4rem;font-weight:700;margin:0 0 6px">Baughman Levy Campaign</h2>
+    <p style="color:#8899aa;font-size:.88rem;margin:0 0 28px;line-height:1.5">Volunteer access only. Enter the team password to continue.</p>
+    <input id="pg-input" type="password" placeholder="Team password"
+      style="width:100%;box-sizing:border-box;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:12px 16px;color:#f0e6c8;font-size:1rem;outline:none;margin-bottom:12px;transition:border .2s"
+      onkeydown="if(event.key==='Enter')pgCheck()">
+    <div id="pg-error" style="color:#e74c3c;font-size:.82rem;min-height:18px;margin-bottom:10px"></div>
+    <button onclick="pgCheck()"
+      style="width:100%;background:linear-gradient(135deg,#c9962a,#e6b84a);border:none;border-radius:8px;padding:13px;color:#0a0e1a;font-weight:700;font-size:1rem;cursor:pointer;letter-spacing:.03em">
+      Enter Site →
+    </button>
+    <p style="color:#445566;font-size:.75rem;margin:20px 0 0">Baughman Township Fire &amp; EMS Levy · May 5, 2026</p>
+  </div>
+</div>
+
+<script>
+(function() {
+  // ── CHANGE THIS PASSWORD ──────────────────────────────
+  var TEAM_PASSWORD = 'BaughmanLevy2026';
+  // ─────────────────────────────────────────────────────
+
+  var overlay = document.getElementById('pg-overlay');
+  var input   = document.getElementById('pg-input');
+  var error   = document.getElementById('pg-error');
+
+  // If already unlocked this session, hide overlay immediately
+  if (sessionStorage.getItem('pg_unlocked') === '1') {
+    overlay.style.display = 'none';
+  } else {
+    // Block page scroll while locked
+    document.body.style.overflow = 'hidden';
+    overlay.style.display = 'flex';
+    setTimeout(function(){ input.focus(); }, 100);
+  }
+
+  window.pgCheck = function() {
+    if (input.value === TEAM_PASSWORD) {
+      sessionStorage.setItem('pg_unlocked', '1');
+      document.body.style.overflow = '';
+      overlay.style.display = 'none';
+    } else {
+      error.textContent = 'Incorrect password. Try again.';
+      input.value = '';
+      input.style.borderColor = '#e74c3c';
+      setTimeout(function(){ input.style.borderColor = 'rgba(255,255,255,.15)'; }, 1500);
+      input.focus();
+    }
+  };
+})();
+</script>
 <div class="top-banner"><div class="tbi"><span>🗳️ <strong>Early voting starts April 8, 2026</strong> — No lines, no waiting</span><span class="tb-pill">Wayne County BOE · 200 Vanover St, Wooster</span><span class="tb-pill">📞 330-287-5480</span><a href="#early-voting">Full schedule →</a></div></div>
 
 <!-- ── LIVE EARLY VOTING COUNTER STRIP ── -->
@@ -673,7 +727,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Robin Coppola</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3302013020">330-201-3020</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:robin.coppola2@gmail.com">robin.coppola2@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#f0829f92999ede939f80809f9c91c2b0979d91999cde939f9d"><span class="__cf_email__" data-cfemail="1a68757873743479756a6a75767b285a7d777b737634797577">[email&#160;protected]</span></a></div>
       <div class="vc-tags">
         <span class="vc-tag">🚶 Canvass</span>
         <span class="vc-tag">📞 Phone</span>
@@ -686,7 +740,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Shelly Brenner</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3306212421">330-621-2421</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:shellybrenner381@gmail.com">shellybrenner381@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#7f0c171a1313061d0d1a11111a0d4c474e3f18121e1613511c1012"><span class="__cf_email__" data-cfemail="32415a575e5e4b5040575c5c5740010a0372555f535b5e1c515d5f">[email&#160;protected]</span></a></div>
       <div class="vc-tags">
         <span class="vc-tag">🚶 Canvass</span>
         <span class="vc-tag">📞 Phone</span>
@@ -701,7 +755,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">David Stoll</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304662409">330-466-2409</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:dnhstoll@gmail.com">dnhstoll@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#3d5953554e495251517d5a505c5451135e5250"><span class="__cf_email__" data-cfemail="6b0f0503181f0407072b0c060a020745080406">[email&#160;protected]</span></a></div>
       <div class="vc-tags">
         <span class="vc-tag">📞 Phone</span>
         <span class="vc-tag">🪧 Yard Signs</span>
@@ -712,7 +766,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Pat Turchiano</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><span>—</span></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:pdjtrch1@zoominternet.net">pdjtrch1@zoominternet.net</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#7e0e1a140a0c1d164f3e0411111317100a1b0c101b0a50101b0a"><span class="__cf_email__" data-cfemail="b9c9ddd3cdcbdad188f9c3d6d6d4d0d7cddccbd7dccd97d7dccd">[email&#160;protected]</span></a></div>
       <div class="vc-tags">
         <span class="vc-tag">📞 Phone / Text</span>
         <span class="vc-tag">🪧 Yard Signs</span>
@@ -723,7 +777,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Matt Slicker</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3308542557">330-854-2557</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:matt@slickerfarms.com">matt@slickerfarms.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#422f23363602312e2b212927302423302f316c212d2f"><span class="__cf_email__" data-cfemail="1c717d68685c6f70757f77796e7a7d6e716f327f7371">[email&#160;protected]</span></a></div>
       <div class="vc-tags">
         <span class="vc-tag">🚶 Canvass</span>
         <span class="vc-tag">📞 Phone / Text</span>
@@ -735,7 +789,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Diane Jarrett</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304654110">330-465-4110</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:djarrett@gojarrett.com">djarrett@gojarrett.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#187c72796a6a7d6c6c587f7772796a6a7d6c6c367b7775"><span class="__cf_email__" data-cfemail="7f1b151e0d0d1a0b0b3f1810151e0d0d1a0b0b511c1012">[email&#160;protected]</span></a></div>
       <div class="vc-tags">
         <span class="vc-tag" style="color:#8a9bb0;border-color:rgba(138,155,176,.2);background:rgba(138,155,176,.08)">Contact for details</span>
       </div>
@@ -745,7 +799,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Joe Rubino</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3306214717">330-621-4717</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:jjrubino@gmail.com">jjrubino@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#bad0d0c8cfd8d3d4d5faddd7dbd3d694d9d5d7"><span class="__cf_email__" data-cfemail="afc5c5dddacdc6c1c0efc8c2cec6c381ccc0c2">[email&#160;protected]</span></a></div>
       <div class="vc-tags">
         <span class="vc-tag">🚶 Canvass</span>
         <span class="vc-tag">📞 Phone</span>
@@ -760,7 +814,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Cathy Pamer</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3307494073">330-749-4073</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:capamer1983@gmail.com">capamer1983@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#33505243525e5641020a0b0073545e525a5f1d505c5e"><span class="__cf_email__" data-cfemail="60030110010d05125159585320070d01090c4e030f0d">[email&#160;protected]</span></a></div>
       <div class="vc-tags">
         <span class="vc-tag" style="color:#8a9bb0;border-color:rgba(138,155,176,.2);background:rgba(138,155,176,.08)">Contact for details</span>
       </div>
@@ -782,12 +836,12 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     <div class="contact-card">
       <h4>Noelle Ressler</h4><div class="role">Campaign Support</div>
       <div class="ci"><span class="icon">📞</span><a href="tel:2162948358">216-294-8358</a></div>
-      <div class="ci"><span class="icon">📧</span><a href="mailto:noeller@rbrconsulting.biz">noeller@rbrconsulting.biz</a></div>
+      <div class="ci"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#224c4d474e4e475062504050414d4c51574e564b4c450c404b58"><span class="__cf_email__" data-cfemail="2a44454f46464f586a584858494544595f465e43444d04484350">[email&#160;protected]</span></a></div>
     </div>
     <div class="contact-card">
       <h4>John Rutter</h4><div class="role">Campaign Support</div>
       <div class="ci"><span class="icon">📞</span><a href="tel:3304659001">330-465-9001</a></div>
-      <div class="ci"><span class="icon">📧</span><a href="mailto:jrutter@hypercrawl.com">jrutter@hypercrawl.com</a></div>
+      <div class="ci"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#dfb5adaaababbaad9fb7a6afbaadbcadbea8b3f1bcb0b2"><span class="__cf_email__" data-cfemail="0d677f787979687f4d65747d687f6e7f6c7a61236e6260">[email&#160;protected]</span></a></div>
     </div>
     <div class="contact-card cc-blue">
       <h4>Wayne County Board of Elections</h4>
@@ -812,7 +866,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   <a class="pbtn pbtn-out" href="#teams">🗺 5 Teams &amp; Maps</a>
   <button class="pbtn pbtn-out" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Top</button>
 </div>
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 
 // ── LIVE EARLY VOTING COUNTER STRIP ──
 // This runs a separate live countdown specifically for the early voting strip
@@ -938,43 +992,3 @@ document.addEventListener('DOMContentLoaded', function() {
       target = ELECTION_DAY;
       label  = 'Election Day is in';
       tag    = '📅 Voting NOW open at Wayne County BOE!';
-
-    } else if (now < ELECTION_DAY) {
-      // Phase 3: Last day — polls are open today
-      target = ELECTION_DAY;
-      label  = 'Polls close in';
-      tag    = '⏳ May 5 — Vote today! Polls close 7:30 PM';
-
-    } else {
-      // Phase 4: Election is over
-      document.getElementById('cd-label').textContent = 'Voting has concluded';
-      document.getElementById('cd-d').textContent = '00';
-      document.getElementById('cd-h').textContent = '00';
-      document.getElementById('cd-m').textContent = '00';
-      document.getElementById('cd-s').textContent = '00';
-      document.getElementById('cd-tag').textContent = 'Thank you for voting — May 5, 2026';
-      return;
-    }
-
-    var diff = target - new Date();
-    if (diff <= 0) { setTimeout(tick, 1000); return; }
-
-    var days    = Math.floor(diff / 86400000);
-    var hours   = Math.floor((diff % 86400000) / 3600000);
-    var minutes = Math.floor((diff % 3600000)  / 60000);
-    var seconds = Math.floor((diff % 60000)    / 1000);
-
-    document.getElementById('cd-label').textContent = label;
-    document.getElementById('cd-d').textContent = String(days).padStart(2,'0');
-    document.getElementById('cd-h').textContent = String(hours).padStart(2,'0');
-    document.getElementById('cd-m').textContent = String(minutes).padStart(2,'0');
-    document.getElementById('cd-s').textContent = String(seconds).padStart(2,'0');
-    document.getElementById('cd-tag').textContent = tag;
-
-    setTimeout(tick, 1000);
-  }
-
-  tick();
-});
-</script>
-</body></html>
