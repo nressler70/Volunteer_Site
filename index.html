@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Baughman Township Fire &amp; EMS Levy — Volunteer Campaign HQ</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Oswald:wght@400;600;700&family=Source+Sans+3:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{--navy:#0f1928;--navy-mid:#1a2e44;--navy-light:#243d58;--red:#c0392b;--red-light:#e74c3c;--gold:#c9962a;--gold-light:#f4a460;--cream:#f5f0e8;--cream-dark:#e8e0d0;--green:#1e7a4a;--green-light:#27ae60;--blue:#1a5276;--blue-light:#2e86c1;--white:#ffffff;--text:#2c2c2c;--text-light:#5a5a5a;--border:#d4c9b0;--gray:#8a9bb0}
@@ -329,7 +330,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   };
 })();
 </script>
-<div class="top-banner"><div class="tbi"><span>🗳️ <strong>Early voting starts April 8, 2026</strong> — No lines, no waiting</span><span class="tb-pill">Wayne County BOE · 200 Vanover St, Wooster</span><span class="tb-pill">📞 330-287-5480</span><a href="#early-voting">Full schedule →</a></div></div>
+<div class="top-banner"><div class="tbi"><span>🗳️ <strong>Early voting starts April 7, 2026</strong> — No lines, no waiting</span><span class="tb-pill">Wayne County BOE · 200 Vanover St, Wooster</span><span class="tb-pill">📞 330-287-5480</span><a href="#early-voting">Full schedule →</a></div></div>
 
 <!-- ── LIVE EARLY VOTING COUNTER STRIP ── -->
 <div id="ev-counter-strip">
@@ -344,7 +345,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <span class="ev-strip-colon">:</span>
       <div class="ev-strip-block"><span class="ev-strip-num" id="ev-s-s">--</span><span class="ev-strip-unit">Sec</span></div>
     </div>
-    <span class="ev-strip-status ev-waiting" id="ev-strip-status">April 8 – May 5</span>
+    <span class="ev-strip-status ev-waiting" id="ev-strip-status">April 7 – May 5</span>
     <a href="#early-voting" class="ev-strip-link">See voting hours →</a>
   </div>
 </div>
@@ -352,7 +353,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 <nav><div class="nav-inner"><a href="#" class="nav-brand">🔥 Baughman Township Fire &amp; EMS Levy</a><ul class="nav-links"><li><a href="#early-voting" class="nav-ev">🗳 Vote Early</a></li><li><a href="#about">Levy Info</a></li><li><a href="#pros-cons">Pros &amp; Cons</a></li><li><a href="#costs">Costs</a></li><li><a href="#strategy">Strategy</a></li><li><a href="#teams">5 Teams</a></li><li><a href="#talking">Scripts</a></li><li><a href="#timeline">Schedule</a></li><li><a href="#vol-contacts" style="color:#74c69d">👥 Team</a></li><li><a href="#contact">Contact</a></li></ul></div></nav>
 
 <section class="hero"><div class="hero-inner">
-  <div class="hero-eyebrow"><span class="hero-badge">🗳 May 5, 2026 · Wayne County Ohio</span><span class="hero-badge-blue">Early Voting · April 8 – May 5</span></div>
+  <div class="hero-eyebrow"><span class="hero-badge">🗳 May 5, 2026 · Wayne County Ohio</span><span class="hero-badge-blue">Early Voting · April 7 – May 5</span></div>
   <h1>Baughman Township<br><em>Fire &amp; EMS Levy</em></h1>
   <p class="hero-sub">A 5-year, 1.75-mill levy to fund fire and emergency medical services. Without it, there is <strong style="color:#f4a460">no guaranteed fire or EMS coverage</strong> for township residents. This is the complete volunteer campaign guide — levy facts, walking maps, talking points, and early voting information.</p>
   <div class="hero-stats">
@@ -364,7 +365,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   </div>
   <div class="hero-early">
     <span class="hero-early-label">🗳 Vote Early — No Lines, No Waiting, Your Choice of Days</span>
-    <p>Don't wait for Election Day. <strong>In-person early voting begins April 8</strong> at the Wayne County Board of Elections in Wooster — open weekdays with Saturday &amp; Sunday hours. Or request a <strong>mail-in absentee ballot</strong> — no reason required under Ohio law.</p>
+    <p>Don't wait for Election Day. <strong>In-person early voting begins April 7</strong> at the Wayne County Board of Elections in Wooster — open weekdays with Saturday &amp; Sunday hours. Or request a <strong>mail-in absentee ballot</strong> — no reason required under Ohio law.</p>
     <a href="#early-voting" class="hero-early-btn">See full voting schedule →</a>
   </div>
   <div class="hero-cd">
@@ -378,24 +379,24 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <span class="hero-cd-colon">:</span>
       <div class="hero-cd-block"><span class="hero-cd-num" id="cd-s">--</span><span class="hero-cd-unit">Sec</span></div>
     </div>
-    <div class="hero-cd-tag" id="cd-tag">Until April 8 early voting start</div>
+    <div class="hero-cd-tag" id="cd-tag">Until April 7 early voting start</div>
   </div>
 </div></section>
 
-<div class="cta-bar">📅 <strong>Election Day: Tuesday, May 5, 2026</strong> &nbsp;·&nbsp; Early voting: <strong>April 8 – May 5</strong> &nbsp;·&nbsp; Questions? <a href="#contact">Contact the campaign team</a></div>
+<div class="cta-bar">📅 <strong>Election Day: Tuesday, May 5, 2026</strong> &nbsp;·&nbsp; Early voting: <strong>April 7 – May 5</strong> &nbsp;·&nbsp; Questions? <a href="#contact">Contact the campaign team</a></div>
 <!-- EARLY VOTING -->
 <section id="early-voting" class="ev-section"><div class="sec">
   <div class="sec-label">How to Vote</div>
   <h2>Vote Early — <em>Three Ways to Cast Your Ballot</em></h2>
   <p class="lead">You don't have to wait until May 5th. Every registered Ohio voter may vote early in person or by mail — no excuse required. Locking in your vote early means life can't get in the way on Election Day.</p>
   <div class="ev-grid">
-    <div class="ev-card ev-inperson"><span class="ev-icon">🏛️</span><h3>Vote Early In Person</h3><div class="ev-sub">April 8 – May 5, 2026 · Wayne County BOE</div><p>Go to the <strong>Wayne County Board of Elections</strong> any time during early voting hours. Bring a photo ID. No appointment needed.</p><p><strong>📍 200 Vanover St Suite 1, Wooster, OH 44691</strong></p><p><strong>📞 330-287-5480</strong></p><a href="tel:3302875480" class="ev-btn">📞 Call to Confirm Hours</a></div>
+    <div class="ev-card ev-inperson"><span class="ev-icon">🏛️</span><h3>Vote Early In Person</h3><div class="ev-sub">April 7 – May 5, 2026 · Wayne County BOE</div><p>Go to the <strong>Wayne County Board of Elections</strong> any time during early voting hours. Bring a photo ID. No appointment needed.</p><p><strong>📍 200 Vanover St Suite 1, Wooster, OH 44691</strong></p><p><strong>📞 330-287-5480</strong></p><a href="tel:3302875480" class="ev-btn">📞 Call to Confirm Hours</a></div>
     <div class="ev-card ev-mail"><span class="ev-icon">📬</span><h3>Vote by Absentee Mail Ballot</h3><div class="ev-sub">Request by May 3 · Return by May 5 postmark</div><p>Any registered voter can request an absentee ballot — <strong>no reason required</strong>. The BOE mails it to your home. Fill it out and mail it back, or drop off at the BOE.</p><p><strong>Request deadline: Saturday, May 3, 2026</strong></p><p><strong>Return: Postmarked by May 5, or hand-delivered by 7:30 PM on May 5</strong></p><a href="tel:3302875480" class="ev-btn">📬 Request Your Ballot Now</a></div>
   </div>
   <div class="sched-wrap">
     <div class="sched-hdr"><h3>📅 Complete Early Voting Schedule — Wayne County Board of Elections</h3><span>200 Vanover St Suite 1, Wooster · 330-287-5480 · Confirm hours before visiting</span></div>
     <table class="sched-table"><thead><tr><th>Date(s)</th><th>Day(s)</th><th>Hours</th><th>Notes</th></tr></thead><tbody>
-      <tr><td>April 8 <span class="sbadge sb-start">First Day</span></td><td>Tuesday</td><td>8:00 AM – 5:00 PM</td><td>Early voting opens — bring valid photo ID</td></tr>
+      <tr><td>April 7 <span class="sbadge sb-start">First Day</span></td><td>Tuesday</td><td>8:00 AM – 5:00 PM</td><td>Early voting opens — bring valid photo ID</td></tr>
       <tr><td>April 9 – 17</td><td>Weekdays</td><td>8:00 AM – 5:00 PM</td><td>Regular hours</td></tr>
       <tr><td>April 18–19</td><td>Sat – Sun</td><td>Sat 8 AM–12 PM · Sun Closed</td><td>First weekend hours available</td></tr>
       <tr><td>April 20 – 24</td><td>Weekdays</td><td>8:00 AM – 5:00 PM</td><td>Regular hours</td></tr>
@@ -484,23 +485,23 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 </div></section>
 <!-- STRATEGY -->
 <section id="strategy" style="background:var(--navy-mid);border-top:1px solid rgba(255,255,255,.06)"><div class="sec">
-  <div style="background:rgba(192,57,43,.12);border:1px solid rgba(192,57,43,.4);border-left:5px solid var(--red);border-radius:8px;padding:18px 22px;margin-bottom:28px;display:flex;gap:14px;align-items:center"><span style="font-size:1.8rem">🏘️</span><div><strong style="font-family:'Oswald',sans-serif;font-size:1rem;letter-spacing:.05em;color:#ff8a7a;display:block">614 Household Canvass — Personalized Handouts Ready for Every Stop</strong><span style="font-size:.88rem;color:#c0d0e0">5 teams of 2 volunteers will contact 614 registered voter households with personalized handouts showing each family's exact annual levy cost. An additional 773 unmatched households can receive generic handouts. Every stop has a name. Every handout is ready to go.</span></div></div>
+  <div style="background:rgba(192,57,43,.12);border:1px solid rgba(192,57,43,.4);border-left:5px solid var(--red);border-radius:8px;padding:18px 22px;margin-bottom:28px;display:flex;gap:14px;align-items:center"><span style="font-size:1.8rem">🏘️</span><div><strong style="font-family:'Oswald',sans-serif;font-size:1rem;letter-spacing:.05em;color:#ff8a7a;display:block">1,391 Household Canvass — Updated Campaign Strategy · 5 Teams · 2,261 Registered Voters</strong><span style="font-size:.88rem;color:#c0d0e0">5 teams covering both Baughman Township precincts will contact 1,391 registered voter households across all major roads and neighborhoods. 683 ★★ Likely households (2+ voters) are Priority 1. 708 ★ Somewhat Likely households (1 voter) are Priority 2. Every stop has a name where records matched — use it.</span></div></div>
   <div class="sec-label">Campaign Strategy</div>
   <h2>Field <em>Operations Plan</em></h2>
-  <p class="lead">10 volunteers. 5 teams. 614 household canvass with personalized handouts. Each team covers one geographic area with 2 volunteers splitting the route — estimated 4–7 hours per team.</p>
+  <p class="lead">10 volunteers. 5 teams. 1,391 household canvass across Precincts 1 &amp; 2. Each team covers one geographic zone — estimated 4–7 hours per team. ★★ Likely (2+ voters) always first.</p>
   <div class="strat-grid">
-    <div class="strat-card"><h3>Total HH to Canvass</h3><span class="snum">614</span><p>All 614 canvassing stops have personalized handouts showing each household's exact property value and annual levy cost. These are confirmed registered voter households.</p></div>
-    <div class="strat-card"><h3>Likely Voter Stops</h3><span class="snum">338</span><p>Households with 2 or more registered voters — marked ★ LIKELY on your list. Prioritize these if time is short. One knock reaches multiple voters.</p></div>
-    <div class="strat-card"><h3>Teams &amp; Canvassers</h3><span class="snum">5 × 2</span><p>5 teams (A–E), 2 volunteers each, 10 total canvassers. Each team gets one geographic zone. ~123 households per team. Split at the midpoint, work simultaneously.</p></div>
-    <div class="strat-card"><h3>Additional Reach</h3><span class="snum">+773</span><p>773 additional registered voter households couldn't be matched to parcel records. Carry generic handouts showing the $191.66/yr township average for these off-list addresses.</p></div>
-    <div class="strat-card"><h3>Early Vote Push</h3><span class="snum">Apr 8</span><p>At every door, push early voting at Wayne County BOE starting April 8. Early voters are locked in — they can't forget or get busy on Election Day.</p></div>
+    <div class="strat-card"><h3>Total HH to Canvass</h3><span class="snum">1,391</span><p>1,391 registered voter households across both precincts. Where property records matched, personalized handouts show each household's exact levy cost.</p></div>
+    <div class="strat-card"><h3>★★ Likely Voter HH</h3><span class="snum">683</span><p>★★ Priority 1 — households with 2+ registered voters. Always canvass these first. One knock reaches multiple voters and maximizes your YES-per-hour rate.</p></div>
+    <div class="strat-card"><h3>Teams &amp; Canvassers</h3><span class="snum">5 × 2</span><p>5 teams (1–5), 2 volunteers each, 10 total canvassers. Teams 1–3 cover Precinct 1; Teams 4–5 cover Precinct 2. Split routes at midpoint and work simultaneously.</p></div>
+    <div class="strat-card"><h3>★ Somewhat Likely HH</h3><span class="snum">708</span><p>★ Priority 2 — households with 1 registered voter. Canvas after all ★★ Likely stops are complete. Still important — every vote counts in a local levy race.</p></div>
+    <div class="strat-card"><h3>Early Vote Push</h3><span class="snum">Apr 7</span><p>At every door, push early voting at Wayne County BOE starting April 7. Early voters are locked in — they can't forget or get busy on Election Day.</p></div>
     <div class="strat-card"><h3>Door Codes</h3><span class="snum">Y·N·U·NH</span><p>Mark every door: Y = Yes · N = No · U = Undecided · NH = Not Home · HO = Left Handout. If not home, leave the personalized handout and mark NH+HO.</p></div>
   </div>
   <div style="margin-top:28px;background:rgba(201,150,42,.07);border:1px solid rgba(201,150,42,.2);border-radius:10px;padding:24px 28px">
     <div class="sec-label" style="margin-bottom:14px">Canvass Overview</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">
-      <div style="background:rgba(39,174,96,.1);border:1px solid rgba(39,174,96,.25);border-radius:8px;padding:14px;text-align:center"><div style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;color:#74c69d">614</div><div style="font-size:.75rem;color:#9aafcc;text-transform:uppercase;letter-spacing:.08em;margin-top:4px">Personalized-Handout Stops</div></div>
-      <div style="background:rgba(46,134,193,.1);border:1px solid rgba(46,134,193,.25);border-radius:8px;padding:14px;text-align:center"><div style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;color:#aee2ff">338</div><div style="font-size:.75rem;color:#9aafcc;text-transform:uppercase;letter-spacing:.08em;margin-top:4px">★ Likely Voter HH (2+ voters)</div></div>
+      <div style="background:rgba(39,174,96,.1);border:1px solid rgba(39,174,96,.25);border-radius:8px;padding:14px;text-align:center"><div style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;color:#74c69d">1,391</div><div style="font-size:.75rem;color:#9aafcc;text-transform:uppercase;letter-spacing:.08em;margin-top:4px">Total HH to Canvass</div></div>
+      <div style="background:rgba(46,134,193,.1);border:1px solid rgba(46,134,193,.25);border-radius:8px;padding:14px;text-align:center"><div style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;color:#aee2ff">683</div><div style="font-size:.75rem;color:#9aafcc;text-transform:uppercase;letter-spacing:.08em;margin-top:4px">★★ Likely Voter HH (2+ voters)</div></div>
       <div style="background:rgba(201,150,42,.1);border:1px solid rgba(201,150,42,.25);border-radius:8px;padding:14px;text-align:center"><div style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;color:var(--gold-light)">$191.66</div><div style="font-size:.75rem;color:#9aafcc;text-transform:uppercase;letter-spacing:.08em;margin-top:4px">Average Annual Levy Cost</div></div>
       <div style="background:rgba(192,57,43,.15);border:1px solid rgba(192,57,43,.35);border-radius:8px;padding:14px;text-align:center"><div style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;color:#ff8a7a">4–7h</div><div style="font-size:.75rem;color:#9aafcc;text-transform:uppercase;letter-spacing:.08em;margin-top:4px">Estimated Time Per Team</div></div>
     </div>
@@ -578,7 +579,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   <div class="teams-grid">
     <!-- TEAM A -->
     <div class="team-card t1"><div class="team-hdr"><div class="team-num">A</div><div class="team-title"><h3>Burkhart Road Corridor</h3><p>Burkhart Rd · Emmitsburg Rd · Hanover Rd</p></div><div class="team-doors">91<br>stops</div></div><div class="team-body">
-      <div class="team-map"><iframe src="https://www.openstreetmap.org/export/embed.html?bbox=-81.860%2C40.830%2C-81.770%2C40.910&layer=mapnik" allowfullscreen loading="lazy"></iframe></div>
+      <div class="team-map" id="map-t1"></div>
       <ul class="streets">
         <li><span class="st-name">Burkhart Rd (#15034–#19120)</span><span class="st-ct">61 stops</span><span class="st-pri pri-h">V-1 &amp; V-2</span></li>
         <li><span class="st-name">Emmitsburg Rd (#16479–#16710)</span><span class="st-ct">15 stops</span><span class="st-pri pri-m">V-2</span></li>
@@ -589,58 +590,64 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="route-note" style="background:rgba(192,57,43,.1);color:#ffaaaa">🗺️ <strong>Start:</strong> 15034 Burkhart Rd. Walk/drive north to #19120, then Emmitsburg Rd, then Hanover Rd.</div>
     </div></div>
 
-    <!-- TEAM B -->
-    <div class="team-card t2"><div class="team-hdr"><div class="team-num">B</div><div class="team-title"><h3>Church Road &amp; Burton City</h3><p>Burton City Rd · Church Rd</p></div><div class="team-doors">109<br>stops</div></div><div class="team-body">
-      <div class="team-map"><iframe src="https://www.openstreetmap.org/export/embed.html?bbox=-81.870%2C40.800%2C-81.770%2C40.870&layer=mapnik" allowfullscreen loading="lazy"></iframe></div>
+    <!-- TEAM 2 -->
+    <div class="team-card t2"><div class="team-hdr"><div class="team-num">2</div><div class="team-title"><h3>P1 South Corridor</h3><p>Church Rd · Rehm Rd · Burton City Rd · Back Massillon Rd (P1)</p></div><div class="team-doors">212<br>stops</div></div><div class="team-body">
+      <div class="team-map" id="map-t2"></div>
       <ul class="streets">
+        <li><span class="st-name">Back Massillon Rd (P1 section)</span><span class="st-ct">4 stops</span><span class="st-pri pri-h">V-1</span></li>
         <li><span class="st-name">Burton City Rd (#12696–#17354)</span><span class="st-ct">43 stops</span><span class="st-pri pri-h">V-1</span></li>
-        <li><span class="st-name">Church Rd (#12066–#18845)</span><span class="st-ct">66 stops</span><span class="st-pri pri-m">V-1 &amp; V-2</span></li>
+        <li><span class="st-name">Church Rd (#12066–#18845)</span><span class="st-ct">57 stops</span><span class="st-pri pri-m">V-1 &amp; V-2</span></li>
+        <li><span class="st-name">Rehm Rd / Misere Rd / Forrer Rd / Wadsworth Rd</span><span class="st-ct">38 stops</span><span class="st-pri pri-h">V-2</span></li>
+        <li><span class="st-name">N Deerfield Ave / Paradise Ext St / West St</span><span class="st-ct">30 stops</span><span class="st-pri pri-m">V-2</span></li>
       </ul>
-      <div style="background:rgba(39,174,96,.1);border:1px solid rgba(39,174,96,.2);border-radius:6px;padding:10px 12px;margin-bottom:10px;font-size:.8rem;color:#c0ccdd"><strong style="color:#74c69d">V-1 covers Church Rd North (stops 44–109, #15500–#18845). V-2 covers Burton City Rd (stops 1–43) and Church Rd South (#12066–#15499).</strong> Avg levy $164/yr. All 109 stops have personalized handouts ready.</div>
-      <div class="team-stats"><div class="tstat"><span class="tstat-num">109</span><span class="tstat-lbl">Stops</span></div><div class="tstat"><span class="tstat-num">48 ★</span><span class="tstat-lbl">Likely</span></div><div class="tstat"><span class="tstat-num">4–7h</span><span class="tstat-lbl">Est. Time</span></div></div>
-      <div class="route-note" style="background:rgba(230,126,34,.1);color:#ffcc99">🗺️ <strong>Start:</strong> 12696 Burton City Rd. Work north, then loop onto Church Rd from #12066 south to #18845.</div>
+      <div style="background:rgba(39,174,96,.1);border:1px solid rgba(39,174,96,.2);border-radius:6px;padding:10px 12px;margin-bottom:10px;font-size:.8rem;color:#c0ccdd"><strong style="color:#74c69d">V-1: Burton City Rd / Church Rd South / Back Massillon P1. V-2: Rehm Rd / Forrer / Misere / Wadsworth / N Deerfield / West St.</strong> Precinct 1 South · Rural — vehicle required. Avg levy $185/yr.</div>
+      <div class="team-stats"><div class="tstat"><span class="tstat-num">212</span><span class="tstat-lbl">Stops</span></div><div class="tstat"><span class="tstat-num">100 ★★</span><span class="tstat-lbl">Likely</span></div><div class="tstat"><span class="tstat-num">5–8h</span><span class="tstat-lbl">Est. Time</span></div></div>
+      <div class="route-note" style="background:rgba(230,126,34,.1);color:#ffcc99">🗺️ <strong>V-1 Start:</strong> 18347 Back Massillon Rd. <strong>V-2 Start:</strong> 13301 Rehm Rd. 🚗 Vehicle required.</div>
     </div></div>
 
-    <!-- TEAM C -->
-    <div class="team-card t3"><div class="team-hdr"><div class="team-num">C</div><div class="team-title"><h3>Rehm / Fosnight / Huprick / Back Massillon North</h3><p>Burkhart Rd S · Fosnight Rd · Rehm Rd · Huprick Rd</p></div><div class="team-doors">119<br>stops</div></div><div class="team-body">
-      <div class="team-map"><iframe src="https://www.openstreetmap.org/export/embed.html?bbox=-81.940%2C40.820%2C-81.840%2C40.900&layer=mapnik" allowfullscreen loading="lazy"></iframe></div>
+    <!-- TEAM 3 -->
+    <div class="team-card t3"><div class="team-hdr"><div class="team-num">3</div><div class="team-title"><h3>P1 Central Corridor</h3><p>York Rd · Mt Eaton Rd · Dalton Fox Lake Rd · Tannerville Rd · Wayne St · W Lebanon Rd</p></div><div class="team-doors">242<br>stops</div></div><div class="team-body">
+      <div class="team-map" id="map-t3"></div>
       <ul class="streets">
-        <li><span class="st-name">Burkhart Rd South (#13411–#14821)</span><span class="st-ct">20 stops</span><span class="st-pri pri-h">V-1</span></li>
-        <li><span class="st-name">Fosnight Rd (#14500–#15079)</span><span class="st-ct">29 stops</span><span class="st-pri pri-h">V-1</span></li>
-        <li><span class="st-name">Rehm Rd (#13301–#15643)</span><span class="st-ct">21 stops</span><span class="st-pri pri-m">V-1</span></li>
-        <li><span class="st-name">Back Massillon Rd N + Huprick + Krug + Shifferly</span><span class="st-ct">49 stops</span><span class="st-pri pri-m">V-2</span></li>
+        <li><span class="st-name">York Rd (#3075–#3665)</span><span class="st-ct">27 stops</span><span class="st-pri pri-h">V-1</span></li>
+        <li><span class="st-name">Wayne St (#1844–#2839)</span><span class="st-ct">16 stops</span><span class="st-pri pri-h">V-1</span></li>
+        <li><span class="st-name">Tannerville Rd (#1487–#3056)</span><span class="st-ct">17 stops</span><span class="st-pri pri-h">V-1</span></li>
+        <li><span class="st-name">Dalton Fox Lake Rd + Good Rd + N Kohler Rd</span><span class="st-ct">30 stops</span><span class="st-pri pri-m">V-2</span></li>
+        <li><span class="st-name">N Mt Eaton Rd + Market St + N West Lebanon Rd</span><span class="st-ct">32 stops</span><span class="st-pri pri-m">V-2</span></li>
       </ul>
-      <div style="background:rgba(39,174,96,.1);border:1px solid rgba(39,174,96,.2);border-radius:6px;padding:10px 12px;margin-bottom:10px;font-size:.8rem;color:#c0ccdd"><strong style="color:#74c69d">V-1 (Rehm Rd / Fosnight Rd, stops 1–70). V-2 (Back Massillon North / Huprick / Krug / Shifferly, stops 71–119).</strong> Avg levy $204/yr. All 119 stops have personalized handouts ready.</div>
-      <div class="team-stats"><div class="tstat"><span class="tstat-num">119</span><span class="tstat-lbl">Stops</span></div><div class="tstat"><span class="tstat-num">68 ★</span><span class="tstat-lbl">Likely</span></div><div class="tstat"><span class="tstat-num">4–7h</span><span class="tstat-lbl">Est. Time</span></div></div>
-      <div class="route-note" style="background:rgba(201,150,42,.1);color:#ffe088">🗺️ <strong>V-1 Start:</strong> 13411 Burkhart Rd South. <strong>V-2 Start:</strong> 17887 Back Massillon Rd.</div>
+      <div style="background:rgba(39,174,96,.1);border:1px solid rgba(39,174,96,.2);border-radius:6px;padding:10px 12px;margin-bottom:10px;font-size:.8rem;color:#c0ccdd"><strong style="color:#74c69d">V-1: York Rd / Wayne St / Tannerville Rd (132 ★★ Likely first). V-2: Dalton Fox Lake / Good Rd / N Kohler / N Mt Eaton / Market St / N West Lebanon Rd.</strong> Precinct 1 Central · Mixed — vehicle required. Avg levy $185/yr.</div>
+      <div class="team-stats"><div class="tstat"><span class="tstat-num">242</span><span class="tstat-lbl">Stops</span></div><div class="tstat"><span class="tstat-num">132 ★★</span><span class="tstat-lbl">Likely</span></div><div class="tstat"><span class="tstat-num">5–8h</span><span class="tstat-lbl">Est. Time</span></div></div>
+      <div class="route-note" style="background:rgba(201,150,42,.1);color:#ffe088">🗺️ <strong>V-1 Start:</strong> 3075 York Rd. <strong>V-2 Start:</strong> 1200 Dalton Fox Lake Rd. 🚗 Vehicle required.</div>
     </div></div>
 
-    <!-- TEAM D -->
-    <div class="team-card t4"><div class="team-hdr"><div class="team-num">D</div><div class="team-title"><h3>Back Massillon / Wayne St / York Rd / Fox Lake</h3><p>Back Massillon Rd · Market St · Wayne St · Dalton Fox Lake Rd</p></div><div class="team-doors">103<br>stops</div></div><div class="team-body">
-      <div class="team-map"><iframe src="https://www.openstreetmap.org/export/embed.html?bbox=-81.960%2C40.855%2C-81.860%2C40.920&layer=mapnik" allowfullscreen loading="lazy"></iframe></div>
+    <!-- TEAM 4 -->
+    <div class="team-card t4"><div class="team-hdr"><div class="team-num">4</div><div class="team-title"><h3>P2 Village Walkable Streets</h3><p>Main St · Market St · Church St · Park St · Euclid St · Surrounding Streets</p></div><div class="team-doors">444<br>stops</div></div><div class="team-body">
+      <div class="team-map" id="map-t4"></div>
       <ul class="streets">
-        <li><span class="st-name">Back Massillon Rd (#12105–#16384)</span><span class="st-ct">27 stops</span><span class="st-pri pri-h">V-1</span></li>
-        <li><span class="st-name">Market St (#15441–#15685)</span><span class="st-ct">7 stops</span><span class="st-pri pri-h">V-1</span></li>
-        <li><span class="st-name">Wayne St (#1844–#2839)</span><span class="st-ct">23 stops</span><span class="st-pri pri-m">V-1</span></li>
-        <li><span class="st-name">Dalton Fox Lake Rd + Good Rd</span><span class="st-ct">46 stops</span><span class="st-pri pri-m">V-2</span></li>
+        <li><span class="st-name">Main St / Market St / Church St</span><span class="st-ct">60 stops</span><span class="st-pri pri-h">V-1</span></li>
+        <li><span class="st-name">Park St / Euclid St / Gloria Ave</span><span class="st-ct">45 stops</span><span class="st-pri pri-h">V-1</span></li>
+        <li><span class="st-name">Tannerville Rd (P2) / Wadsworth Rd</span><span class="st-ct">40 stops</span><span class="st-pri pri-m">V-2</span></li>
+        <li><span class="st-name">N Deerfield Ave / Huprick Rd / Lovers Lane Rd / Shifferly Rd</span><span class="st-ct">60 stops</span><span class="st-pri pri-m">V-2</span></li>
       </ul>
-      <div style="background:rgba(39,174,96,.1);border:1px solid rgba(39,174,96,.2);border-radius:6px;padding:10px 12px;margin-bottom:10px;font-size:.8rem;color:#c0ccdd"><strong style="color:#74c69d">V-1 covers Back Massillon Rd / Market St / Wayne St (stops 1–57). V-2 covers York Rd / Dalton Fox Lake Rd / Good Rd (stops 58–103).</strong> Avg levy $181/yr. All 103 stops have personalized handouts ready.</div>
-      <div class="team-stats"><div class="tstat"><span class="tstat-num">103</span><span class="tstat-lbl">Stops</span></div><div class="tstat"><span class="tstat-num">55 ★</span><span class="tstat-lbl">Likely</span></div><div class="tstat"><span class="tstat-num">4–7h</span><span class="tstat-lbl">Est. Time</span></div></div>
-      <div class="route-note" style="background:rgba(34,153,84,.1);color:#aaffcc">🗺️ <strong>V-1 Start:</strong> 12105 Back Massillon Rd. <strong>V-2 Start:</strong> 1200 Dalton Fox Lake Rd.</div>
+      <div style="background:rgba(39,174,96,.1);border:1px solid rgba(39,174,96,.2);border-radius:6px;padding:10px 12px;margin-bottom:10px;font-size:.8rem;color:#c0ccdd"><strong style="color:#74c69d">V-1: Village core — walkable. Main St / Market St / Church St / Park St / Euclid St / Gloria Ave. V-2: Rural outskirts — Tannerville / Wadsworth / N Deerfield / Huprick / Lovers Lane.</strong> Precinct 2 Village · 178 ★★ Likely first. Avg levy $210/yr.</div>
+      <div class="team-stats"><div class="tstat"><span class="tstat-num">444</span><span class="tstat-lbl">Stops</span></div><div class="tstat"><span class="tstat-num">178 ★★</span><span class="tstat-lbl">Likely</span></div><div class="tstat"><span class="tstat-num">6–9h</span><span class="tstat-lbl">Est. Time</span></div></div>
+      <div class="route-note" style="background:rgba(34,153,84,.1);color:#aaffcc">🗺️ <strong>V-1 Start:</strong> 9 N Main St — walkable village streets. <strong>V-2 Start:</strong> 4941 Tannerville Rd. 🚶 V-1 walkable · 🚗 V-2 vehicle required.</div>
     </div></div>
 
-    <!-- TEAM E -->
-    <div class="team-card t5"><div class="team-hdr"><div class="team-num">E</div><div class="team-title"><h3>Tannerville / Wadsworth / Forrer / Misere / Lovers Lane</h3><p>N Kohler Rd · N West Lebanon Rd · Tannerville Rd · York Rd</p></div><div class="team-doors">192<br>stops</div></div><div class="team-body">
-      <div class="team-map"><iframe src="https://www.openstreetmap.org/export/embed.html?bbox=-81.900%2C40.760%2C-81.780%2C40.840&layer=mapnik" allowfullscreen loading="lazy"></iframe></div>
+    <!-- TEAM 5 -->
+    <div class="team-card t5"><div class="team-hdr"><div class="team-num">5</div><div class="team-title"><h3>P2 Rural Roads</h3><p>Back Massillon Rd · Fulton Rd · Fox Lake Rd · Coal Bank Rd · Fosnight Rd</p></div><div class="team-doors">367<br>stops</div></div><div class="team-body">
+      <div class="team-map" id="map-t5"></div>
       <ul class="streets">
-        <li><span class="st-name">N Kohler Rd + N West Lebanon Rd</span><span class="st-ct">25 stops</span><span class="st-pri pri-h">V-1</span></li>
-        <li><span class="st-name">Tannerville Rd (#1817–#5378)</span><span class="st-ct">47 stops</span><span class="st-pri pri-h">V-1</span></li>
-        <li><span class="st-name">Wadsworth Rd (#1215–#6733)</span><span class="st-ct">24 stops</span><span class="st-pri pri-m">V-1</span></li>
-        <li><span class="st-name">Forrer / Misere / Lovers Lane / York Rd / Good Rd</span><span class="st-ct">96 stops</span><span class="st-pri pri-m">V-2</span></li>
+        <li><span class="st-name">Back Massillon Rd (P2 section)</span><span class="st-ct">42 stops</span><span class="st-pri pri-h">V-1</span></li>
+        <li><span class="st-name">Fosnight Rd (#14500–#15117)</span><span class="st-ct">18 stops</span><span class="st-pri pri-h">V-1</span></li>
+        <li><span class="st-name">Forrer Rd / Rehm Rd (P2)</span><span class="st-ct">10 stops</span><span class="st-pri pri-h">V-1</span></li>
+        <li><span class="st-name">Coal Bank Rd / Black Diamond Rd</span><span class="st-ct">56 stops</span><span class="st-pri pri-m">V-2</span></li>
+        <li><span class="st-name">Fulton Rd / Fox Lake Rd / Dalton Fox Lake Rd (P2)</span><span class="st-ct">79 stops</span><span class="st-pri pri-m">V-2</span></li>
+        <li><span class="st-name">N Mt Eaton Rd (P2) / Stevic Rd / Keck Rd</span><span class="st-ct">22 stops</span><span class="st-pri pri-m">V-2</span></li>
       </ul>
-      <div style="background:rgba(39,174,96,.1);border:1px solid rgba(39,174,96,.2);border-radius:6px;padding:10px 12px;margin-bottom:10px;font-size:.8rem;color:#c0ccdd"><strong style="color:#74c69d">V-1 covers N Kohler Rd / N West Lebanon Rd / Tannerville Rd / Wadsworth Rd (stops 53–149). V-2 covers Chambersburg Pike / Coal Bank / Forrer / Good / Lovers Lane / Misere / N Wenger / West St / York Rd (stops 1–52 &amp; 150–192).</strong> Largest team — avg levy $196/yr. All 192 stops have personalized handouts ready.</div>
-      <div class="team-stats"><div class="tstat"><span class="tstat-num">192</span><span class="tstat-lbl">Stops</span></div><div class="tstat"><span class="tstat-num">109 ★</span><span class="tstat-lbl">Likely</span></div><div class="tstat"><span class="tstat-num">4–7h</span><span class="tstat-lbl">Est. Time</span></div></div>
-      <div class="route-note" style="background:rgba(41,128,185,.1);color:#aaddff">🗺️ <strong>V-1 Start:</strong> 1215 N Kohler Rd. <strong>V-2 Start:</strong> 3532 Chambersburg Pike. Bring water — largest territory.</div>
+      <div style="background:rgba(39,174,96,.1);border:1px solid rgba(39,174,96,.2);border-radius:6px;padding:10px 12px;margin-bottom:10px;font-size:.8rem;color:#c0ccdd"><strong style="color:#74c69d">V-1: Back Massillon Rd (P2) / Fosnight Rd / Forrer Rd / Rehm Rd (P2) — 194 ★★ Likely stops first. V-2: Coal Bank / Black Diamond / Fulton Rd / Fox Lake Rd / Dalton Fox Lake (P2) / N Mt Eaton (P2).</strong> Precinct 2 Rural · Vehicle required. Avg levy $210/yr.</div>
+      <div class="team-stats"><div class="tstat"><span class="tstat-num">367</span><span class="tstat-lbl">Stops</span></div><div class="tstat"><span class="tstat-num">194 ★★</span><span class="tstat-lbl">Likely</span></div><div class="tstat"><span class="tstat-num">6–9h</span><span class="tstat-lbl">Est. Time</span></div></div>
+      <div class="route-note" style="background:rgba(41,128,185,.1);color:#aaddff">🗺️ <strong>V-1 Start:</strong> 12105 Back Massillon Rd. <strong>V-2 Start:</strong> 4948 Coal Bank Rd. 🚗 Vehicle required — bring water, large territory.</div>
     </div></div>
   </div>
 
@@ -668,7 +675,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     <div class="talk-card opener"><h3>🚪 Door Opener — First 15 Seconds</h3><div class="script-box">"Hi, I'm [NAME] with the Baughman Township levy campaign. We're asking your YES vote on the 1.75 mill levy on May 5, 2026. For your home, the annual cost is about [LEVY AMOUNT from list] — roughly [MONTHLY]/month. This funds your local Fire &amp; EMS. Can we count on your YES?"</div><ul><li>Pull the <strong>personalized handout</strong> for this household before knocking — it shows their exact property value and annual levy cost</li><li>Stand relaxed, step back from the door — don't hold clipboard at chest height</li><li>Smile and make eye contact — this is a conversation, not a presentation</li><li>If no answer after two knocks, <strong>leave the personalized handout at the door</strong> and mark NH+HO on your list</li></ul></div>
     <div class="talk-card cost"><h3>💰 The Cost Argument</h3><div class="script-box" style="border-left-color:#74c69d">"The levy costs $61 a year for a $100,000 home — about $5 a month, less than a pizza. Without it, a single ambulance call can run $1,500 to $3,500 out of pocket. One house fire could cost $10,000 or more."</div><ul><li>Personalize it: "At $200K, that's $122 a year."</li><li>Medicare doesn't fully cover ground ambulance — there's always a gap</li><li>Unpaid bills can be liened directly to your property taxes</li><li>Levy is only 5 years — NOT permanent. Expires 2031.</li></ul></div>
     <div class="talk-card objection"><h3>🛑 Handling Objections</h3><ul><li><strong>"I pay too many taxes already"</strong> — "This is the lowest fire levy in Wayne County at 1.75 mills. Every other township levies 2–6.75 mills. Baughman is the ONLY township without one."</li><li><strong>"The fire departments will still come"</strong> — "Not guaranteed. Without a contract, no department is legally required to respond."</li><li><strong>"It's permanent"</strong> — "It's not — it expires automatically after 5 years in 2031."</li><li><strong>"Why didn't they plan better?"</strong> — "The General Fund is nearly depleted. Fire protection eats 51 cents of every dollar spent."</li></ul></div>
-    <div class="talk-card close"><h3>✅ Closing the Conversation</h3><div class="script-box" style="border-left-color:#aee2ff">"Can we count on your YES vote? Did you know you can vote early starting April 8th at the Wayne County BOE in Wooster — no lines, any weekday? You can also request a mail ballot by calling 330-287-5480."</div><ul><li>Record response: Strong YES / Leaning YES / Undecided / Leaning NO / Hard NO</li><li>Leave a levy card at every door regardless of response</li><li>Push early voting at every door — April 8 start at BOE, 330-287-5480</li><li>Never argue with a Hard NO — thank them and move on immediately</li></ul></div>
+    <div class="talk-card close"><h3>✅ Closing the Conversation</h3><div class="script-box" style="border-left-color:#aee2ff">"Can we count on your YES vote? Did you know you can vote early starting April 7th at the Wayne County BOE in Wooster — no lines, any weekday? You can also request a mail ballot by calling 330-287-5480."</div><ul><li>Record response: Strong YES / Leaning YES / Undecided / Leaning NO / Hard NO</li><li>Leave a levy card at every door regardless of response</li><li>Push early voting at every door — April 7 start at BOE, 330-287-5480</li><li>Never argue with a Hard NO — thank them and move on immediately</li></ul></div>
   </div>
 </div></section>
 
@@ -676,10 +683,10 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 <section id="timeline" style="background:var(--navy-mid);border-top:1px solid rgba(255,255,255,.06)"><div class="sec">
   <div class="sec-label">Campaign Schedule</div>
   <h2>Timeline to <em>May 5th</em></h2>
-  <p class="lead">Four phases from now to Election Day. Early voting starting April 8 changes the canvassing game — push it at every door from the first wave onward.</p>
+  <p class="lead">Four phases from now to Election Day. Early voting starting April 7 changes the canvassing game — push it at every door from the first wave onward.</p>
   <div class="timeline">
-    <div class="tl-item"><div class="tl-dot">📋</div><h4>Now – Apr 5</h4><p>Assign teams A–E. Print personalized handout packets for all 614 stops — sorted by team. Brief volunteers on door script and phone map. Know your zone and <strong style="color:var(--gold-light)">★ Likely voter stops</strong>.</p></div>
-    <div class="tl-item"><div class="tl-dot">🚪</div><h4>Apr 5 – Apr 19</h4><p>Wave 1 — all 5 teams knock every door on their list. Early voting <strong style="color:var(--gold-light)">OPENS April 8</strong> — mention at every door. Mark each door: Y=Yes · N=No · U=Undecided · NH=Not Home. Export CSV results from phone map and report to campaign coordinator.</p></div>
+    <div class="tl-item"><div class="tl-dot">📋</div><h4>Now – Apr 5</h4><p>Assign Teams 1–5. Print canvass lists for all 1,391 stops — sorted by team. Brief volunteers on door script and route. Know your zone and <strong style="color:var(--gold-light)">★★ Likely voter stops</strong> (2+ registered voters — always first).</p></div>
+    <div class="tl-item"><div class="tl-dot">🚪</div><h4>Apr 5 – Apr 19</h4><p>Wave 1 — all 5 teams knock every ★★ Likely stop first, then ★ Somewhat Likely. Early voting <strong style="color:var(--gold-light)">OPENS April 7</strong> — mention at every door. Mark each door: Y=Yes · N=No · U=Undecided · NH=Not Home. Report results to campaign coordinator.</p></div>
     <div class="tl-item"><div class="tl-dot">🔁</div><h4>Apr 19 – May 3</h4><p>Wave 2 targets <strong style="color:var(--gold-light)">undecided stops ONLY</strong>. Skip confirmed NOs. Call/text ★ Likely households who haven't voted early yet. Last absentee request deadline: <strong style="color:var(--gold-light)">May 3</strong>.</p></div>
     <div class="tl-item"><div class="tl-dot">🗳️</div><h4>May 5 — Election Day</h4><p>Polls 6:30 AM – 7:30 PM. Text/call every confirmed YES voter <strong style="color:var(--gold-light)">by 10 AM</strong>. Offer rides. Station a volunteer near the polling location all day.</p></div>
   </div>
@@ -692,7 +699,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   <div class="tips-grid">
     <div class="tip-card"><span class="tip-icon">🕐</span><h4>Best Hours to Knock</h4><p>Saturdays 10 AM–6 PM and Sundays 1–5 PM are peak. Weekdays after 5 PM work for rural routes. Avoid mornings before 9 AM and after dark.</p></div>
     <div class="tip-card"><span class="tip-icon">📋</span><h4>What to Bring</h4><p>Printed walk list with names &amp; addresses. Personalized handouts for all your stops (pre-sorted). Generic handouts ($191.66/yr avg) for off-list addresses. Clipboard &amp; pen to mark responses. Water bottle.</p></div>
-    <div class="tip-card"><span class="tip-icon">🗳️</span><h4>Push Early Voting</h4><p>At every single door, mention early voting starts April 8 at the Wayne County BOE in Wooster. "You can vote any weekday — no lines." Absentee: call 330-287-5480.</p></div>
+    <div class="tip-card"><span class="tip-icon">🗳️</span><h4>Push Early Voting</h4><p>At every single door, mention early voting starts April 7 at the Wayne County BOE in Wooster. "You can vote any weekday — no lines." Absentee: call 330-287-5480.</p></div>
     <div class="tip-card"><span class="tip-icon">🚗</span><h4>Rural Route Tips</h4><p>Rural houses have long driveways — drive in if gate is open. Park at the mailbox if uncertain. Dogs are common. Amish residents don't vote — skip those homes.</p></div>
     <div class="tip-card"><span class="tip-icon">📝</span><h4>Track Every Door</h4><p>Mark every house: Y = Yes · N = No · U = Undecided · NH = Not Home · HO = Left Handout. Not Home: leave the personalized handout and mark NH+HO. Report results to campaign after your route.</p></div>
     <div class="tip-card"><span class="tip-icon">📱</span><h4>Using Your Phone Map</h4><p>Open your team's HTML file in Safari (iPhone) or Chrome (Android) — no internet needed. Tap a stop card for directions via Google Maps or Apple Maps. Mark results with Yes / No / Not Home / Unsure, add notes, then Export → Download CSV when done.</p></div>
@@ -706,11 +713,11 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   <div style="overflow-x:auto;border-radius:10px;border:1px solid rgba(255,255,255,.08)"><table class="tracker-table">
     <thead><tr><th>Team</th><th>Zone</th><th>★ Likely</th><th>Total Stops</th><th>Volunteer 1</th><th>Phone</th><th>Volunteer 2</th><th>Phone</th><th>Date Out</th><th>Doors Hit</th><th>YES Count</th></tr></thead>
     <tbody>
-      <tr><td style="color:#e74c3c;font-weight:700">A</td><td>Burkhart Road Corridor</td><td style="color:#74c69d;font-weight:700">58</td><td style="color:var(--gold);font-weight:700">91</td><td style="color:#334">__________________</td><td style="color:#334">______________</td><td style="color:#334">__________________</td><td style="color:#334">______________</td><td style="color:#334">________</td><td style="color:#334">_____</td><td style="color:#334">_____</td></tr>
-      <tr><td style="color:#e67e22;font-weight:700">B</td><td>Church Road &amp; Burton City</td><td style="color:#74c69d;font-weight:700">48</td><td style="color:var(--gold);font-weight:700">109</td><td style="color:#334">__________________</td><td style="color:#334">______________</td><td style="color:#334">__________________</td><td style="color:#334">______________</td><td style="color:#334">________</td><td style="color:#334">_____</td><td style="color:#334">_____</td></tr>
-      <tr><td style="color:#c9962a;font-weight:700">C</td><td>Rehm / Fosnight / Huprick / Back Massillon N</td><td style="color:#74c69d;font-weight:700">68</td><td style="color:var(--gold);font-weight:700">119</td><td style="color:#334">__________________</td><td style="color:#334">______________</td><td style="color:#334">__________________</td><td style="color:#334">______________</td><td style="color:#334">________</td><td style="color:#334">_____</td><td style="color:#334">_____</td></tr>
-      <tr><td style="color:#27ae60;font-weight:700">D</td><td>Back Massillon / Wayne St / York Rd / Fox Lake</td><td style="color:#74c69d;font-weight:700">55</td><td style="color:var(--gold);font-weight:700">103</td><td style="color:#334">__________________</td><td style="color:#334">______________</td><td style="color:#334">__________________</td><td style="color:#334">______________</td><td style="color:#334">________</td><td style="color:#334">_____</td><td style="color:#334">_____</td></tr>
-      <tr><td style="color:#2980b9;font-weight:700">E</td><td>Tannerville / Wadsworth / Forrer / Misere / Lovers Lane</td><td style="color:#74c69d;font-weight:700">109</td><td style="color:var(--gold);font-weight:700">192</td><td style="color:#334">__________________</td><td style="color:#334">______________</td><td style="color:#334">__________________</td><td style="color:#334">______________</td><td style="color:#334">________</td><td style="color:#334">_____</td><td style="color:#334">_____</td></tr>
+      <tr><td style="color:#e74c3c;font-weight:700">1</td><td>P1 North Corridor (Burkhart / Hanover / Emmitsburg / Huprick)</td><td style="color:#74c69d;font-weight:700">79</td><td style="color:var(--gold);font-weight:700">126</td><td style="color:#334">__________________</td><td style="color:#334">______________</td><td style="color:#334">__________________</td><td style="color:#334">______________</td><td style="color:#334">________</td><td style="color:#334">_____</td><td style="color:#334">_____</td></tr>
+      <tr><td style="color:#e67e22;font-weight:700">2</td><td>P1 South Corridor (Church / Rehm / Burton City / Back Massillon P1)</td><td style="color:#74c69d;font-weight:700">100</td><td style="color:var(--gold);font-weight:700">212</td><td style="color:#334">__________________</td><td style="color:#334">______________</td><td style="color:#334">__________________</td><td style="color:#334">______________</td><td style="color:#334">________</td><td style="color:#334">_____</td><td style="color:#334">_____</td></tr>
+      <tr><td style="color:#c9962a;font-weight:700">3</td><td>P1 Central Corridor (York / Mt Eaton / Dalton Fox Lake / Tannerville / Wayne St)</td><td style="color:#74c69d;font-weight:700">132</td><td style="color:var(--gold);font-weight:700">242</td><td style="color:#334">__________________</td><td style="color:#334">______________</td><td style="color:#334">__________________</td><td style="color:#334">______________</td><td style="color:#334">________</td><td style="color:#334">_____</td><td style="color:#334">_____</td></tr>
+      <tr><td style="color:#27ae60;font-weight:700">4</td><td>P2 Village Walkable (Main / Market / Church / Park / Euclid)</td><td style="color:#74c69d;font-weight:700">178</td><td style="color:var(--gold);font-weight:700">444</td><td style="color:#334">__________________</td><td style="color:#334">______________</td><td style="color:#334">__________________</td><td style="color:#334">______________</td><td style="color:#334">________</td><td style="color:#334">_____</td><td style="color:#334">_____</td></tr>
+      <tr><td style="color:#2980b9;font-weight:700">5</td><td>P2 Rural Roads (Back Massillon / Fulton / Fox Lake / Coal Bank / Fosnight)</td><td style="color:#74c69d;font-weight:700">194</td><td style="color:var(--gold);font-weight:700">367</td><td style="color:#334">__________________</td><td style="color:#334">______________</td><td style="color:#334">__________________</td><td style="color:#334">______________</td><td style="color:#334">________</td><td style="color:#334">_____</td><td style="color:#334">_____</td></tr>
     </tbody>
   </table></div>
 </div></section>
@@ -727,7 +734,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Robin Coppola</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3302013020">330-201-3020</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:robin.coppola2@gmail.com">robin.coppola2@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#0c7e636e6562226f637c7c63606d3e4c6b616d6560226f6361"><span class="__cf_email__" data-cfemail="3b49545952551558544b4b54575a097b5c565a525715585456">[email&#160;protected]</span></a></div>
       <div class="vc-tags">
         <span class="vc-tag">🚶 Canvass</span>
         <span class="vc-tag">📞 Phone</span>
@@ -740,7 +747,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Shelly Brenner</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3306212421">330-621-2421</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:shellybrenner381@gmail.com">shellybrenner381@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#d5a6bdb0b9b9acb7a7b0bbbbb0a7e6ede495b2b8b4bcb9fbb6bab8"><span class="__cf_email__" data-cfemail="6a19020f06061308180f04040f1859525b2a0d070b030644090507">[email&#160;protected]</span></a></div>
       <div class="vc-tags">
         <span class="vc-tag">🚶 Canvass</span>
         <span class="vc-tag">📞 Phone</span>
@@ -755,7 +762,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">David Stoll</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304662409">330-466-2409</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:dnhstoll@gmail.com">dnhstoll@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#b0d4ded8c3c4dfdcdcf0d7ddd1d9dc9ed3dfdd"><span class="__cf_email__" data-cfemail="3e5a50564d4a5152527e59535f5752105d5153">[email&#160;protected]</span></a></div>
       <div class="vc-tags">
         <span class="vc-tag">📞 Phone</span>
         <span class="vc-tag">🪧 Yard Signs</span>
@@ -766,7 +773,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Pat Turchiano</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><span>—</span></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:pdjtrch1@zoominternet.net">pdjtrch1@zoominternet.net</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#7000141a0402131841300a1f1f1d191e0415021e15045e1e1504"><span class="__cf_email__" data-cfemail="a9d9cdc3dddbcac198e9d3c6c6c4c0c7ddccdbc7ccdd87c7ccdd">[email&#160;protected]</span></a></div>
       <div class="vc-tags">
         <span class="vc-tag">📞 Phone / Text</span>
         <span class="vc-tag">🪧 Yard Signs</span>
@@ -777,7 +784,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Matt Slicker</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3308542557">330-854-2557</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:matt@slickerfarms.com">matt@slickerfarms.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#d2bfb3a6a692a1bebbb1b9b7a0b4b3a0bfa1fcb1bdbf"><span class="__cf_email__" data-cfemail="99f4f8ededd9eaf5f0faf2fcebfff8ebf4eab7faf6f4">[email&#160;protected]</span></a></div>
       <div class="vc-tags">
         <span class="vc-tag">🚶 Canvass</span>
         <span class="vc-tag">📞 Phone / Text</span>
@@ -789,7 +796,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Diane Jarrett</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304654110">330-465-4110</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:djarrett@gojarrett.com">djarrett@gojarrett.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#88ece2e9fafaedfcfcc8efe7e2e9fafaedfcfca6ebe7e5"><span class="__cf_email__" data-cfemail="f4909e958686918080b4939b9e958686918080da979b99">[email&#160;protected]</span></a></div>
       <div class="vc-tags">
         <span class="vc-tag" style="color:#8a9bb0;border-color:rgba(138,155,176,.2);background:rgba(138,155,176,.08)">Contact for details</span>
       </div>
@@ -799,7 +806,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Joe Rubino</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3306214717">330-621-4717</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:jjrubino@gmail.com">jjrubino@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#751f1f0700171c1b1a351218141c195b161a18"><span class="__cf_email__" data-cfemail="5c36362e293e3532331c3b313d3530723f3331">[email&#160;protected]</span></a></div>
       <div class="vc-tags">
         <span class="vc-tag">🚶 Canvass</span>
         <span class="vc-tag">📞 Phone</span>
@@ -814,10 +821,53 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Cathy Pamer</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3307494073">330-749-4073</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:capamer1983@gmail.com">capamer1983@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#96f5f7e6f7fbf3e4a7afaea5d6f1fbf7fffab8f5f9fb"><span class="__cf_email__" data-cfemail="c0a3a1b0a1ada5b2f1f9f8f380a7ada1a9aceea3afad">[email&#160;protected]</span></a></div>
       <div class="vc-tags">
         <span class="vc-tag" style="color:#8a9bb0;border-color:rgba(138,155,176,.2);background:rgba(138,155,176,.08)">Contact for details</span>
       </div>
+    </div>
+
+    <!-- NEW — Added from 03/09/2026 Kick-off Meeting -->
+
+
+    <div class="vc-card vc-green">
+      <div class="vc-name">Jarred Brown</div>
+      <div class="vc-role">Volunteer · Kick-off 03/09/2026</div>
+      <div class="vc-info"><span class="icon">📞</span><span style="color:#8a9bb0">—</span></div>
+      <div class="vc-info"><span class="icon">📧</span><span style="color:#8a9bb0">—</span></div>
+      <div class="vc-tags"><span class="vc-tag tag-any">✋ Anything</span></div>
+    </div>
+
+    <div class="vc-card vc-green">
+      <div class="vc-name">Justine Haislip</div>
+      <div class="vc-role">Volunteer · Kick-off 03/09/2026</div>
+      <div class="vc-info"><span class="icon">📞</span><span style="color:#8a9bb0">—</span></div>
+      <div class="vc-info"><span class="icon">📧</span><span style="color:#8a9bb0">—</span></div>
+      <div class="vc-tags"><span class="vc-tag tag-any">✋ Anything</span></div>
+    </div>
+
+    <div class="vc-card vc-green">
+      <div class="vc-name">Julie Finney</div>
+      <div class="vc-role">Volunteer · Kick-off 03/09/2026</div>
+      <div class="vc-info"><span class="icon">📞</span><span style="color:#8a9bb0">—</span></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#c48eb1a8ada1ea82adaaaaa1bdf3f384a3a9a5ada8eaa7aba9"><span class="__cf_email__" data-cfemail="3a704f56535f147c5354545f430d0d7a5d575b535614595557">[email&#160;protected]</span></a></div>
+      <div class="vc-tags"><span class="vc-tag tag-any">✋ Anything</span></div>
+    </div>
+
+    <div class="vc-card vc-green">
+      <div class="vc-name">Stephanie Geiser</div>
+      <div class="vc-role">Volunteer · Kick-off 03/09/2026</div>
+      <div class="vc-info"><span class="icon">📞</span><span style="color:#8a9bb0">—</span></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#5c313d2e372f28392c343d323539656a1c3b313d3530723f3331"><span class="__cf_email__" data-cfemail="b0ddd1c2dbc3c4d5c0d8d1ded9d58986f0d7ddd1d9dc9ed3dfdd">[email&#160;protected]</span></a></div>
+      <div class="vc-tags"><span class="vc-tag tag-any">✋ Anything</span></div>
+    </div>
+
+    <div class="vc-card vc-green">
+      <div class="vc-name">Suzi Byall</div>
+      <div class="vc-role">Volunteer · Kick-off 03/09/2026</div>
+      <div class="vc-info"><span class="icon">📞</span><span style="color:#8a9bb0">—</span></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#7f0c0a05161d061e13133f18121e1613511c1012"><span class="__cf_email__" data-cfemail="b7c4c2cdded5ced6dbdbf7d0dad6dedb99d4d8da">[email&#160;protected]</span></a></div>
+      <div class="vc-tags"><span class="vc-tag tag-any">✋ Anything</span></div>
     </div>
 
   </div>
@@ -836,29 +886,29 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     <div class="contact-card">
       <h4>Noelle Ressler</h4><div class="role">Campaign Support</div>
       <div class="ci"><span class="icon">📞</span><a href="tel:2162948358">216-294-8358</a></div>
-      <div class="ci"><span class="icon">📧</span><a href="mailto:noeller@rbrconsulting.biz">noeller@rbrconsulting.biz</a></div>
+      <div class="ci"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#c1afaea4adada4b381b3a3b3a2aeafb2b4adb5a8afa6efa3a8bb"><span class="__cf_email__" data-cfemail="640a0b010808011624160616070b0a171108100d0a034a060d1e">[email&#160;protected]</span></a></div>
     </div>
     <div class="contact-card">
       <h4>John Rutter</h4><div class="role">Campaign Support</div>
       <div class="ci"><span class="icon">📞</span><a href="tel:3304659001">330-465-9001</a></div>
-      <div class="ci"><span class="icon">📧</span><a href="mailto:jrutter@hypercrawl.com">jrutter@hypercrawl.com</a></div>
+      <div class="ci"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#016b737475756473416978716473627360766d2f626e6c"><span class="__cf_email__" data-cfemail="a8c2dadddcdccddae8c0d1d8cddacbdac9dfc486cbc7c5">[email&#160;protected]</span></a></div>
     </div>
     <div class="contact-card cc-blue">
       <h4>Wayne County Board of Elections</h4>
       <div class="role" style="color:#aee2ff">Early Voting · Absentee Ballots · Official Info</div>
       <div class="ci"><span class="icon">📞</span><a href="tel:3302875480">330-287-5480</a></div>
       <div class="ci"><span class="icon">📍</span><span>200 Vanover St Suite 1, Wooster OH 44691</span></div>
-      <div class="ci"><span class="icon">🗳️</span><span><strong style="color:var(--cream)">Early voting: April 8 – May 5</strong><br>Election Day: May 5, 6:30 AM – 7:30 PM</span></div>
+      <div class="ci"><span class="icon">🗳️</span><span><strong style="color:var(--cream)">Early voting: April 7 – May 5</strong><br>Election Day: May 5, 6:30 AM – 7:30 PM</span></div>
       <div class="ci"><span class="icon">📬</span><span>Absentee ballots — no reason required. Request by May 3.</span></div>
     </div>
   </div>
   <div style="margin-top:44px;padding:26px 30px;background:var(--navy-mid);border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center">
-    <p style="font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--cream);font-style:italic;line-height:1.8;max-width:680px;margin:0 auto">"You don't need to convince everyone. You need to find the neighbors who already believe in protecting this community — and make sure they vote. Early voting starting April 8 makes that easier than ever."</p>
+    <p style="font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--cream);font-style:italic;line-height:1.8;max-width:680px;margin:0 auto">"You don't need to convince everyone. You need to find the neighbors who already believe in protecting this community — and make sure they vote. Early voting starting April 7 makes that easier than ever."</p>
     <p style="font-size:.78rem;color:var(--gray);margin-top:10px;letter-spacing:.07em;text-transform:uppercase">— Baughman Township Fire &amp; EMS Levy Campaign</p>
   </div>
 </div></section>
 
-<footer><p><strong>Baughman Township Fire &amp; EMS Levy — May 5, 2026 · Early Voting April 8 – May 5</strong><br>Paid for by concerned residents of Baughman Township, Wayne County, Ohio.<br>This site presents factual information drawn from official Wayne County Board of Elections data, Township financial records, and publicly available sources.<br>Early voting hours should be confirmed with the Wayne County BOE at 330-287-5480 before traveling.</p></footer>
+<footer><p><strong>Baughman Township Fire &amp; EMS Levy — May 5, 2026 · Early Voting April 7 – May 5</strong><br>Paid for by concerned residents of Baughman Township, Wayne County, Ohio.<br>This site presents factual information drawn from official Wayne County Board of Elections data, Township financial records, and publicly available sources.<br>Early voting hours should be confirmed with the Wayne County BOE at 330-287-5480 before traveling.</p></footer>
 
 <div class="print-bar">
   <button class="pbtn pbtn-gold" onclick="window.print()">🖨️ Print Full Plan</button>
@@ -866,7 +916,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   <a class="pbtn pbtn-out" href="#teams">🗺 5 Teams &amp; Maps</a>
   <button class="pbtn pbtn-out" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Top</button>
 </div>
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 
 // ── LIVE EARLY VOTING COUNTER STRIP ──
 // This runs a separate live countdown specifically for the early voting strip
@@ -874,7 +924,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 document.addEventListener('DOMContentLoaded', function() {
 
   // The three key dates for early voting
-  var EV_START    = new Date('2026-04-08T08:00:00');  // Early voting opens April 8
+  var EV_START    = new Date('2026-04-07T08:00:00');  // Early voting opens April 7
   var EV_END      = new Date('2026-05-05T17:00:00');  // Early voting closes May 5
   var ELECTION    = new Date('2026-05-05T19:30:00');  // Election Day ends
 
@@ -890,10 +940,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (now < EV_START) {
       // ── PHASE 1: Counting down TO early voting ──
-      // We want to show: how many days/hrs/min/sec until April 8
+      // We want to show: how many days/hrs/min/sec until April 7
       target      = EV_START;
       labelText   = '🗳 Early Voting Opens In';
-      statusText  = 'April 8 – May 5';
+      statusText  = 'April 7 – May 5';
       statusClass = 'ev-waiting';
 
     } else if (now < EV_END) {
@@ -962,61 +1012,95 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ── COUNTDOWN CLOCK ──
-// Uses DOMContentLoaded so it runs AFTER the page loads fully,
-// preventing any Cloudflare or other scripts from interfering.
+// Hero section countdown — counts to early voting start, then election day.
 document.addEventListener('DOMContentLoaded', function() {
 
-  // Key dates — times are local Ohio time (no timezone conversion needed
-  // because the server clock on the visitor's device is already local)
-  var EARLY_START  = new Date('2026-04-08T08:00:00');  // Early voting opens
-  var EARLY_END    = new Date('2026-05-05T17:00:00');  // Early voting closes
-  var ELECTION_DAY = new Date('2026-05-05T19:30:00');  // Polls close 7:30 PM
+  var EARLY_START  = new Date('2026-04-07T08:00:00');
+  var EARLY_END    = new Date('2026-05-05T17:00:00');
+  var ELECTION_DAY = new Date('2026-05-05T19:30:00');
 
-  function pad(n) {
-    // Always show 2 digits: 5 → "05", 12 → "12"
-    return String(n).padStart(2, '0');
-  }
+  function pad(n) { return String(n).padStart(2, '0'); }
 
   function tick() {
-    var now = new Date();   // Current date/time right now
-    var target, label, tag;
+    var now  = new Date();
+    var diff, labelText, tagText;
 
     if (now < EARLY_START) {
-      // Phase 1: Waiting for early voting to open
-      target = EARLY_START;
-      label  = 'Early voting opens in';
-      tag    = '🗳 Until April 8 early voting start';
-
+      diff      = EARLY_START - now;
+      labelText = '⏳ Days Until Early Voting Opens';
+      tagText   = 'Early voting starts April 7, 2026';
+    } else if (now < EARLY_END) {
+      diff      = ELECTION_DAY - now;
+      labelText = '✅ Early Voting Is Open — Election In';
+      tagText   = '🟢 You Can Vote Right Now — Wayne County BOE';
+    } else if (now < ELECTION_DAY) {
+      diff      = ELECTION_DAY - now;
+      labelText = '⏳ Polls Close In';
+      tagText   = '🔴 Election Day — May 5, 2026';
     } else {
-      // Phase 4: Election is over
-      document.getElementById('cd-label').textContent = 'Voting has concluded';
+      document.getElementById('cd-label').textContent = '🗳 Voting Has Concluded';
       document.getElementById('cd-d').textContent = '00';
       document.getElementById('cd-h').textContent = '00';
       document.getElementById('cd-m').textContent = '00';
       document.getElementById('cd-s').textContent = '00';
-      document.getElementById('cd-tag').textContent = 'Thank you for voting — May 5, 2026';
+      document.getElementById('cd-tag').textContent = 'Thank you for your vote!';
       return;
     }
-
-    var diff = target - new Date();
-    if (diff <= 0) { setTimeout(tick, 1000); return; }
 
     var days    = Math.floor(diff / 86400000);
     var hours   = Math.floor((diff % 86400000) / 3600000);
     var minutes = Math.floor((diff % 3600000)  / 60000);
     var seconds = Math.floor((diff % 60000)    / 1000);
 
-    document.getElementById('cd-label').textContent = label;
-    document.getElementById('cd-d').textContent = pad(days);
-    document.getElementById('cd-h').textContent = pad(hours);
-    document.getElementById('cd-m').textContent = pad(minutes);
-    document.getElementById('cd-s').textContent = pad(seconds);
-    document.getElementById('cd-tag').textContent = tag;
+    document.getElementById('cd-label').textContent = labelText;
+    document.getElementById('cd-d').textContent     = pad(days);
+    document.getElementById('cd-h').textContent     = pad(hours);
+    document.getElementById('cd-m').textContent     = pad(minutes);
+    document.getElementById('cd-s').textContent     = pad(seconds);
+    document.getElementById('cd-tag').textContent   = tagText;
 
     setTimeout(tick, 1000);
   }
 
   tick();
 });
+
 </script>
-</body></html>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+// ── LEAFLET TEAM MAPS ──
+// Each team gets a Leaflet map centered on their territory in Baughman Township, Wayne County, OH.
+// Tiles from OpenStreetMap — no API key required.
+(function() {
+  var TILE = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+  var ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
+
+  function makeMap(id, lat, lng, zoom) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    var m = L.map(id, { zoomControl: true, scrollWheelZoom: false, dragging: true });
+    L.tileLayer(TILE, { attribution: ATTR, maxZoom: 16 }).addTo(m);
+    m.setView([lat, lng], zoom);
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    // Team 1 — P1 North Corridor (Burkhart / Hanover / Emmitsburg / Huprick)
+    makeMap('map-t1', 40.905, -81.835, 12);
+
+    // Team 2 — P1 South Corridor (Church / Rehm / Burton City / Back Massillon P1)
+    makeMap('map-t2', 40.845, -81.855, 12);
+
+    // Team 3 — P1 Central Corridor (York / Mt Eaton / Tannerville / Wayne St)
+    makeMap('map-t3', 40.862, -81.892, 12);
+
+    // Team 4 — P2 Village Walkable (Main / Market / Church / Park / Euclid)
+    makeMap('map-t4', 40.820, -81.920, 13);
+
+    // Team 5 — P2 Rural Roads (Back Massillon / Fulton / Fox Lake / Coal Bank)
+    makeMap('map-t5', 40.835, -81.955, 12);
+  });
+})();
+</script>
+</body>
+</html>
