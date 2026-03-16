@@ -1886,7 +1886,6 @@ document.addEventListener('DOMContentLoaded', function() {
 <script>
 // ══════════════════════════════════════════════════════════════════════════
 // PERSISTENCE — restore saved results on page load & update status hint
-// Merge logic lives inside parseSheet in the report IIFE above.
 // ══════════════════════════════════════════════════════════════════════════
 var ROWS_KEY  = 'baughman_rows_v2';
 var FILES_KEY = 'baughman_files_v2';
@@ -1911,30 +1910,31 @@ function updateUploadStatus() {
 }
 
 function restoreSavedRows() {
-  var stored = [], files = [];
-  try { stored = JSON.parse(localStorage.getItem(ROWS_KEY) || '[]'); } catch(e) {}
-  try { files  = JSON.parse(localStorage.getItem(FILES_KEY) || '[]'); } catch(e) {}
-  if (!stored.length) return;
-
-  if (typeof window.parseSheet !== 'function' || typeof XLSX === 'undefined') {
-    setTimeout(restoreSavedRows, 200);
+  // Wait until _restoreRows is available (defined at end of report IIFE)
+  if (typeof window._restoreRows !== 'function') {
+    setTimeout(restoreSavedRows, 100);
     return;
   }
 
-  // Build a synthetic raw array that parseSheet can read, preserving stored state
-  // Instead of re-parsing, directly set rows and render
-  if (typeof window._restoreRows === 'function') {
-    var label = 'Saved Results (' + stored.length + ' households, '
-      + files.length + ' upload' + (files.length > 1 ? 's' : '') + ')';
-    window._restoreRows(stored, label);
+  var stored = [], files = [];
+  try { stored = JSON.parse(localStorage.getItem(ROWS_KEY) || '[]'); } catch(e) {}
+  try { files  = JSON.parse(localStorage.getItem(FILES_KEY) || '[]'); } catch(e) {}
+
+  if (!stored.length) {
     updateUploadStatus();
+    return;
   }
+
+  var label = 'Saved Results (' + stored.length + ' household'
+    + (stored.length !== 1 ? 's' : '') + ', '
+    + files.length + ' upload' + (files.length !== 1 ? 's' : '') + ')';
+
+  window._restoreRows(stored, label);
+  updateUploadStatus();
 }
 
-window.addEventListener('DOMContentLoaded', function() {
-  updateUploadStatus();
-  restoreSavedRows();
-});
+// Kick off restore as soon as DOM is ready
+window.addEventListener('DOMContentLoaded', restoreSavedRows);
 </script>
 
 <script>
