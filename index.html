@@ -320,8 +320,13 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       sessionStorage.setItem('pg_unlocked', '1');
       document.body.style.overflow = '';
       overlay.style.display = 'none';
+      // Restore local data immediately (fast)
+      if (typeof window._updateDebug === 'function') window._updateDebug();
       if (typeof window._doRestore === 'function') window._doRestore();
-      if (typeof window._doJSONBinFetch === 'function') window._doJSONBinFetch();
+      // Then check cloud for newer data (async, updates if available)
+      if (typeof window._doJSONBinFetch === 'function') {
+        setTimeout(function(){ window._doJSONBinFetch(); }, 300);
+      }
     } else {
       error.textContent = 'Incorrect password. Try again.';
       input.value = '';
@@ -705,6 +710,15 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   <h2>Field <em>Report &amp; Follow-Up</em></h2>
   <p class="lead">Upload the exported spreadsheet from the canvassing app to see the latest results. Works with any version — just re-upload when a new file comes in from the field.</p>
 
+  <!-- DEBUG STATUS BAR — shows localStorage state for troubleshooting -->
+  <div id="debug-bar" style="background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:.72rem;font-family:monospace;color:#8a9bb0;line-height:1.8">
+    <strong style="color:#aee2ff">Storage Debug:</strong>
+    <span id="dbg-ls-rows">checking…</span> &nbsp;|&nbsp;
+    <span id="dbg-ls-files">checking…</span> &nbsp;|&nbsp;
+    <span id="dbg-session">checking…</span> &nbsp;|&nbsp;
+    <span id="dbg-jb">checking…</span>
+  </div>
+
   <!-- UPLOAD BAR — compact, always visible at top of results -->
   <div id="upload-zone"
     style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:rgba(201,150,42,.06);border:1.5px dashed rgba(201,150,42,.35);border-radius:12px;padding:14px 20px;margin-bottom:24px;cursor:pointer;transition:border-color .2s"
@@ -1060,6 +1074,9 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       + fileList.length + ' upload' + (fileList.length > 1 ? 's' : '') + ')';
     renderReport(mergedLabel, exportedAt);
 
+    // Update debug bar
+    if (typeof window._updateDebug === 'function') window._updateDebug();
+
     // Push to JSONBin cloud storage so all browsers see latest results
     if (typeof window.jsonbinPush === 'function') {
       window.jsonbinPush(stored, fileList);
@@ -1404,12 +1421,27 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
           + ' · Last: ' + last.filename + ' (' + last.uploaded + ')';
       }
     } catch(e) {}
+    if (typeof window._updateDebug === 'function') window._updateDebug();
   }
 
   window._doRestore = doRestore;
 
-  // Run immediately — all DOM elements above this script are already parsed
-  doRestore();
+  // Debug helper — shows localStorage state on the page
+  window._updateDebug = function() {
+    try {
+      var rows  = JSON.parse(localStorage.getItem('baughman_rows_v2')  || '[]');
+      var files = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]');
+      var jbKey = localStorage.getItem('baughman_jb_key') || '';
+      var jbBin = localStorage.getItem('baughman_jb_bin') || '';
+      var sess  = sessionStorage.getItem('pg_unlocked') === '1';
+      var el = function(id) { return document.getElementById(id); };
+      if (el('dbg-ls-rows'))  el('dbg-ls-rows').textContent  = 'rows: ' + rows.length;
+      if (el('dbg-ls-files')) el('dbg-ls-files').textContent = 'uploads: ' + files.length;
+      if (el('dbg-session'))  el('dbg-session').textContent  = 'session: ' + (sess ? 'unlocked' : 'locked');
+      if (el('dbg-jb'))       el('dbg-jb').textContent       = 'JSONBin: ' + (jbKey ? (jbBin ? 'configured (bin:' + jbBin.slice(-6) + ')' : 'key only') : 'not set');
+      if (rows.length > 0 && el('dbg-ls-rows')) el('dbg-ls-rows').style.color = '#5ce08a';
+    } catch(e) {}
+  };
 
   // Expose renderDetail globally for the search input's oninput
   window.renderDetail = window.renderDetail;
@@ -2063,7 +2095,13 @@ window._doJSONBinFetch = jsonbinFetch;
 
 window.addEventListener('DOMContentLoaded', function() {
   updateUploadStatus();
-  setTimeout(jsonbinFetch, 500);
+  // If session already unlocked (user didn't close browser, just navigated),
+  // restore immediately without waiting for password entry
+  if (typeof window._updateDebug === 'function') window._updateDebug();
+  if (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('pg_unlocked') === '1') {
+    if (typeof window._doRestore === 'function') window._doRestore();
+    setTimeout(jsonbinFetch, 300);
+  }
 });
 </script>
 
