@@ -1373,11 +1373,32 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     badge.textContent = visited + ' visited · ' + yes + ' Yes · ' + no + ' No · ' + (und+nh) + ' Follow-Up';
   }
 
-  // Restore previously saved rows directly without re-parsing
-  window._restoreRows = function(savedRows, label) {
-    rows = savedRows;
-    renderReport(label, '');
-  };
+  // ── AUTO-RESTORE on page load ────────────────────────────────────────────
+  // Runs inside the IIFE so it has direct access to rows + renderReport.
+  // No cross-script calls needed.
+  (function autoRestore() {
+    var RKEY = 'baughman_rows_v2';
+    var FKEY = 'baughman_files_v2';
+    try {
+      var stored = JSON.parse(localStorage.getItem(RKEY) || '[]');
+      var files  = JSON.parse(localStorage.getItem(FKEY) || '[]');
+      if (!stored.length) return;
+      rows = stored;
+      var label = 'Saved Results (' + stored.length + ' household'
+        + (stored.length !== 1 ? 's' : '') + ', '
+        + files.length + ' upload' + (files.length !== 1 ? 's' : '') + ')';
+      renderReport(label, '');
+      // Update the status hint
+      var hint = document.getElementById('upload-saved-hint');
+      if (hint && files.length) {
+        var last = files[files.length - 1];
+        hint.style.color = '#2da44e';
+        hint.textContent = '💾 ' + stored.length + ' households · '
+          + files.length + ' upload' + (files.length !== 1 ? 's' : '')
+          + ' · Last: ' + last.filename + ' (' + last.uploaded + ')';
+      }
+    } catch(e) {}
+  })();
 
   // Expose renderDetail globally for the search input's oninput
   window.renderDetail = window.renderDetail;
@@ -1885,22 +1906,20 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 <script>
 // ══════════════════════════════════════════════════════════════════════════
-// PERSISTENCE — restore saved results on page load & update status hint
+// PERSISTENCE — update upload status hint
+// Auto-restore runs inside the report IIFE above (direct closure access).
 // ══════════════════════════════════════════════════════════════════════════
-var ROWS_KEY  = 'baughman_rows_v2';
-var FILES_KEY = 'baughman_files_v2';
-
 function updateUploadStatus() {
   var hint = document.getElementById('upload-saved-hint');
   if (!hint) return;
   try {
-    var stored = JSON.parse(localStorage.getItem(ROWS_KEY) || '[]');
-    var files  = JSON.parse(localStorage.getItem(FILES_KEY) || '[]');
+    var stored = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]');
+    var files  = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]');
     if (stored.length && files.length) {
       var last = files[files.length - 1];
       hint.style.color = '#2da44e';
       hint.textContent = '💾 ' + stored.length + ' households · '
-        + files.length + ' upload' + (files.length > 1 ? 's' : '')
+        + files.length + ' upload' + (files.length !== 1 ? 's' : '')
         + ' · Last: ' + last.filename + ' (' + last.uploaded + ')';
     } else {
       hint.style.color = '#556677';
@@ -1908,33 +1927,7 @@ function updateUploadStatus() {
     }
   } catch(e) {}
 }
-
-function restoreSavedRows() {
-  // Wait until _restoreRows is available (defined at end of report IIFE)
-  if (typeof window._restoreRows !== 'function') {
-    setTimeout(restoreSavedRows, 100);
-    return;
-  }
-
-  var stored = [], files = [];
-  try { stored = JSON.parse(localStorage.getItem(ROWS_KEY) || '[]'); } catch(e) {}
-  try { files  = JSON.parse(localStorage.getItem(FILES_KEY) || '[]'); } catch(e) {}
-
-  if (!stored.length) {
-    updateUploadStatus();
-    return;
-  }
-
-  var label = 'Saved Results (' + stored.length + ' household'
-    + (stored.length !== 1 ? 's' : '') + ', '
-    + files.length + ' upload' + (files.length !== 1 ? 's' : '') + ')';
-
-  window._restoreRows(stored, label);
-  updateUploadStatus();
-}
-
-// Kick off restore as soon as DOM is ready
-window.addEventListener('DOMContentLoaded', restoreSavedRows);
+window.addEventListener('DOMContentLoaded', updateUploadStatus);
 </script>
 
 <script>
