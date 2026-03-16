@@ -320,6 +320,8 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       sessionStorage.setItem('pg_unlocked', '1');
       document.body.style.overflow = '';
       overlay.style.display = 'none';
+      if (typeof window._doRestore === 'function') window._doRestore();
+      if (typeof window._doJSONBinFetch === 'function') window._doJSONBinFetch();
     } else {
       error.textContent = 'Incorrect password. Try again.';
       input.value = '';
@@ -1377,32 +1379,37 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     badge.textContent = visited + ' visited · ' + yes + ' Yes · ' + no + ' No · ' + (und+nh) + ' Follow-Up';
   }
 
-  // ── AUTO-RESTORE on page load ────────────────────────────────────────────
-  // Runs inside the IIFE so it has direct access to rows + renderReport.
-  // No cross-script calls needed.
-  (function autoRestore() {
-    var RKEY = 'baughman_rows_v2';
-    var FKEY = 'baughman_files_v2';
+  // ── RESTORE SAVED RESULTS ─────────────────────────────────────────────────
+  window._restoreRows = function(savedRows, label) {
+    rows = savedRows;
+    renderReport(label, '');
+  };
+
+  function doRestore() {
     try {
-      var stored = JSON.parse(localStorage.getItem(RKEY) || '[]');
-      var files  = JSON.parse(localStorage.getItem(FKEY) || '[]');
-      if (!stored.length) return;
-      rows = stored;
-      var label = 'Saved Results (' + stored.length + ' household'
-        + (stored.length !== 1 ? 's' : '') + ', '
+      var saved  = JSON.parse(localStorage.getItem('baughman_rows_v2')  || '[]');
+      var files  = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]');
+      if (!saved.length) return;
+      rows = saved;
+      var label  = 'Saved Results (' + saved.length + ' household'
+        + (saved.length !== 1 ? 's' : '') + ', '
         + files.length + ' upload' + (files.length !== 1 ? 's' : '') + ')';
       renderReport(label, '');
-      // Update the status hint
       var hint = document.getElementById('upload-saved-hint');
       if (hint && files.length) {
         var last = files[files.length - 1];
         hint.style.color = '#2da44e';
-        hint.textContent = '💾 ' + stored.length + ' households · '
+        hint.textContent = '💾 ' + saved.length + ' households · '
           + files.length + ' upload' + (files.length !== 1 ? 's' : '')
           + ' · Last: ' + last.filename + ' (' + last.uploaded + ')';
       }
     } catch(e) {}
-  })();
+  }
+
+  window._doRestore = doRestore;
+
+  // Run immediately — all DOM elements above this script are already parsed
+  doRestore();
 
   // Expose renderDetail globally for the search input's oninput
   window.renderDetail = window.renderDetail;
@@ -2051,17 +2058,13 @@ function updateCloudStatus(state) {
   if (state === 'offline') { el.textContent = '☁ Cloud unavailable — showing local cache'; el.style.color = '#f4c460'; }
 }
 
-// Wait for _restoreRows to be defined (end of report IIFE), then fetch
-function waitAndFetch() {
-  if (typeof window._restoreRows !== 'function') {
-    setTimeout(waitAndFetch, 100);
-    return;
-  }
-  jsonbinFetch();
-  updateUploadStatus();
-}
+// Exposed so pgCheck can trigger after password entry
+window._doJSONBinFetch = jsonbinFetch;
 
-window.addEventListener('DOMContentLoaded', waitAndFetch);
+window.addEventListener('DOMContentLoaded', function() {
+  updateUploadStatus();
+  setTimeout(jsonbinFetch, 500);
+});
 </script>
 
 <script>
