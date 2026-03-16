@@ -1949,100 +1949,95 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 <script>
 // ══════════════════════════════════════════════════════════════════════════
-// PERSISTENCE — JSONBin cloud sync + localStorage fallback
-// JSONBin stores results in the cloud so ALL browsers see the same data.
-// localStorage is kept as a fast-load cache.
+// CLOUD SYNC — JSONBin
+// BIN_ID is hardcoded below once admin sets it up.
+// READING is public — no key needed — works in every browser automatically.
+// WRITING requires the master key stored on the uploader's device only.
 // ══════════════════════════════════════════════════════════════════════════
-var ROWS_KEY    = 'baughman_rows_v2';
-var FILES_KEY   = 'baughman_files_v2';
-var JB_KEY_STORE = 'baughman_jb_key';
-var JB_BIN_STORE = 'baughman_jb_bin';
 
-function jbApiKey()  { try { return localStorage.getItem(JB_KEY_STORE) || ''; } catch(e) { return ''; } }
-function jbBinId()   { try { return localStorage.getItem(JB_BIN_STORE) || ''; } catch(e) { return ''; } }
+// ▼▼▼ SET THIS ONCE after admin creates the bin — baked into the HTML file ▼▼▼
+var JB_BIN_ID = '';   // e.g. '67abc123def456' — filled in by adminSaveCloudConfig
+// ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
-// ── Push merged rows to JSONBin ───────────────────────────────────────────
+var ROWS_KEY  = 'baughman_rows_v2';
+var FILES_KEY = 'baughman_files_v2';
+
+// Write key stored only on the uploader's device
+function jbWriteKey() {
+  try { return localStorage.getItem('baughman_jb_key') || ''; } catch(e) { return ''; }
+}
+
+// Get the active bin ID — prefer hardcoded, fall back to localStorage
+function jbBin() {
+  if (JB_BIN_ID) return JB_BIN_ID;
+  try { return localStorage.getItem('baughman_jb_bin') || ''; } catch(e) { return ''; }
+}
+
+// ── PUSH to JSONBin after every upload ───────────────────────────────────
 window.jsonbinPush = function(rows, fileList) {
-  var key = jbApiKey();
-  var bin = jbBinId();
-  if (!key) return; // JSONBin not configured yet
+  var key = jbWriteKey();
+  var bin = jbBin();
+  if (!key || !bin) return;
 
-  var payload = JSON.stringify({ rows: rows, files: fileList });
-
-  if (bin) {
-    // Update existing bin
-    fetch('https://api.jsonbin.io/v3/b/' + bin, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json', 'X-Master-Key': key },
-      body: payload
-    }).then(function(r) {
-      if (!r.ok) r.text().then(function(t){ console.warn('JSONBin update failed:', t); });
-      else updateCloudStatus('synced');
-    }).catch(function(e){ console.warn('JSONBin push error:', e); });
-  } else {
-    // Create new bin on first use
-    fetch('https://api.jsonbin.io/v3/b', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Master-Key': key,
-        'X-Bin-Name': 'BaughmanCanvassResults',
-        'X-Bin-Private': 'true'
-      },
-      body: payload
-    }).then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (data.metadata && data.metadata.id) {
-        var newBin = data.metadata.id;
-        try { localStorage.setItem(JB_BIN_STORE, newBin); } catch(e2) {}
-        updateCloudStatus('synced');
-        // Show bin ID in admin so others can use it
-        var el = document.getElementById('admin-bin-id');
-        if (el) { el.value = newBin; el.parentNode.style.display = 'block'; }
-      }
-    }).catch(function(e){ console.warn('JSONBin create error:', e); });
-  }
+  fetch('https://api.jsonbin.io/v3/b/' + bin, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'X-Master-Key': key },
+    body: JSON.stringify({ rows: rows, files: fileList })
+  }).then(function(r) {
+    if (r.ok) updateCloudStatus('synced');
+    else r.text().then(function(t){ console.warn('JSONBin push failed:', t); updateCloudStatus('offline'); });
+  }).catch(function(e) { console.warn('JSONBin push error:', e); updateCloudStatus('offline'); });
 };
 
-// ── Fetch latest from JSONBin on page load ────────────────────────────────
+// ── FETCH from JSONBin on page load — PUBLIC READ, no key needed ──────────
 function jsonbinFetch() {
-  var key = jbApiKey();
-  var bin = jbBinId();
-  if (!key || !bin) {
-    // No cloud config — use localStorage only
-    restoreFromLocal();
-    return;
-  }
+  var bin = jbBin();
+  if (!bin) { restoreFromLocal(); return; }
 
   updateCloudStatus('loading');
+
+  // Try public read first (no key required)
   fetch('https://api.jsonbin.io/v3/b/' + bin + '/latest', {
-    headers: { 'X-Master-Key': key }
+    headers: { 'X-Bin-Meta': 'false' }
+  }).then(function(r) {
+    // If public read fails, try with write key as fallback
+    if (r.status === 401) {
+      var key = jbWriteKey();
+      if (!key) throw new Error('private bin, no key');
+      return fetch('https://api.jsonbin.io/v3/b/' + bin + '/latest', {
+        headers: { 'X-Master-Key': key, 'X-Bin-Meta': 'false' }
+      });
+    }
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r;
   }).then(function(r) {
     if (!r.ok) throw new Error('HTTP ' + r.status);
     return r.json();
   }).then(function(data) {
-    var record = data.record || {};
-    var rows   = record.rows  || [];
-    var files  = record.files || [];
-    if (!rows.length) { restoreFromLocal(); return; }
+    var record = data.record || data || {};
+    var cloudRows  = record.rows  || [];
+    var cloudFiles = record.files || [];
 
-    // Update localStorage cache
+    if (!cloudRows.length) { restoreFromLocal(); updateCloudStatus('offline'); return; }
+
+    // Cache locally for this browser
     try {
-      localStorage.setItem(ROWS_KEY,  JSON.stringify(rows));
-      localStorage.setItem(FILES_KEY, JSON.stringify(files));
+      localStorage.setItem(ROWS_KEY,  JSON.stringify(cloudRows));
+      localStorage.setItem(FILES_KEY, JSON.stringify(cloudFiles));
     } catch(e) {}
 
-    // Restore into report
+    // Render the report
     if (typeof window._restoreRows === 'function') {
-      var label = 'Saved Results (' + rows.length + ' household'
-        + (rows.length !== 1 ? 's' : '') + ', '
-        + files.length + ' upload' + (files.length !== 1 ? 's' : '') + ')';
-      window._restoreRows(rows, label);
+      var label = 'Canvass Results (' + cloudRows.length + ' household'
+        + (cloudRows.length !== 1 ? 's' : '') + ', '
+        + cloudFiles.length + ' upload' + (cloudFiles.length !== 1 ? 's' : '') + ')';
+      window._restoreRows(cloudRows, label);
     }
-    updateUploadStatus(rows, files);
+    updateUploadStatus(cloudRows, cloudFiles);
     updateCloudStatus('synced');
+    if (typeof window._updateDebug === 'function') window._updateDebug();
   }).catch(function(e) {
-    console.warn('JSONBin fetch failed, using local cache:', e);
+    console.warn('JSONBin fetch failed:', e.message);
     restoreFromLocal();
     updateCloudStatus('offline');
   });
@@ -2087,16 +2082,14 @@ function updateCloudStatus(state) {
   if (!el) return;
   if (state === 'synced')  { el.textContent = '☁ Synced to cloud'; el.style.color = '#2da44e'; }
   if (state === 'loading') { el.textContent = '☁ Loading from cloud…'; el.style.color = '#aee2ff'; }
-  if (state === 'offline') { el.textContent = '☁ Cloud unavailable — showing local cache'; el.style.color = '#f4c460'; }
+  if (state === 'offline') { el.textContent = '☁ Offline — showing local data'; el.style.color = '#f4c460'; }
+  if (state === 'none')    { el.textContent = ''; }
 }
 
-// Exposed so pgCheck can trigger after password entry
 window._doJSONBinFetch = jsonbinFetch;
 
 window.addEventListener('DOMContentLoaded', function() {
   updateUploadStatus();
-  // If session already unlocked (user didn't close browser, just navigated),
-  // restore immediately without waiting for password entry
   if (typeof window._updateDebug === 'function') window._updateDebug();
   if (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('pg_unlocked') === '1') {
     if (typeof window._doRestore === 'function') window._doRestore();
@@ -2196,7 +2189,7 @@ window.adminSaveCloudConfig = function() {
     var binEl  = document.getElementById('admin-bin-id');
     if (binRow) binRow.style.display = 'block';
     if (binEl)  binEl.value = existingBin;
-    statusEl.textContent = 'Connected. Bin ID: ' + existingBin;
+    statusEl.innerHTML = '✓ Connected. Bin ID: ' + existingBin + '<br><button onclick="window._offerBakedDownload(\'' + existingBin + '\')" style="margin-top:6px;background:#1a3355;color:#aee2ff;border:1px solid #2a4a70;border-radius:6px;padding:5px 12px;font-size:.72rem;cursor:pointer">Download Updated HTML with Bin ID Baked In</button>';
     statusEl.style.color = '#2da44e';
     return;
   }
@@ -2223,12 +2216,19 @@ window.adminSaveCloudConfig = function() {
     if (data.metadata && data.metadata.id) {
       var binId = data.metadata.id;
       try { localStorage.setItem('baughman_jb_bin', binId); } catch(e2) {}
+      // Patch JB_BIN_ID in the running page so fetch works immediately
+      if (typeof window !== 'undefined') { window._jbBinOverride = binId; }
+      // Make jbBin() pick it up
       var binRow = document.getElementById('admin-bin-row');
       var binEl  = document.getElementById('admin-bin-id');
       if (binRow) binRow.style.display = 'block';
       if (binEl)  binEl.value = binId;
-      statusEl.textContent = 'Connected! Bin ID: ' + binId;
+      statusEl.textContent = '✓ Connected! Bin ID: ' + binId + ' — now downloading the updated HTML file below.';
       statusEl.style.color = '#2da44e';
+      // Trigger a fetch immediately so results load in this browser too
+      if (typeof jsonbinFetch === 'function') setTimeout(jsonbinFetch, 500);
+      // Offer to download updated HTML with bin ID baked in
+      setTimeout(function() { window._offerBakedDownload(binId); }, 800);
     } else {
       statusEl.textContent = 'Error: ' + (data.message || 'Check your API key.');
       statusEl.style.color = '#f87171';
@@ -2237,6 +2237,26 @@ window.adminSaveCloudConfig = function() {
     statusEl.textContent = 'Connection failed: ' + e.message;
     statusEl.style.color = '#f87171';
   });
+};
+
+// Download updated HTML with bin ID baked in
+window._offerBakedDownload = function(binId) {
+  var statusEl = document.getElementById('admin-jb-status');
+  if (!binId) return;
+  // Read the current page HTML and patch JB_BIN_ID
+  var src = document.documentElement.outerHTML;
+  var patched = src.replace(
+    "var JB_BIN_ID = '';",
+    "var JB_BIN_ID = '" + binId + "';"
+  );
+  var blob = new Blob([patched], {type:'text/html'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'volunteer_site_updated.html';
+  a.click();
+  if (statusEl) {
+    statusEl.innerHTML = '✓ Connected! <strong style="color:#f4c460">Download complete — upload this new HTML file to GitHub to make all browsers sync automatically.</strong>';
+  }
 };
 
 window.adminDeleteResults = function() {
