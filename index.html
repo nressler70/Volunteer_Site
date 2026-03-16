@@ -740,11 +740,14 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
         </a>
       </div>
 
-      <!-- Active: chooser button injected here by JS -->
+      <!-- Active: real button that calls Dropbox.choose() directly -->
       <div id="dbx-ready" style="display:none;width:100%;text-align:center">
-        <div id="dbx-btn-wrap"></div>
-        <div style="font-size:.65rem;color:#445566;margin-top:6px">Opens Dropbox file picker popup</div>
-        <button onclick="resetDbxKey()" style="margin-top:4px;background:none;border:none;color:#334455;font-size:.62rem;cursor:pointer;text-decoration:underline">Change key</button>
+        <button id="dbx-open-btn" onclick="openDropboxChooser()"
+          style="width:100%;background:#0061d9;color:white;border:none;border-radius:8px;padding:11px 16px;font-family:'Oswald',sans-serif;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;margin-bottom:6px">
+          📦 Open Dropbox
+        </button>
+        <div style="font-size:.65rem;color:#445566;line-height:1.5">Opens Dropbox file picker in a popup</div>
+        <button onclick="resetDbxKey()" style="margin-top:5px;background:none;border:none;color:#334455;font-size:.62rem;cursor:pointer;text-decoration:underline">Change key</button>
       </div>
     </div>
 
@@ -1505,7 +1508,11 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     var key = (document.getElementById('dbx-key-input').value || '').trim();
     if (!key) { showError('Please paste a Dropbox App Key first.'); return; }
     try { localStorage.setItem(DBX_KEY_STORAGE, key); } catch(e) {}
-    initDropbox(key);
+    hideError();
+    loadDbxSdk(key, function() {
+      document.getElementById('dbx-setup').style.display = 'none';
+      document.getElementById('dbx-ready').style.display = 'block';
+    });
   }
 
   function resetDbxKey() {
@@ -1513,57 +1520,66 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     document.getElementById('dbx-ready').style.display = 'none';
     document.getElementById('dbx-setup').style.display = 'block';
     document.getElementById('dbx-key-input').value = '';
-    document.getElementById('dbx-btn-wrap').innerHTML = '';
-    // Remove old SDK script so it can be re-loaded with new key
     var old = document.getElementById('dropboxjs');
     if (old) old.parentNode.removeChild(old);
+    window.Dropbox = undefined;
   }
 
-  function initDropbox(key) {
-    // Remove any existing SDK script
+  function loadDbxSdk(key, callback) {
+    // Remove stale SDK if key changed
     var old = document.getElementById('dropboxjs');
     if (old) old.parentNode.removeChild(old);
+    window.Dropbox = undefined;
 
-    // Load Dropbox Chooser SDK with the provided key
     var s = document.createElement('script');
     s.id = 'dropboxjs';
     s.src = 'https://www.dropbox.com/static/api/2/dropins.js';
     s.setAttribute('data-app-key', key);
-    s.onload = function() { renderDbxButton(); };
+    s.onload = function() {
+      if (window.Dropbox) {
+        if (callback) callback();
+      } else {
+        showError('Dropbox SDK loaded but is not available. Check your App Key is correct.');
+        resetDbxKey();
+      }
+    };
     s.onerror = function() {
-      showError('Could not load Dropbox SDK. Check that your App Key is correct.');
+      showError('Could not reach Dropbox. Check your internet connection and App Key.');
       resetDbxKey();
     };
     document.head.appendChild(s);
   }
 
-  function renderDbxButton() {
+  // Called by the "Open Dropbox" button in the UI
+  window.openDropboxChooser = function() {
     if (!window.Dropbox) {
-      showError('Dropbox SDK did not load. Check your App Key.');
+      showError('Dropbox is not ready yet. Wait a moment and try again.');
       return;
     }
-    var wrap = document.getElementById('dbx-btn-wrap');
-    wrap.innerHTML = '';
-
-    // Use Dropbox.createChooseButton for native styled button
-    var btn = Dropbox.createChooseButton({
+    Dropbox.choose({
       success: function(files) {
         var file = files[0];
-        // Dropbox returns a direct link — fetch it
+        hideError();
+        // Show loading state
+        var btn = document.getElementById('dbx-open-btn');
+        if (btn) { btn.textContent = '⏳ Loading…'; btn.disabled = true; }
+
         fetch(file.link)
           .then(function(r) {
             if (!r.ok) throw new Error('HTTP ' + r.status);
             return r.arrayBuffer();
           })
           .then(function(buf) {
+            if (btn) { btn.textContent = '📦 Open Dropbox'; btn.disabled = false; }
             var wb = XLSX.read(buf, {type:'array'});
             var ws = wb.Sheets[wb.SheetNames[0]];
             var data = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
             parseSheet(data, file.name + ' (Dropbox)');
           })
           .catch(function(err) {
-            showError('Could not load file from Dropbox: ' + err.message +
-              '. Make sure the file is shared with "Anyone with the link".');
+            if (btn) { btn.textContent = '📦 Open Dropbox'; btn.disabled = false; }
+            showError('Could not download from Dropbox: ' + err.message +
+              ' — make sure the file sharing is set to "Anyone with the link".');
           });
       },
       cancel: function() {},
@@ -1572,27 +1588,18 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       extensions: ['.xlsx', '.csv', '.xls'],
       folderselect: false
     });
+  };
 
-    // Style the button to match site
-    btn.style.cssText = 'display:inline-block;background:#0061d9;color:white;' +
-      'border:none;border-radius:8px;padding:10px 22px;font-family:Oswald,sans-serif;' +
-      'font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;' +
-      'cursor:pointer;width:100%;text-align:center;margin-bottom:2px';
-    wrap.appendChild(btn);
-
-    document.getElementById('dbx-setup').style.display = 'none';
-    document.getElementById('dbx-ready').style.display = 'block';
-  }
-
-  // On page load: restore saved key if present
-  (function() {
+  // Restore saved key on page load
+  document.addEventListener('DOMContentLoaded', function() {
     var savedKey = loadDbxKey();
     if (savedKey) {
-      document.addEventListener('DOMContentLoaded', function() {
-        initDropbox(savedKey);
+      loadDbxSdk(savedKey, function() {
+        document.getElementById('dbx-setup').style.display = 'none';
+        document.getElementById('dbx-ready').style.display = 'block';
       });
     }
-  })();
+  });
 
 })();
 </script>
