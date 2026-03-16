@@ -703,57 +703,41 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   <h2>Field <em>Report &amp; Follow-Up</em></h2>
   <p class="lead">Upload the exported spreadsheet from the canvassing app to see the latest results. Works with any version — just re-upload when a new file comes in from the field.</p>
 
-  <!-- UPLOAD OPTIONS -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px" id="upload-panels">
+  <!-- UPLOAD ZONE -->
+  <div id="upload-zone"
+    style="border:2px dashed rgba(201,150,42,.4);border-radius:14px;padding:36px 24px 28px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:20px;background:rgba(201,150,42,.04);-webkit-tap-highlight-color:transparent"
+    onclick="document.getElementById('file-input').click()"
+    ondragover="event.preventDefault();this.style.borderColor='var(--gold)';this.style.background='rgba(201,150,42,.1)'"
+    ondragleave="this.style.borderColor='rgba(201,150,42,.4)';this.style.background='rgba(201,150,42,.04)'"
+    ondrop="handleDrop(event)">
+    <div style="font-size:2.8rem;margin-bottom:10px">📂</div>
+    <div style="font-family:'Oswald',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-light);margin-bottom:8px">Tap to Upload Spreadsheet</div>
+    <div style="font-size:.84rem;color:#8a9bb0;margin-bottom:6px">Select the .xlsx or .csv exported from the canvass app</div>
+    <div style="display:inline-block;margin-top:10px;background:var(--gold);color:var(--navy);font-family:'Oswald',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:11px 32px;border-radius:8px">Choose File</div>
+    <input id="file-input" type="file" accept=".xlsx,.csv,.xls" style="display:none" onchange="handleFile(this.files[0])">
+  </div>
 
-    <!-- LEFT: local file -->
-    <div id="upload-zone"
-      style="border:2px dashed rgba(201,150,42,.4);border-radius:14px;padding:28px 18px 22px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(201,150,42,.04);-webkit-tap-highlight-color:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px"
-      onclick="document.getElementById('file-input').click()"
-      ondragover="event.preventDefault();this.style.borderColor='var(--gold)';this.style.background='rgba(201,150,42,.1)'"
-      ondragleave="this.style.borderColor='rgba(201,150,42,.4)';this.style.background='rgba(201,150,42,.04)'"
-      ondrop="handleDrop(event)">
-      <div style="font-size:2rem">📂</div>
-      <div style="font-family:'Oswald',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-light)">From Your Device</div>
-      <div style="font-size:.74rem;color:#667788">Drag &amp; drop or tap to browse<br>.xlsx or .csv from canvass app</div>
-      <div style="margin-top:8px;background:var(--gold);color:var(--navy);font-family:'Oswald',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:8px 22px;border-radius:7px">Choose File</div>
-      <input id="file-input" type="file" accept=".xlsx,.csv,.xls" style="display:none" onchange="handleFile(this.files[0])">
+  <!-- 3-STEP WORKFLOW -->
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:28px">
+    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px 16px;text-align:center">
+      <div style="font-size:1.4rem;margin-bottom:6px">📱</div>
+      <div style="font-family:'Oswald',sans-serif;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-light);margin-bottom:6px">Step 1 — In the App</div>
+      <div style="font-size:.76rem;color:#8a9bb0;line-height:1.6">Tap <strong style="color:var(--cream)">Export</strong> then <strong style="color:var(--cream)">📤 Share / Send File</strong></div>
     </div>
-
-    <!-- RIGHT: Dropbox chooser -->
-    <div id="dbx-panel" style="border:2px solid rgba(0,97,217,.35);border-radius:14px;padding:24px 18px;text-align:center;background:rgba(0,97,217,.05);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px">
-      <div style="font-size:2rem">📦</div>
-      <div style="font-family:'Oswald',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7ec8ff">From Dropbox</div>
-
-      <!-- Setup: enter app key -->
-      <div id="dbx-setup" style="width:100%">
-        <div style="font-size:.71rem;color:#556677;margin-bottom:8px;line-height:1.6">Enter your free Dropbox App Key<br>to enable the file picker button</div>
-        <div style="display:flex;gap:6px;width:100%">
-          <input id="dbx-key-input" type="text" placeholder="Paste app key…"
-            style="flex:1;min-width:0;background:rgba(0,0,0,.3);border:1px solid rgba(0,97,217,.3);border-radius:6px;padding:7px 8px;color:var(--cream);font-size:.76rem;outline:none;font-family:monospace"
-            onkeydown="if(event.key==='Enter')saveDbxKey()">
-          <button onclick="saveDbxKey()" style="background:var(--blue-light);color:white;border:none;border-radius:6px;padding:7px 11px;font-family:'Oswald',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;white-space:nowrap">Save</button>
-        </div>
-        <a href="https://www.dropbox.com/developers/apps" target="_blank"
-           style="display:block;margin-top:7px;font-size:.65rem;color:#4466aa;text-decoration:underline">
-          Get a free key at dropbox.com/developers ↗
-        </a>
-      </div>
-
-      <!-- Active: real button that calls Dropbox.choose() directly -->
-      <div id="dbx-ready" style="display:none;width:100%;text-align:center">
-        <button id="dbx-open-btn" onclick="openDropboxChooser()"
-          style="width:100%;background:#0061d9;color:white;border:none;border-radius:8px;padding:11px 16px;font-family:'Oswald',sans-serif;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;margin-bottom:6px">
-          📦 Open Dropbox
-        </button>
-        <div style="font-size:.65rem;color:#445566;line-height:1.5">Opens Dropbox file picker in a popup</div>
-        <button onclick="resetDbxKey()" style="margin-top:5px;background:none;border:none;color:#334455;font-size:.62rem;cursor:pointer;text-decoration:underline">Change key</button>
-      </div>
+    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px 16px;text-align:center">
+      <div style="font-size:1.4rem;margin-bottom:6px">📧</div>
+      <div style="font-family:'Oswald',sans-serif;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-light);margin-bottom:6px">Step 2 — Send It</div>
+      <div style="font-size:.76rem;color:#8a9bb0;line-height:1.6">Email or message the file to the coordinator</div>
     </div>
-
+    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px 16px;text-align:center">
+      <div style="font-size:1.4rem;margin-bottom:6px">⬆️</div>
+      <div style="font-family:'Oswald',sans-serif;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-light);margin-bottom:6px">Step 3 — Upload Here</div>
+      <div style="font-size:.76rem;color:#8a9bb0;line-height:1.6">Open the file from email, tap <strong style="color:var(--cream)">Choose File</strong> above</div>
+    </div>
   </div>
 
   <!-- HOW-TO INSTRUCTIONS -->
+
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px" id="howto-panels">
     <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:16px 18px">
       <div style="font-family:'Oswald',sans-serif;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:#aee2ff;margin-bottom:10px">🤖 Android</div>
@@ -1133,6 +1117,9 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 
   // Expose renderDetail globally for the search input's oninput
   window.renderDetail = window.renderDetail;
+  window.parseSheet = parseSheet;
+  window.handleFile = handleFile;
+  window.handleDrop = handleDrop;
 })();
 </script>
 
@@ -1214,7 +1201,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Suzi Byall</div>
       <div class="vc-role">Canvasser · Signed In 3/15/2026</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304656433">330-465-6433</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#2754525d4e455e464b4b67404a464e4b0944484a"><span class="__cf_email__" data-cfemail="2457515e4d465d454848644349454d480a474b49">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:suzibyall@gmail.com">suzibyall@gmail.com</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Burkhart Rd · 70 stops</span></div>
     </div>
 
@@ -1223,7 +1210,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-role">Canvasser &amp; Campaign Support · Signed In 3/15/2026</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304659001">330-465-9001</a></div>
       <div class="vc-info"><span class="icon">📟</span><span style="color:#8a9bb0">Campaign Cell: 330-465-8982</span></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#f298808786869780b29a8b829780918093859edc919d9f"><span class="__cf_email__" data-cfemail="9af0e8efeeeeffe8daf2e3eaffe8f9e8fbedf6b4f9f5f7">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:jrutter@hypercrawl.com">jrutter@hypercrawl.com</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Burton City / Mt Eaton / N West Lebanon / Krug · 102 stops</span></div>
     </div>
 
@@ -1231,7 +1218,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Mike Raff</div>
       <div class="vc-role">Canvasser · Signed In 3/15/2026</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3303172059">330-317-2059</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#016c686a6473647575393741666c60686d2f626e6c"><span class="__cf_email__" data-cfemail="fe9397959b8c9b8a8ac6c8be99939f9792d09d9193">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:mikerett86@gmail.com">mikerett86@gmail.com</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Church Rd / Good Rd / N Kohler / Wenger · 75 stops</span></div>
     </div>
 
@@ -1239,7 +1226,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Pat Turchiano</div>
       <div class="vc-role">Canvasser · Selected Streets (couldn't attend 3/15)</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304665110">330-466-5110</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#99e9fdf3edebfaf1f7a8d9e3f6f6f4f0f7edfcebf7fcedb7f7fced"><span class="__cf_email__" data-cfemail="5626323c2224353e3867162c39393b3f3822332438332278383322">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:pdjtrchn1@zoominternet.net">pdjtrchn1@zoominternet.net</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 York Rd / Emmitsburg / Hanover / Chambersburg / Market / Misere · 79 stops</span></div>
     </div>
 
@@ -1247,7 +1234,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Robin Coppola</div>
       <div class="vc-role">Canvasser · Signed In 3/15/2026</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3302013020">330-201-3020</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#aad8c5c8c3c484c9c5dadac5c6cb98eacdc7cbc3c684c9c5c7"><span class="__cf_email__" data-cfemail="12607d707b7c3c717d62627d7e732052757f737b7e3c717d7f">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:robin.coppola2@gmail.com">robin.coppola2@gmail.com</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">🪧 Yard Signs</span><span class="vc-tag">📍 Tannerville / Wayne St / Paradise Ext · 64 stops</span></div>
     </div>
 
@@ -1255,7 +1242,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Joe Rubino</div>
       <div class="vc-role">Canvasser</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3306214717">330-621-4717</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#deb4b4acabbcb7b0b19eb9b3bfb7b2f0bdb1b3"><span class="__cf_email__" data-cfemail="5c36362e293e3532331c3b313d3530723f3331">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:jjrubino@gmail.com">jjrubino@gmail.com</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📞 Phone</span><span class="vc-tag">🚗 Rides</span><span class="vc-tag">📬 Absentee</span><span class="vc-tag">📍 Coal Bank / Fosnight / Rehm / West St · 68 stops</span></div>
     </div>
 
@@ -1263,7 +1250,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">David Stoll</div>
       <div class="vc-role">Canvasser</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304662409">330-466-2409</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#fd9993958e89929191bd9a909c9491d39e9290"><span class="__cf_email__" data-cfemail="7f1b11170c0b1013133f18121e1613511c1012">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:dnhstoll@gmail.com">dnhstoll@gmail.com</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">🪧 Yard Signs</span><span class="vc-tag">📍 Ault Rd / Huprick Rd · 25 stops</span></div>
     </div>
 
@@ -1271,7 +1258,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Diane Jarrett</div>
       <div class="vc-role">Canvasser</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304654110">330-465-4110</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#e5818f849797809191a5828a8f849797809191cb868a88"><span class="__cf_email__" data-cfemail="1c78767d6e6e7968685c7b73767d6e6e796868327f7371">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:djarrett@gojarrett.com">djarrett@gojarrett.com</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Forrer Rd · 12 stops</span></div>
     </div>
 
@@ -1279,7 +1266,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Matt Slicker</div>
       <div class="vc-role">Canvasser · Signed In 3/15/2026</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3308542557">330-854-2557</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#bbd6dacfcffbc8d7d2d8d0dec9dddac9d6c895d8d4d6"><span class="__cf_email__" data-cfemail="04696570704477686d676f617662657669772a676b69">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:matt@slickerfarms.com">matt@slickerfarms.com</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">🪧 Yard Signs</span><span class="vc-tag">📍 Deerfield NW / Fulton / Lovers Lane / Shifferly / Black Diamond + shared · 124+ stops</span></div>
     </div>
 
@@ -1287,14 +1274,14 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Shelly Brenner</div>
       <div class="vc-role">Canvasser</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3306212421">330-621-2421</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#99eaf1fcf5f5e0fbebfcf7f7fcebaaa1d9fef4f8f0f5b7faf6f4"><span class="__cf_email__" data-cfemail="1b68737e77776279697e75757e6928235b7c767a727735787476">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:shellybrenner38@gmail.com">shellybrenner38@gmail.com</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📞 Phone</span><span class="vc-tag">🚗 Rides</span><span class="vc-tag">📬 Absentee</span><span class="vc-tag">📍 Back Massillon Rd (split w/ Matt)</span></div>
     </div>
 
     <div class="vc-card vc-green">
       <div class="vc-name">Noelle Ressler</div>
       <div class="vc-role">Canvasser &amp; Campaign Support · Signed In 3/15/2026</div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#bfd1d0dad3d3dacdffcdddcddcd0d1cccad3cbd6d1d891ddd6c5"><span class="__cf_email__" data-cfemail="553b3a303939302715273727363a3b262039213c3b327b373c2f">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:noeller@rbrconsulting.biz">noeller@rbrconsulting.biz</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Dalton Fox Lake Rd (split w/ Matt)</span></div>
     </div>
 
@@ -1302,7 +1289,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Julie Finney</div>
       <div class="vc-role">Canvasser</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3302340141">330-234-0141</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#0369766f6a662d656a6d6d667a343443646e626a6f2d606c6e"><span class="__cf_email__" data-cfemail="513b243d38347f37383f3f3428666611363c30383d7f323e3c">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:julie.finney77@gmail.com">julie.finney77@gmail.com</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Fox Lake Rd (split w/ Matt) + Wadsworth Rd + Keck Rd · 64 stops</span></div>
     </div>
 
@@ -1316,7 +1303,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Cathy Pamer</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3307494073">330-749-4073</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#0665677667746b6374373f3e3546616b676f6a2865696b"><span class="__cf_email__" data-cfemail="e281839283908f8790d3dbdad1a2858f838b8ecc818d8f">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:caparmer1983@gmail.com">caparmer1983@gmail.com</a></div>
       <div class="vc-tags"><span class="vc-tag tag-any">✋ Anything</span></div>
     </div>
 
@@ -1332,7 +1319,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Justin Haislip</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><span style="color:#8a9bb0">—</span></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#c08ab5b3b4a9ae80aab5b3b4a9aea8a1a9b3aca9b0a1a7a5aea3b9eea3afad"><span class="__cf_email__" data-cfemail="09437c7a7d606749637c7a7d60676168607a656079686e6c676a70276a6664">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:Justin@justinhaislipagency.com">Justin@justinhaislipagency.com</a></div>
       <div class="vc-tags"><span class="vc-tag tag-any">✋ Anything</span></div>
     </div>
 
@@ -1340,7 +1327,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Stephanie Geiser</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><span style="color:#8a9bb0">—</span></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#93fef2e1f8e0e7f6e3fbf2fdfaf6f4aaa5d3f4fef2faffbdf0fcfe"><span class="__cf_email__" data-cfemail="bcd1ddced7cfc8d9ccd4ddd2d5d9db858afcdbd1ddd5d092dfd3d1">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:markstephanieg96@gmail.com">markstephanieg96@gmail.com</a></div>
       <div class="vc-tags"><span class="vc-tag tag-any">✋ Anything</span></div>
     </div>
 
@@ -1348,7 +1335,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Tim Horst</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><span style="color:#8a9bb0">—</span></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#fa8e91929588898ec9ba9d979b9396d4999597"><span class="__cf_email__" data-cfemail="a1d5cac9ced3d2d592e1c6ccc0c8cd8fc2cecc">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:tkhorst3@gmail.com">tkhorst3@gmail.com</a></div>
       <div class="vc-tags"><span class="vc-tag tag-any">✋ Anything</span></div>
     </div>
 
@@ -1394,7 +1381,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Bob Graber</div>
       <div class="vc-role">Trustee</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304661662">330-466-1662</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#c18386b3a0a3a4b380b4a2b5a8aeafb281a0aeadefa2aeac"><span class="__cf_email__" data-cfemail="1557526774777067546076617c7a7b6655747a793b767a78">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:BGraberAuctions@aol.com">BGraberAuctions@aol.com</a></div>
       <div class="vc-tags"><span class="vc-tag" style="background:rgba(46,134,193,.15);color:#aee2ff;border-color:rgba(46,134,193,.3)">🏛️ Trustee</span></div>
     </div>
 
@@ -1455,12 +1442,12 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     <div class="contact-card">
       <h4>Noelle Ressler</h4><div class="role">Campaign Support</div>
       <div class="ci"><span class="icon">📞</span><a href="tel:2162948358">216-294-8358</a></div>
-      <div class="ci"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#cda3a2a8a1a1a8bf8dbfafbfaea2a3beb8a1b9a4a3aae3afa4b7"><span class="__cf_email__" data-cfemail="bdd3d2d8d1d1d8cffdcfdfcfded2d3cec8d1c9d4d3da93dfd4c7">[email&#160;protected]</span></a></div>
+      <div class="ci"><span class="icon">📧</span><a href="mailto:noeller@rbrconsulting.biz">noeller@rbrconsulting.biz</a></div>
     </div>
     <div class="contact-card">
       <h4>John Rutter</h4><div class="role">Campaign Support</div>
       <div class="ci"><span class="icon">📞</span><a href="tel:3304659001">330-465-9001</a></div>
-      <div class="ci"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#b0dac2c5c4c4d5c2f0d8c9c0d5c2d3c2d1c7dc9ed3dfdd"><span class="__cf_email__" data-cfemail="2d475f585959485f6d45545d485f4e5f4c5a41034e4240">[email&#160;protected]</span></a></div>
+      <div class="ci"><span class="icon">📧</span><a href="mailto:jrutter@hypercrawl.com">jrutter@hypercrawl.com</a></div>
     </div>
     <div class="contact-card cc-blue">
       <h4>Wayne County Board of Elections</h4>
@@ -1489,120 +1476,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     &nbsp;·&nbsp; 798 stops · 1,475 registered voters · 12 canvassers assigned
   </p>
 </footer>
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-// Automatically display the last-updated date
-(function() {
-  var updated = new Date('2026-03-15T00:00:00');
-  var options = { year: 'numeric', month: 'long', day: 'numeric' };
-  var el = document.getElementById('last-updated-date');
-  if (el) el.textContent = updated.toLocaleDateString('en-US', options);
 
-  // ── DROPBOX CHOOSER ───────────────────────────────────────────────────────
-  var DBX_KEY_STORAGE = 'baughman_dbx_key';
-
-  function loadDbxKey() {
-    try { return localStorage.getItem(DBX_KEY_STORAGE) || ''; } catch(e) { return ''; }
-  }
-
-  window.saveDbxKey = function saveDbxKey() {
-    var key = (document.getElementById('dbx-key-input').value || '').trim();
-    if (!key) { showError('Please paste a Dropbox App Key first.'); return; }
-    try { localStorage.setItem(DBX_KEY_STORAGE, key); } catch(e) {}
-    hideError();
-    loadDbxSdk(key, function() {
-      document.getElementById('dbx-setup').style.display = 'none';
-      document.getElementById('dbx-ready').style.display = 'block';
-    });
-  }
-
-  window.resetDbxKey = function resetDbxKey() {
-    try { localStorage.removeItem(DBX_KEY_STORAGE); } catch(e) {}
-    document.getElementById('dbx-ready').style.display = 'none';
-    document.getElementById('dbx-setup').style.display = 'block';
-    document.getElementById('dbx-key-input').value = '';
-    var old = document.getElementById('dropboxjs');
-    if (old) old.parentNode.removeChild(old);
-    window.Dropbox = undefined;
-  }
-
-  function loadDbxSdk(key, callback) {
-    // Remove stale SDK if key changed
-    var old = document.getElementById('dropboxjs');
-    if (old) old.parentNode.removeChild(old);
-    window.Dropbox = undefined;
-
-    var s = document.createElement('script');
-    s.id = 'dropboxjs';
-    s.src = 'https://www.dropbox.com/static/api/2/dropins.js';
-    s.setAttribute('data-app-key', key);
-    s.onload = function() {
-      if (window.Dropbox) {
-        if (callback) callback();
-      } else {
-        showError('Dropbox SDK loaded but is not available. Check your App Key is correct.');
-        resetDbxKey();
-      }
-    };
-    s.onerror = function() {
-      showError('Could not reach Dropbox. Check your internet connection and App Key.');
-      resetDbxKey();
-    };
-    document.head.appendChild(s);
-  }
-
-  // Called by the "Open Dropbox" button in the UI
-  window.openDropboxChooser = function() {
-    if (!window.Dropbox) {
-      showError('Dropbox is not ready yet. Wait a moment and try again.');
-      return;
-    }
-    Dropbox.choose({
-      success: function(files) {
-        var file = files[0];
-        hideError();
-        // Show loading state
-        var btn = document.getElementById('dbx-open-btn');
-        if (btn) { btn.textContent = '⏳ Loading…'; btn.disabled = true; }
-
-        fetch(file.link)
-          .then(function(r) {
-            if (!r.ok) throw new Error('HTTP ' + r.status);
-            return r.arrayBuffer();
-          })
-          .then(function(buf) {
-            if (btn) { btn.textContent = '📦 Open Dropbox'; btn.disabled = false; }
-            var wb = XLSX.read(buf, {type:'array'});
-            var ws = wb.Sheets[wb.SheetNames[0]];
-            var data = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
-            parseSheet(data, file.name + ' (Dropbox)');
-          })
-          .catch(function(err) {
-            if (btn) { btn.textContent = '📦 Open Dropbox'; btn.disabled = false; }
-            showError('Could not download from Dropbox: ' + err.message +
-              ' — make sure the file sharing is set to "Anyone with the link".');
-          });
-      },
-      cancel: function() {},
-      linkType: 'direct',
-      multiselect: false,
-      extensions: ['.xlsx', '.csv', '.xls'],
-      folderselect: false
-    });
-  };
-
-  // Restore saved key on page load
-  document.addEventListener('DOMContentLoaded', function() {
-    var savedKey = loadDbxKey();
-    if (savedKey) {
-      loadDbxSdk(savedKey, function() {
-        document.getElementById('dbx-setup').style.display = 'none';
-        document.getElementById('dbx-ready').style.display = 'block';
-      });
-    }
-  });
-
-})();
-</script>
 
 <div class="print-bar">
   <button class="pbtn pbtn-gold" onclick="window.print()">🖨️ Print Full Plan</button>
@@ -1662,4 +1536,88 @@ document.addEventListener('DOMContentLoaded', function() {
       el('ev-s-m').textContent          = '00';
       el('ev-s-s').textContent          = '00';
       el('ev-strip-status').textContent = 'May 5, 2026';
-      el('ev-s
+      el('ev-strip-status').className   = 'ev-strip-status ev-closed';
+      return;
+    }
+
+    var diff = target - now;
+    if (diff <= 0) { setTimeout(tickStrip, 1000); return; }
+
+    var days    = Math.floor(diff / 86400000);
+    var hours   = Math.floor((diff % 86400000) / 3600000);
+    var minutes = Math.floor((diff % 3600000)  / 60000);
+    var seconds = Math.floor((diff % 60000)    / 1000);
+
+    el('ev-strip-label').textContent  = labelText;
+    el('ev-s-d').textContent          = pad(days);
+    el('ev-s-h').textContent          = pad(hours);
+    el('ev-s-m').textContent          = pad(minutes);
+    el('ev-s-s').textContent          = pad(seconds);
+    el('ev-strip-status').textContent = statusText;
+    el('ev-strip-status').className   = 'ev-strip-status ' + statusClass;
+
+    setTimeout(tickStrip, 1000);
+  }
+
+  tickStrip();
+});
+
+// ── HERO COUNTDOWN (large countdown in the hero section) ──
+document.addEventListener('DOMContentLoaded', function() {
+
+  var EV_START = new Date('2026-04-07T08:00:00');
+  var EV_END   = new Date('2026-05-05T17:00:00');
+  var ELECTION = new Date('2026-05-05T19:30:00');
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+  function el(id) { return document.getElementById(id); }
+
+  function tickHero() {
+    var now = new Date();
+    var target, labelText, tagText;
+
+    if (now < EV_START) {
+      target    = EV_START;
+      labelText = '⏳ Early Voting Opens In';
+      tagText   = 'Until April 7 early voting start';
+    } else if (now < EV_END) {
+      target    = EV_END;
+      labelText = '✅ Early Voting IS OPEN — Closes In';
+      tagText   = 'Early voting open now at Wayne County BOE';
+    } else if (now < ELECTION) {
+      target    = ELECTION;
+      labelText = '🗳️ Election Day — Polls Close In';
+      tagText   = 'May 5, 2026 · Polls open 6:30 AM – 7:30 PM';
+    } else {
+      el('cd-label').textContent = '🗳️ Election Complete — Thank You!';
+      el('cd-d').textContent = '00';
+      el('cd-h').textContent = '00';
+      el('cd-m').textContent = '00';
+      el('cd-s').textContent = '00';
+      el('cd-tag').textContent = 'May 5, 2026';
+      return;
+    }
+
+    var diff = target - now;
+    if (diff <= 0) { setTimeout(tickHero, 1000); return; }
+
+    var days    = Math.floor(diff / 86400000);
+    var hours   = Math.floor((diff % 86400000) / 3600000);
+    var minutes = Math.floor((diff % 3600000)  / 60000);
+    var seconds = Math.floor((diff % 60000)    / 1000);
+
+    el('cd-label').textContent = labelText;
+    el('cd-d').textContent     = pad(days);
+    el('cd-h').textContent     = pad(hours);
+    el('cd-m').textContent     = pad(minutes);
+    el('cd-s').textContent     = pad(seconds);
+    el('cd-tag').textContent   = tagText;
+
+    setTimeout(tickHero, 1000);
+  }
+
+  tickHero();
+});
+</script>
+</body>
+</html>
