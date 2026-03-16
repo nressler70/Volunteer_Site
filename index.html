@@ -1377,6 +1377,8 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     var hint = document.querySelector('#street-toggle span:nth-child(2)');
     if (hint) hint.textContent = isOpen ? 'Click to expand' : 'Click to collapse';
     if (!isOpen) {
+      // Render data on expand — may not have been rendered while hidden
+      renderStreets();
       setTimeout(function() {
         document.getElementById('street-toggle').scrollIntoView({behavior:'smooth', block:'nearest'});
       }, 50);
@@ -1402,11 +1404,13 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     var chevron = document.getElementById('detail-chevron');
     var hint    = document.querySelector('#detail-toggle span:nth-child(2)');
     var isOpen  = body.style.display !== 'none';
-    body.style.display    = isOpen ? 'none' : 'block';
+    body.style.display      = isOpen ? 'none' : 'block';
     chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
     var toggleEl = document.getElementById('detail-toggle');
     if (hint) hint.textContent = isOpen ? 'Click to expand' : 'Click to collapse';
     if (!isOpen) {
+      // Render data on expand — may not have been rendered while hidden
+      window.renderDetail();
       setTimeout(function() {
         toggleEl.scrollIntoView({behavior:'smooth', block:'nearest'});
       }, 50);
