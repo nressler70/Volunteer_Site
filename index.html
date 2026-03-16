@@ -2003,13 +2003,22 @@ window.jsonbinPush = function(rows, fileList) {
   var bin = jbBin();
   if (!key || !bin) return;
 
+  // Store only address+resp+notes to stay under JSONBin 100KB free limit
+  // Full row data (names, levy etc) stays in localStorage on the uploader device
+  var slim = rows.map(function(r) {
+    return { address: r.address, resp: r.resp, notes: r.notes || '' };
+  });
+
   fetch('https://api.jsonbin.io/v3/b/' + bin, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', 'X-Master-Key': key },
-    body: JSON.stringify({ rows: rows, files: fileList })
+    body: JSON.stringify({ rows: slim, files: fileList })
   }).then(function(r) {
-    if (r.ok) updateCloudStatus('synced');
-    else r.text().then(function(t){ console.warn('JSONBin push failed:', t); updateCloudStatus('offline'); });
+    if (r.ok) { updateCloudStatus('synced'); }
+    else r.text().then(function(t) {
+      console.warn('JSONBin push failed:', t);
+      updateCloudStatus('offline');
+    });
   }).catch(function(e) { console.warn('JSONBin push error:', e); updateCloudStatus('offline'); });
 };
 
@@ -2020,20 +2029,9 @@ function jsonbinFetch() {
 
   updateCloudStatus('loading');
 
-  // Try public read first (no key required)
+  // Public bin — no key needed for reading, any browser can fetch
   fetch('https://api.jsonbin.io/v3/b/' + bin + '/latest', {
     headers: { 'X-Bin-Meta': 'false' }
-  }).then(function(r) {
-    // If public read fails, try with write key as fallback
-    if (r.status === 401) {
-      var key = jbWriteKey();
-      if (!key) throw new Error('private bin, no key');
-      return fetch('https://api.jsonbin.io/v3/b/' + bin + '/latest', {
-        headers: { 'X-Master-Key': key, 'X-Bin-Meta': 'false' }
-      });
-    }
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    return r;
   }).then(function(r) {
     if (!r.ok) throw new Error('HTTP ' + r.status);
     return r.json();
@@ -2233,7 +2231,7 @@ window.adminSaveCloudConfig = function() {
       'Content-Type': 'application/json',
       'X-Master-Key': key,
       'X-Bin-Name': 'BaughmanCanvassResults',
-      'X-Bin-Private': 'true'
+      'X-Bin-Private': 'false'
     },
     body: JSON.stringify({ rows: rows, files: files })
   }).then(function(r) { return r.json(); })
