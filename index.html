@@ -1058,7 +1058,11 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       + fileList.length + ' upload' + (fileList.length > 1 ? 's' : '') + ')';
     renderReport(mergedLabel, exportedAt);
 
-    // Notify persistence layer to update status hint
+    // Push to JSONBin cloud storage so all browsers see latest results
+    if (typeof window.jsonbinPush === 'function') {
+      window.jsonbinPush(stored, fileList);
+    }
+
     if (typeof updateUploadStatus === 'function') updateUploadStatus();
   }
 
@@ -1906,28 +1910,158 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 <script>
 // ══════════════════════════════════════════════════════════════════════════
-// PERSISTENCE — update upload status hint
-// Auto-restore runs inside the report IIFE above (direct closure access).
+// PERSISTENCE — JSONBin cloud sync + localStorage fallback
+// JSONBin stores results in the cloud so ALL browsers see the same data.
+// localStorage is kept as a fast-load cache.
 // ══════════════════════════════════════════════════════════════════════════
-function updateUploadStatus() {
-  var hint = document.getElementById('upload-saved-hint');
-  if (!hint) return;
-  try {
-    var stored = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]');
-    var files  = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]');
-    if (stored.length && files.length) {
-      var last = files[files.length - 1];
-      hint.style.color = '#2da44e';
-      hint.textContent = '💾 ' + stored.length + ' households · '
-        + files.length + ' upload' + (files.length !== 1 ? 's' : '')
-        + ' · Last: ' + last.filename + ' (' + last.uploaded + ')';
-    } else {
-      hint.style.color = '#556677';
-      hint.textContent = 'Select .xlsx or .csv from the canvass app';
+var ROWS_KEY    = 'baughman_rows_v2';
+var FILES_KEY   = 'baughman_files_v2';
+var JB_KEY_STORE = 'baughman_jb_key';
+var JB_BIN_STORE = 'baughman_jb_bin';
+
+function jbApiKey()  { try { return localStorage.getItem(JB_KEY_STORE) || ''; } catch(e) { return ''; } }
+function jbBinId()   { try { return localStorage.getItem(JB_BIN_STORE) || ''; } catch(e) { return ''; } }
+
+// ── Push merged rows to JSONBin ───────────────────────────────────────────
+window.jsonbinPush = function(rows, fileList) {
+  var key = jbApiKey();
+  var bin = jbBinId();
+  if (!key) return; // JSONBin not configured yet
+
+  var payload = JSON.stringify({ rows: rows, files: fileList });
+
+  if (bin) {
+    // Update existing bin
+    fetch('https://api.jsonbin.io/v3/b/' + bin, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'X-Master-Key': key },
+      body: payload
+    }).then(function(r) {
+      if (!r.ok) r.text().then(function(t){ console.warn('JSONBin update failed:', t); });
+      else updateCloudStatus('synced');
+    }).catch(function(e){ console.warn('JSONBin push error:', e); });
+  } else {
+    // Create new bin on first use
+    fetch('https://api.jsonbin.io/v3/b', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Master-Key': key,
+        'X-Bin-Name': 'BaughmanCanvassResults',
+        'X-Bin-Private': 'true'
+      },
+      body: payload
+    }).then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.metadata && data.metadata.id) {
+        var newBin = data.metadata.id;
+        try { localStorage.setItem(JB_BIN_STORE, newBin); } catch(e2) {}
+        updateCloudStatus('synced');
+        // Show bin ID in admin so others can use it
+        var el = document.getElementById('admin-bin-id');
+        if (el) { el.value = newBin; el.parentNode.style.display = 'block'; }
+      }
+    }).catch(function(e){ console.warn('JSONBin create error:', e); });
+  }
+};
+
+// ── Fetch latest from JSONBin on page load ────────────────────────────────
+function jsonbinFetch() {
+  var key = jbApiKey();
+  var bin = jbBinId();
+  if (!key || !bin) {
+    // No cloud config — use localStorage only
+    restoreFromLocal();
+    return;
+  }
+
+  updateCloudStatus('loading');
+  fetch('https://api.jsonbin.io/v3/b/' + bin + '/latest', {
+    headers: { 'X-Master-Key': key }
+  }).then(function(r) {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  }).then(function(data) {
+    var record = data.record || {};
+    var rows   = record.rows  || [];
+    var files  = record.files || [];
+    if (!rows.length) { restoreFromLocal(); return; }
+
+    // Update localStorage cache
+    try {
+      localStorage.setItem(ROWS_KEY,  JSON.stringify(rows));
+      localStorage.setItem(FILES_KEY, JSON.stringify(files));
+    } catch(e) {}
+
+    // Restore into report
+    if (typeof window._restoreRows === 'function') {
+      var label = 'Saved Results (' + rows.length + ' household'
+        + (rows.length !== 1 ? 's' : '') + ', '
+        + files.length + ' upload' + (files.length !== 1 ? 's' : '') + ')';
+      window._restoreRows(rows, label);
     }
+    updateUploadStatus(rows, files);
+    updateCloudStatus('synced');
+  }).catch(function(e) {
+    console.warn('JSONBin fetch failed, using local cache:', e);
+    restoreFromLocal();
+    updateCloudStatus('offline');
+  });
+}
+
+function restoreFromLocal() {
+  try {
+    var rows  = JSON.parse(localStorage.getItem(ROWS_KEY)  || '[]');
+    var files = JSON.parse(localStorage.getItem(FILES_KEY) || '[]');
+    if (!rows.length) { updateUploadStatus([], []); return; }
+    if (typeof window._restoreRows === 'function') {
+      var label = 'Saved Results (' + rows.length + ' household'
+        + (rows.length !== 1 ? 's' : '') + ', '
+        + files.length + ' upload' + (files.length !== 1 ? 's' : '') + ')';
+      window._restoreRows(rows, label);
+    }
+    updateUploadStatus(rows, files);
   } catch(e) {}
 }
-window.addEventListener('DOMContentLoaded', updateUploadStatus);
+
+function updateUploadStatus(rows, files) {
+  if (!rows) {
+    try { rows  = JSON.parse(localStorage.getItem(ROWS_KEY)  || '[]'); } catch(e) { rows = []; }
+    try { files = JSON.parse(localStorage.getItem(FILES_KEY) || '[]'); } catch(e) { files = []; }
+  }
+  var hint = document.getElementById('upload-saved-hint');
+  if (!hint) return;
+  if (rows.length && files.length) {
+    var last = files[files.length - 1];
+    hint.style.color = '#2da44e';
+    hint.textContent = '💾 ' + rows.length + ' households · '
+      + files.length + ' upload' + (files.length !== 1 ? 's' : '')
+      + ' · Last: ' + last.filename + ' (' + last.uploaded + ')';
+  } else {
+    hint.style.color = '#556677';
+    hint.textContent = 'Select .xlsx or .csv from the canvass app';
+  }
+}
+
+function updateCloudStatus(state) {
+  var el = document.getElementById('cloud-status');
+  if (!el) return;
+  if (state === 'synced')  { el.textContent = '☁ Synced to cloud'; el.style.color = '#2da44e'; }
+  if (state === 'loading') { el.textContent = '☁ Loading from cloud…'; el.style.color = '#aee2ff'; }
+  if (state === 'offline') { el.textContent = '☁ Cloud unavailable — showing local cache'; el.style.color = '#f4c460'; }
+}
+
+// Wait for _restoreRows to be defined (end of report IIFE), then fetch
+function waitAndFetch() {
+  if (typeof window._restoreRows !== 'function') {
+    setTimeout(waitAndFetch, 100);
+    return;
+  }
+  jsonbinFetch();
+  updateUploadStatus();
+}
+
+window.addEventListener('DOMContentLoaded', waitAndFetch);
 </script>
 
 <script>
@@ -1945,6 +2079,24 @@ window.openAdminPanel = function() {
   setTimeout(function() { document.getElementById('admin-pw-input').focus(); }, 100);
 };
 
+window.adminPanelOpened = function() {
+  // Pre-fill API key if saved
+  var saved = '';
+  try { saved = localStorage.getItem('baughman_jb_key') || ''; } catch(e) {}
+  if (saved) {
+    var el = document.getElementById('admin-jb-key');
+    if (el) el.value = saved;
+    var binId = '';
+    try { binId = localStorage.getItem('baughman_jb_bin') || ''; } catch(e) {}
+    if (binId) {
+      var binRow = document.getElementById('admin-bin-row');
+      var binEl  = document.getElementById('admin-bin-id');
+      if (binRow) binRow.style.display = 'block';
+      if (binEl)  binEl.value = binId;
+    }
+  }
+};
+
 window.closeAdminPanel = function() {
   document.getElementById('admin-overlay').style.display = 'none';
 };
@@ -1956,6 +2108,7 @@ window.adminLogin = function() {
     document.getElementById('admin-pw-wrap').style.display = 'none';
     document.getElementById('admin-actions').style.display = 'block';
     refreshAdminStatus();
+    if (typeof window.adminPanelOpened === 'function') window.adminPanelOpened();
   } else {
     document.getElementById('admin-pw-error').textContent = 'Incorrect password.';
     document.getElementById('admin-pw-input').value = '';
@@ -1986,6 +2139,64 @@ function refreshAdminStatus() {
     el.innerHTML = '<span style="color:#8a9bb0">No saved results.</span>';
   }
 }
+
+window.adminSaveCloudConfig = function() {
+  var key = (document.getElementById('admin-jb-key').value || '').trim();
+  var statusEl = document.getElementById('admin-jb-status');
+  if (!key) { statusEl.textContent = 'Please enter your Master Key.'; statusEl.style.color = '#f87171'; return; }
+
+  try { localStorage.setItem('baughman_jb_key', key); } catch(e) {}
+
+  // Check if we already have a bin ID stored
+  var existingBin = '';
+  try { existingBin = localStorage.getItem('baughman_jb_bin') || ''; } catch(e) {}
+  if (existingBin) {
+    var binRow = document.getElementById('admin-bin-row');
+    var binEl  = document.getElementById('admin-bin-id');
+    if (binRow) binRow.style.display = 'block';
+    if (binEl)  binEl.value = existingBin;
+    statusEl.textContent = 'Connected. Bin ID: ' + existingBin;
+    statusEl.style.color = '#2da44e';
+    return;
+  }
+
+  statusEl.textContent = 'Testing connection…'; statusEl.style.color = '#aee2ff';
+
+  // Verify key works and create bin if needed
+  var rows  = [];
+  var files = [];
+  try { rows  = JSON.parse(localStorage.getItem('baughman_rows_v2')  || '[]'); } catch(e2) {}
+  try { files = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]'); } catch(e2) {}
+
+  fetch('https://api.jsonbin.io/v3/b', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Master-Key': key,
+      'X-Bin-Name': 'BaughmanCanvassResults',
+      'X-Bin-Private': 'true'
+    },
+    body: JSON.stringify({ rows: rows, files: files })
+  }).then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.metadata && data.metadata.id) {
+      var binId = data.metadata.id;
+      try { localStorage.setItem('baughman_jb_bin', binId); } catch(e2) {}
+      var binRow = document.getElementById('admin-bin-row');
+      var binEl  = document.getElementById('admin-bin-id');
+      if (binRow) binRow.style.display = 'block';
+      if (binEl)  binEl.value = binId;
+      statusEl.textContent = 'Connected! Bin ID: ' + binId;
+      statusEl.style.color = '#2da44e';
+    } else {
+      statusEl.textContent = 'Error: ' + (data.message || 'Check your API key.');
+      statusEl.style.color = '#f87171';
+    }
+  }).catch(function(e) {
+    statusEl.textContent = 'Connection failed: ' + e.message;
+    statusEl.style.color = '#f87171';
+  });
+};
 
 window.adminDeleteResults = function() {
   if (!confirm('Delete ALL saved canvass results from all uploads? This cannot be undone.')) return;
@@ -2104,9 +2315,30 @@ document.addEventListener('DOMContentLoaded', function() {
       <div id="admin-pw-error" style="font-size:.78rem;color:#f87171;min-height:18px"></div>
     </div>
     <div id="admin-actions" style="display:none">
-      <div style="background:#0d1117;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:12px 14px;margin-bottom:16px;font-size:.82rem;line-height:1.6" id="admin-data-status"></div>
+      <div style="background:#0d1117;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:12px 14px;margin-bottom:14px;font-size:.82rem;line-height:1.6" id="admin-data-status"></div>
+
+      <!-- Cloud status indicator -->
+      <div id="cloud-status" style="font-size:.75rem;margin-bottom:14px;color:#556677"></div>
+
+      <!-- JSONBin Setup -->
+      <div style="background:#0d1117;border:1px solid rgba(0,97,217,.2);border-radius:8px;padding:12px 14px;margin-bottom:14px">
+        <div style="font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#aee2ff;margin-bottom:8px">☁ Cloud Sync (JSONBin)</div>
+        <div style="font-size:.75rem;color:#556677;margin-bottom:8px;line-height:1.5">Paste your JSONBin Master Key to sync results across all browsers. <a href="https://jsonbin.io" target="_blank" style="color:#4466aa">Get a free key at jsonbin.io</a></div>
+        <input id="admin-jb-key" type="password" placeholder="X-Master-Key (from jsonbin.io)"
+          style="width:100%;background:#161b22;border:1px solid #30363d;border-radius:6px;padding:8px 10px;color:#f0f6fc;font-size:.78rem;outline:none;margin-bottom:6px;box-sizing:border-box">
+        <div id="admin-bin-row" style="display:none;margin-bottom:6px">
+          <div style="font-size:.68rem;color:#445566;margin-bottom:3px">Bin ID (share with your team)</div>
+          <input id="admin-bin-id" type="text" readonly
+            style="width:100%;background:#0a0e14;border:1px solid #21262d;border-radius:6px;padding:6px 10px;color:#aee2ff;font-size:.75rem;font-family:monospace;outline:none;box-sizing:border-box">
+        </div>
+        <button onclick="adminSaveCloudConfig()" style="width:100%;background:#1a3355;color:#aee2ff;border:1px solid #2a4a70;border-radius:8px;padding:9px;font-family:'Oswald',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer">
+          Save &amp; Connect
+        </button>
+        <div id="admin-jb-status" style="font-size:.72rem;margin-top:6px;min-height:16px;color:#556677"></div>
+      </div>
+
       <button onclick="adminDeleteResults()" style="width:100%;background:#3d1a1a;color:#f87171;border:1.5px solid #6b1a1a;border-radius:10px;padding:14px;font-family:'Oswald',sans-serif;font-size:.82rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;margin-bottom:8px">
-        &#x1F5D1; Delete Saved Results
+        &#x1F5D1; Delete All Saved Results
       </button>
       <div id="admin-delete-confirm" style="display:none;text-align:center;color:#5ce08a;font-size:.82rem;font-weight:700;margin-bottom:8px">&#10003; Results cleared successfully</div>
       <button onclick="closeAdminPanel()" style="width:100%;background:transparent;color:#8a9bb0;border:1px solid #21262d;border-radius:10px;padding:10px;font-size:.78rem;cursor:pointer">Close</button>
