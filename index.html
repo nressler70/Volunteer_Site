@@ -350,7 +350,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   </div>
 </div>
 
-<nav><div class="nav-inner"><a href="#" class="nav-brand">🔥 Baughman Township Fire &amp; EMS Levy</a><ul class="nav-links"><li><a href="#early-voting" class="nav-ev">🗳 Vote Early</a></li><li><a href="#about">Levy Info</a></li><li><a href="#pros-cons">Pros &amp; Cons</a></li><li><a href="#costs">Costs</a></li><li><a href="#strategy">Strategy</a></li><li><a href="#tally" style="color:#74c69d">📊 Results</a></li><li><a href="#teams">Canvassers</a></li><li><a href="#talking">Scripts</a></li><li><a href="#timeline">Schedule</a></li><li><a href="#vol-contacts" style="color:#74c69d">👥 Team</a></li><li><a href="#contact">Contact</a></li></ul></div></nav>
+<nav><div class="nav-inner"><a href="#" class="nav-brand">🔥 Baughman Township Fire &amp; EMS Levy</a><ul class="nav-links"><li><a href="#early-voting" class="nav-ev">🗳 Vote Early</a></li><li><a href="#about">Levy Info</a></li><li><a href="#pros-cons">Pros &amp; Cons</a></li><li><a href="#costs">Costs</a></li><li><a href="#strategy">Strategy</a></li><li><a href="#tally" style="color:#74c69d">📊 Results</a></li><li><a href="#teams">Canvassers</a></li><li><a href="#talking">Scripts</a></li><li><a href="#timeline">Schedule</a></li><li><a href="#vol-contacts" style="color:#74c69d">👥 Team</a></li><li><a href="#contact">Contact</a></li><li><a href="javascript:void(0)" onclick="openAdminPanel()">Admin</a></li></ul></div></nav>
 
 <section class="hero"><div class="hero-inner">
   <div class="hero-eyebrow"><span class="hero-badge">🗳 May 5, 2026 · Wayne County Ohio</span><span class="hero-badge-blue">Early Voting · April 7 – May 5</span></div>
@@ -711,29 +711,10 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     ondragleave="this.style.borderColor='rgba(201,150,42,.4)';this.style.background='rgba(201,150,42,.04)'"
     ondrop="handleDrop(event)">
     <div style="font-size:2.8rem;margin-bottom:10px">📂</div>
-    <div style="font-family:'Oswald',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-light);margin-bottom:8px">Tap to Upload Spreadsheet</div>
-    <div style="font-size:.84rem;color:#8a9bb0;margin-bottom:6px">Select the .xlsx or .csv exported from the canvass app</div>
+    <div style="font-family:'Oswald',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-light);margin-bottom:8px">Upload Canvass Results</div>
+    <div style="font-size:.84rem;color:#8a9bb0;margin-bottom:6px">Select the .xlsx or .csv exported from the canvass app — report saves automatically</div>
     <div style="display:inline-block;margin-top:10px;background:var(--gold);color:var(--navy);font-family:'Oswald',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:11px 32px;border-radius:8px">Choose File</div>
     <input id="file-input" type="file" accept=".xlsx,.csv,.xls" style="display:none" onchange="window.handleFile(this.files[0])">
-  </div>
-
-  <!-- 3-STEP WORKFLOW -->
-  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:28px">
-    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px 16px;text-align:center">
-      <div style="font-size:1.4rem;margin-bottom:6px">📱</div>
-      <div style="font-family:'Oswald',sans-serif;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-light);margin-bottom:6px">Step 1 — In the App</div>
-      <div style="font-size:.76rem;color:#8a9bb0;line-height:1.6">Tap <strong style="color:var(--cream)">Export</strong> then <strong style="color:var(--cream)">📤 Share / Send File</strong></div>
-    </div>
-    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px 16px;text-align:center">
-      <div style="font-size:1.4rem;margin-bottom:6px">📧</div>
-      <div style="font-family:'Oswald',sans-serif;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-light);margin-bottom:6px">Step 2 — Send It</div>
-      <div style="font-size:.76rem;color:#8a9bb0;line-height:1.6">Email or message the file to the coordinator</div>
-    </div>
-    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px 16px;text-align:center">
-      <div style="font-size:1.4rem;margin-bottom:6px">⬆️</div>
-      <div style="font-family:'Oswald',sans-serif;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-light);margin-bottom:6px">Step 3 — Upload Here</div>
-      <div style="font-size:.76rem;color:#8a9bb0;line-height:1.6">Open the file from email, tap <strong style="color:var(--cream)">Choose File</strong> above</div>
-    </div>
   </div>
 
   <!-- HOW-TO INSTRUCTIONS -->
@@ -794,7 +775,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
             <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#ff8a7a;padding:9px 10px;text-align:center">❌ No</th>
             <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-light);padding:9px 10px;text-align:center">❓ Undecided</th>
             <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#8a9bb0;padding:9px 10px;text-align:center">🏠 Not Home</th>
-            <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#445566;padding:9px 10px;text-align:center">⚪ Not Visited</th><th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#667788;padding:9px 10px;text-align:left;min-width:90px">Visual</th>
+            <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#445566;padding:9px 10px;text-align:center">⚪ Not Visited</th>
           </tr></thead>
           <tbody id="street-tbody"></tbody>
         </table>
@@ -1606,6 +1587,8 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   <div style="margin-top:44px;padding:26px 30px;background:var(--navy-mid);border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center">
     <p style="font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--cream);font-style:italic;line-height:1.8;max-width:680px;margin:0 auto">"You don't need to convince everyone. You need to find the neighbors who already believe in protecting this community — and make sure they vote. Early voting starting April 7 makes that easier than ever."</p>
     <p style="font-size:.78rem;color:var(--gray);margin-top:10px;letter-spacing:.07em;text-transform:uppercase">— Baughman Township Fire &amp; EMS Levy Campaign</p>
+  <a onclick="openAdminPanel()" href="javascript:void(0)" style="display:inline-block;margin-top:12px;font-size:.65rem;color:#223344;text-decoration:none;border:1px solid #1a2a3a;border-radius:4px;padding:3px 8px;cursor:pointer">Admin</a>
+
   </div>
 </div></section>
 
@@ -1681,4 +1664,374 @@ document.addEventListener('DOMContentLoaded', function() {
       el('ev-s-m').textContent          = '00';
       el('ev-s-s').textContent          = '00';
       el('ev-strip-status').textContent = 'May 5, 2026';
-      el('ev-s
+      el('ev-strip-status').className   = 'ev-strip-status ev-closed';
+      return;
+    }
+
+    var diff = target - now;
+    if (diff <= 0) { setTimeout(tickStrip, 1000); return; }
+
+    var days    = Math.floor(diff / 86400000);
+    var hours   = Math.floor((diff % 86400000) / 3600000);
+    var minutes = Math.floor((diff % 3600000)  / 60000);
+    var seconds = Math.floor((diff % 60000)    / 1000);
+
+    el('ev-strip-label').textContent  = labelText;
+    el('ev-s-d').textContent          = pad(days);
+    el('ev-s-h').textContent          = pad(hours);
+    el('ev-s-m').textContent          = pad(minutes);
+    el('ev-s-s').textContent          = pad(seconds);
+    el('ev-strip-status').textContent = statusText;
+    el('ev-strip-status').className   = 'ev-strip-status ' + statusClass;
+
+    setTimeout(tickStrip, 1000);
+  }
+
+  tickStrip();
+});
+
+// ── HERO COUNTDOWN (large countdown in the hero section) ──
+document.addEventListener('DOMContentLoaded', function() {
+
+  var EV_START = new Date('2026-04-07T08:00:00');
+  var EV_END   = new Date('2026-05-05T17:00:00');
+  var ELECTION = new Date('2026-05-05T19:30:00');
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+  function el(id) { return document.getElementById(id); }
+
+  function tickHero() {
+    var now = new Date();
+    var target, labelText, tagText;
+
+    if (now < EV_START) {
+      target    = EV_START;
+      labelText = '⏳ Early Voting Opens In';
+      tagText   = 'Until April 7 early voting start';
+    } else if (now < EV_END) {
+      target    = EV_END;
+      labelText = '✅ Early Voting IS OPEN — Closes In';
+      tagText   = 'Early voting open now at Wayne County BOE';
+    } else if (now < ELECTION) {
+      target    = ELECTION;
+      labelText = '🗳️ Election Day — Polls Close In';
+      tagText   = 'May 5, 2026 · Polls open 6:30 AM – 7:30 PM';
+    } else {
+      el('cd-label').textContent = '🗳️ Election Complete — Thank You!';
+      el('cd-d').textContent = '00';
+      el('cd-h').textContent = '00';
+      el('cd-m').textContent = '00';
+      el('cd-s').textContent = '00';
+      el('cd-tag').textContent = 'May 5, 2026';
+      return;
+    }
+
+    var diff = target - now;
+    if (diff <= 0) { setTimeout(tickHero, 1000); return; }
+
+    var days    = Math.floor(diff / 86400000);
+    var hours   = Math.floor((diff % 86400000) / 3600000);
+    var minutes = Math.floor((diff % 3600000)  / 60000);
+    var seconds = Math.floor((diff % 60000)    / 1000);
+
+    el('cd-label').textContent = labelText;
+    el('cd-d').textContent     = pad(days);
+    el('cd-h').textContent     = pad(hours);
+    el('cd-m').textContent     = pad(minutes);
+    el('cd-s').textContent     = pad(seconds);
+    el('cd-tag').textContent   = tagText;
+
+    setTimeout(tickHero, 1000);
+  }
+
+  tickHero();
+});
+</script>
+<script>
+// ══════════════════════════════════════════════════════════════════════════
+// CANVASS RESULTS — PERSISTENCE & AUTO-RESTORE
+// Saves the last-uploaded CSV text to localStorage so it survives refresh.
+// ══════════════════════════════════════════════════════════════════════════
+var RESULTS_KEY = 'baughman_canvass_results_v1';
+var RESULTS_META_KEY = 'baughman_canvass_meta_v1';
+
+// Called by the report IIFE after a successful file upload — save the raw CSV
+window.addEventListener('DOMContentLoaded', function() {
+
+  // Patch handleFile to also persist the raw file data after parsing
+  var _origHandleFile = window.handleFile;
+  window.handleFile = function(file) {
+    if (!file) return;
+    var ext = file.name.split('.').pop().toLowerCase();
+    // Read file for persistence too
+    var persReader = new FileReader();
+    persReader.onload = function(e) {
+      try {
+        var dataToStore = e.target.result;
+        var meta = {
+          filename: file.name,
+          uploaded: new Date().toLocaleString(),
+          size: file.size
+        };
+        localStorage.setItem(RESULTS_KEY, JSON.stringify({
+          data: dataToStore,
+          ext: ext,
+          meta: meta
+        }));
+        localStorage.setItem(RESULTS_META_KEY, JSON.stringify(meta));
+        updateUploadStatus();
+      } catch(e2) {
+        // localStorage might be full or disabled — silently ignore
+      }
+    };
+    if (ext === 'csv') {
+      persReader.readAsText(file);
+    } else {
+      persReader.readAsBinaryString(file);
+    }
+    // Still call original handler
+    _origHandleFile(file);
+  };
+
+  // Auto-restore saved results on page load
+  restoreSavedResults();
+  updateUploadStatus();
+});
+
+function restoreSavedResults() {
+  try {
+    var saved = localStorage.getItem(RESULTS_KEY);
+    if (!saved) return;
+    var obj = JSON.parse(saved);
+    if (!obj || !obj.data) return;
+
+    if (typeof XLSX === 'undefined') {
+      // XLSX not loaded yet — wait for it
+      setTimeout(restoreSavedResults, 300);
+      return;
+    }
+
+    var wb;
+    if (obj.ext === 'csv') {
+      wb = XLSX.read(obj.data, {type: 'string'});
+    } else {
+      wb = XLSX.read(obj.data, {type: 'binary'});
+    }
+    var ws  = wb.Sheets[wb.SheetNames[0]];
+    var raw = XLSX.utils.sheet_to_json(ws, {header: 1, defval: ''});
+    window.parseSheet(raw, obj.meta.filename + ' (saved)');
+  } catch(e) {
+    // Saved data corrupt — clear it
+    try { localStorage.removeItem(RESULTS_KEY); } catch(e2) {}
+  }
+}
+
+function updateUploadStatus() {
+  var zone = document.getElementById('upload-zone');
+  if (!zone) return;
+  var hint = document.getElementById('upload-saved-hint');
+  try {
+    var meta = localStorage.getItem(RESULTS_META_KEY);
+    if (meta) {
+      var m = JSON.parse(meta);
+      if (!hint) {
+        hint = document.createElement('div');
+        hint.id = 'upload-saved-hint';
+        hint.style.cssText = 'font-size:.74rem;color:#2da44e;margin-top:8px;font-weight:600';
+        zone.appendChild(hint);
+      }
+      hint.textContent = '💾 Showing saved: ' + m.filename + ' (uploaded ' + m.uploaded + ')';
+    } else if (hint) {
+      hint.textContent = '';
+    }
+  } catch(e) {}
+}
+</script>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════════
+// ADMIN PANEL — delete saved results, protected by password
+// ══════════════════════════════════════════════════════════════════════════
+var ADMIN_PW = 'Admin2026$';
+
+window.openAdminPanel = function() {
+  document.getElementById('admin-overlay').style.display = 'flex';
+  document.getElementById('admin-pw-input').value = '';
+  document.getElementById('admin-pw-error').textContent = '';
+  document.getElementById('admin-actions').style.display = 'none';
+  document.getElementById('admin-pw-wrap').style.display = 'block';
+  setTimeout(function() { document.getElementById('admin-pw-input').focus(); }, 100);
+};
+
+window.closeAdminPanel = function() {
+  document.getElementById('admin-overlay').style.display = 'none';
+};
+
+window.adminLogin = function() {
+  var pw = document.getElementById('admin-pw-input').value;
+  if (pw === ADMIN_PW) {
+    document.getElementById('admin-pw-error').textContent = '';
+    document.getElementById('admin-pw-wrap').style.display = 'none';
+    document.getElementById('admin-actions').style.display = 'block';
+    refreshAdminStatus();
+  } else {
+    document.getElementById('admin-pw-error').textContent = 'Incorrect password.';
+    document.getElementById('admin-pw-input').value = '';
+    document.getElementById('admin-pw-input').focus();
+  }
+};
+
+function refreshAdminStatus() {
+  var el = document.getElementById('admin-data-status');
+  if (!el) return;
+  try {
+    var meta = localStorage.getItem(RESULTS_META_KEY);
+    if (meta) {
+      var m = JSON.parse(meta);
+      el.innerHTML = '<span style="color:#5ce08a">&#10003; Saved results:</span> ' +
+        m.filename + '<br><span style="color:#8a9bb0;font-size:.78rem">Uploaded: ' + m.uploaded + '</span>';
+    } else {
+      el.innerHTML = '<span style="color:#8a9bb0">No saved results found.</span>';
+    }
+  } catch(e) {
+    el.innerHTML = '<span style="color:#8a9bb0">No saved results.</span>';
+  }
+}
+
+window.adminDeleteResults = function() {
+  if (!confirm('Delete all saved canvass results? The report will be cleared from this site until a new file is uploaded.')) return;
+  try {
+    localStorage.removeItem(RESULTS_KEY);
+    localStorage.removeItem(RESULTS_META_KEY);
+  } catch(e) {}
+  // Hide the report
+  var rw = document.getElementById('report-wrap');
+  if (rw) rw.style.display = 'none';
+  var donut = document.getElementById('donut-wrap');
+  if (donut) donut.remove();
+  updateUploadStatus();
+  refreshAdminStatus();
+  document.getElementById('admin-delete-confirm').style.display = 'block';
+  setTimeout(function() {
+    var el = document.getElementById('admin-delete-confirm');
+    if (el) el.style.display = 'none';
+  }, 3000);
+};
+</script>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════════
+// COUNTDOWNS — Early Voting Strip + Hero Section
+// ══════════════════════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function() {
+  var EV_START = new Date('2026-04-07T08:00:00');
+  var EV_END   = new Date('2026-05-05T17:00:00');
+  var ELECTION = new Date('2026-05-05T19:30:00');
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+  function el(id) { return document.getElementById(id); }
+
+  // ── Strip countdown ──
+  function tickStrip() {
+    var now = new Date();
+    var target, labelText, statusText, statusClass;
+    if (now < EV_START) {
+      target = EV_START; labelText = 'Early Voting Opens In';
+      statusText = 'April 7 – May 5'; statusClass = 'ev-waiting';
+    } else if (now < EV_END) {
+      target = EV_END; labelText = 'Early Voting OPEN — Closes In';
+      statusText = 'VOTING OPEN NOW'; statusClass = 'ev-open';
+    } else if (now < ELECTION) {
+      target = ELECTION; labelText = 'Polls Close In';
+      statusText = 'Election Day — May 5'; statusClass = 'ev-waiting';
+    } else {
+      if (el('ev-strip-label')) el('ev-strip-label').textContent = 'Voting has concluded';
+      ['ev-s-d','ev-s-h','ev-s-m','ev-s-s'].forEach(function(id) { if (el(id)) el(id).textContent = '00'; });
+      if (el('ev-strip-status')) { el('ev-strip-status').textContent = 'May 5, 2026'; el('ev-strip-status').className = 'ev-strip-status ev-closed'; }
+      return;
+    }
+    var diff = Math.max(0, target - now);
+    var days    = Math.floor(diff / 86400000);
+    var hours   = Math.floor((diff % 86400000) / 3600000);
+    var minutes = Math.floor((diff % 3600000) / 60000);
+    var seconds = Math.floor((diff % 60000) / 1000);
+    if (el('ev-strip-label')) el('ev-strip-label').textContent = labelText;
+    if (el('ev-s-d')) el('ev-s-d').textContent = pad(days);
+    if (el('ev-s-h')) el('ev-s-h').textContent = pad(hours);
+    if (el('ev-s-m')) el('ev-s-m').textContent = pad(minutes);
+    if (el('ev-s-s')) el('ev-s-s').textContent = pad(seconds);
+    if (el('ev-strip-status')) { el('ev-strip-status').textContent = statusText; el('ev-strip-status').className = 'ev-strip-status ' + statusClass; }
+    setTimeout(tickStrip, 1000);
+  }
+  tickStrip();
+
+  // ── Hero countdown ──
+  function tickHero() {
+    var now = new Date();
+    var target, labelText, tagText;
+    if (now < EV_START) {
+      target = EV_START; labelText = 'Early Voting Opens In'; tagText = 'April 7 – May 5 · Wayne County BOE';
+    } else if (now < EV_END) {
+      target = EV_END; labelText = 'Early Voting IS OPEN — Closes In'; tagText = 'Early voting open now at Wayne County BOE';
+    } else if (now < ELECTION) {
+      target = ELECTION; labelText = 'Election Day — Polls Close In'; tagText = 'May 5, 2026 · Polls 6:30 AM – 7:30 PM';
+    } else {
+      if (el('cd-label')) el('cd-label').textContent = 'Election Complete';
+      ['cd-d','cd-h','cd-m','cd-s'].forEach(function(id) { if (el(id)) el(id).textContent = '00'; });
+      if (el('cd-tag')) el('cd-tag').textContent = 'May 5, 2026';
+      return;
+    }
+    var diff = Math.max(0, target - now);
+    var days    = Math.floor(diff / 86400000);
+    var hours   = Math.floor((diff % 86400000) / 3600000);
+    var minutes = Math.floor((diff % 3600000) / 60000);
+    var seconds = Math.floor((diff % 60000) / 1000);
+    if (el('cd-label')) el('cd-label').textContent = labelText;
+    if (el('cd-d')) el('cd-d').textContent = pad(days);
+    if (el('cd-h')) el('cd-h').textContent = pad(hours);
+    if (el('cd-m')) el('cd-m').textContent = pad(minutes);
+    if (el('cd-s')) el('cd-s').textContent = pad(seconds);
+    if (el('cd-tag')) el('cd-tag').textContent = tagText;
+    setTimeout(tickHero, 1000);
+  }
+  tickHero();
+});
+</script>
+
+<!-- ══ ADMIN PANEL OVERLAY ══ -->
+<div id="admin-overlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);z-index:99999;align-items:center;justify-content:center">
+  <div style="background:#161b22;border:2px solid #c1121f;border-radius:16px;padding:28px 28px 24px;width:90%;max-width:420px;box-shadow:0 8px 40px rgba(0,0,0,.8)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+      <div style="font-family:'Oswald',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#c1121f">Admin Panel</div>
+      <button onclick="closeAdminPanel()" style="background:none;border:none;color:#8a9bb0;font-size:20px;cursor:pointer;line-height:1">&#x2715;</button>
+    </div>
+
+    <!-- Password prompt -->
+    <div id="admin-pw-wrap">
+      <div style="font-size:.85rem;color:#8a9bb0;margin-bottom:12px">Enter admin password to continue:</div>
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <input id="admin-pw-input" type="password" placeholder="Admin password"
+          style="flex:1;background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:10px 12px;color:#f0f6fc;font-size:.9rem;outline:none"
+          onkeydown="if(event.key==='Enter')adminLogin()">
+        <button onclick="adminLogin()" style="background:#c1121f;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-family:'Oswald',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer">Login</button>
+      </div>
+      <div id="admin-pw-error" style="font-size:.78rem;color:#f87171;min-height:18px"></div>
+    </div>
+
+    <!-- Admin actions (shown after login) -->
+    <div id="admin-actions" style="display:none">
+      <div style="background:#0d1117;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:12px 14px;margin-bottom:16px;font-size:.82rem;line-height:1.6" id="admin-data-status"></div>
+
+      <button onclick="adminDeleteResults()" style="width:100%;background:#3d1a1a;color:#f87171;border:1.5px solid #6b1a1a;border-radius:10px;padding:14px;font-family:'Oswald',sans-serif;font-size:.82rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;margin-bottom:8px">
+        &#x1F5D1; Delete Saved Results
+      </button>
+
+      <div id="admin-delete-confirm" style="display:none;text-align:center;color:#5ce08a;font-size:.82rem;font-weight:700;margin-bottom:8px">&#10003; Results cleared successfully</div>
+
+      <button onclick="closeAdminPanel()" style="width:100%;background:transparent;color:#8a9bb0;border:1px solid #21262d;border-radius:10px;padding:10px;font-size:.78rem;cursor:pointer">Close</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
