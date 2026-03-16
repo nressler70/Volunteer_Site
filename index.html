@@ -703,41 +703,75 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   <h2>Field <em>Report &amp; Follow-Up</em></h2>
   <p class="lead">Upload the exported spreadsheet from the canvassing app to see the latest results. Works with any version — just re-upload when a new file comes in from the field.</p>
 
-  <!-- UPLOAD ZONE -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px" id="upload-panels">
+  <!-- UPLOAD OPTIONS -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px" id="upload-panels">
 
-    <!-- LEFT: Local file -->
+    <!-- LEFT: local file -->
     <div id="upload-zone"
-      style="border:2px dashed rgba(201,150,42,.4);border-radius:12px;padding:32px 20px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(201,150,42,.04)"
+      style="border:2px dashed rgba(201,150,42,.4);border-radius:14px;padding:28px 18px 22px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(201,150,42,.04);-webkit-tap-highlight-color:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px"
       onclick="document.getElementById('file-input').click()"
       ondragover="event.preventDefault();this.style.borderColor='var(--gold)';this.style.background='rgba(201,150,42,.1)'"
       ondragleave="this.style.borderColor='rgba(201,150,42,.4)';this.style.background='rgba(201,150,42,.04)'"
       ondrop="handleDrop(event)">
-      <div style="font-size:2rem;margin-bottom:8px">📂</div>
-      <div style="font-family:'Oswald',sans-serif;font-size:.82rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-light);margin-bottom:5px">From Your Device</div>
-      <div style="font-size:.78rem;color:#667788">Drag &amp; drop or click to browse<br><span style="font-size:.72rem">.xlsx or .csv from the canvass app</span></div>
-      <input id="file-input" type="file" accept=".xlsx,.csv" style="display:none" onchange="handleFile(this.files[0])">
+      <div style="font-size:2rem">📂</div>
+      <div style="font-family:'Oswald',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-light)">From Your Device</div>
+      <div style="font-size:.74rem;color:#667788">Drag &amp; drop or tap to browse<br>.xlsx or .csv from canvass app</div>
+      <div style="margin-top:8px;background:var(--gold);color:var(--navy);font-family:'Oswald',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:8px 22px;border-radius:7px">Choose File</div>
+      <input id="file-input" type="file" accept=".xlsx,.csv,.xls" style="display:none" onchange="handleFile(this.files[0])">
     </div>
 
-    <!-- RIGHT: Dropbox link -->
-    <div style="border:2px dashed rgba(46,134,193,.35);border-radius:12px;padding:32px 20px;text-align:center;background:rgba(46,134,193,.04);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px">
-      <div style="font-size:2rem;margin-bottom:2px">📦</div>
-      <div style="font-family:'Oswald',sans-serif;font-size:.82rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#aee2ff;margin-bottom:2px">From Dropbox</div>
-      <div style="font-size:.75rem;color:#667788;margin-bottom:4px">Paste a shared Dropbox link below</div>
-      <div style="display:flex;gap:8px;width:100%;max-width:360px">
-        <input id="dropbox-url" type="url" placeholder="https://www.dropbox.com/s/…"
-          style="flex:1;background:rgba(0,0,0,.3);border:1px solid rgba(46,134,193,.3);border-radius:6px;padding:8px 10px;color:var(--cream);font-size:.78rem;outline:none;min-width:0"
-          onkeydown="if(event.key==='Enter')loadFromDropbox()"
-          onfocus="this.style.borderColor='rgba(46,134,193,.7)'"
-          onblur="this.style.borderColor='rgba(46,134,193,.3)'">
-        <button onclick="loadFromDropbox()"
-          style="background:var(--blue-light);color:white;border:none;border-radius:6px;padding:8px 14px;font-family:'Oswald',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;white-space:nowrap">Load</button>
+    <!-- RIGHT: Dropbox chooser -->
+    <div id="dbx-panel" style="border:2px solid rgba(0,97,217,.35);border-radius:14px;padding:24px 18px;text-align:center;background:rgba(0,97,217,.05);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px">
+      <div style="font-size:2rem">📦</div>
+      <div style="font-family:'Oswald',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7ec8ff">From Dropbox</div>
+
+      <!-- Setup: enter app key -->
+      <div id="dbx-setup" style="width:100%">
+        <div style="font-size:.71rem;color:#556677;margin-bottom:8px;line-height:1.6">Enter your free Dropbox App Key<br>to enable the file picker button</div>
+        <div style="display:flex;gap:6px;width:100%">
+          <input id="dbx-key-input" type="text" placeholder="Paste app key…"
+            style="flex:1;min-width:0;background:rgba(0,0,0,.3);border:1px solid rgba(0,97,217,.3);border-radius:6px;padding:7px 8px;color:var(--cream);font-size:.76rem;outline:none;font-family:monospace"
+            onkeydown="if(event.key==='Enter')saveDbxKey()">
+          <button onclick="saveDbxKey()" style="background:var(--blue-light);color:white;border:none;border-radius:6px;padding:7px 11px;font-family:'Oswald',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;white-space:nowrap">Save</button>
+        </div>
+        <a href="https://www.dropbox.com/developers/apps" target="_blank"
+           style="display:block;margin-top:7px;font-size:.65rem;color:#4466aa;text-decoration:underline">
+          Get a free key at dropbox.com/developers ↗
+        </a>
       </div>
-      <div style="font-size:.68rem;color:#445566;line-height:1.5">In Dropbox: open the file → Share → Copy link<br>Paste it here and click Load</div>
+
+      <!-- Active: chooser button injected here by JS -->
+      <div id="dbx-ready" style="display:none;width:100%;text-align:center">
+        <div id="dbx-btn-wrap"></div>
+        <div style="font-size:.65rem;color:#445566;margin-top:6px">Opens Dropbox file picker popup</div>
+        <button onclick="resetDbxKey()" style="margin-top:4px;background:none;border:none;color:#334455;font-size:.62rem;cursor:pointer;text-decoration:underline">Change key</button>
+      </div>
     </div>
 
   </div>
-  <style>@media(max-width:600px){#upload-panels{grid-template-columns:1fr}}</style>
+
+  <!-- HOW-TO INSTRUCTIONS -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px" id="howto-panels">
+    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:16px 18px">
+      <div style="font-family:'Oswald',sans-serif;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:#aee2ff;margin-bottom:10px">🤖 Android</div>
+      <ol style="padding-left:16px;font-size:.78rem;color:#8a9bb0;line-height:1.9;margin:0">
+        <li>Export file from the canvass app</li>
+        <li>Tap <strong style="color:var(--cream)">Choose File</strong> above</li>
+        <li>Tap <strong style="color:var(--cream)">Downloads</strong> in file picker</li>
+        <li>Select the spreadsheet</li>
+      </ol>
+    </div>
+    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:16px 18px">
+      <div style="font-family:'Oswald',sans-serif;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:#74c69d;margin-bottom:10px">🍎 iPhone</div>
+      <ol style="padding-left:16px;font-size:.78rem;color:#8a9bb0;line-height:1.9;margin:0">
+        <li>Export file from the canvass app</li>
+        <li>Tap <strong style="color:var(--cream)">Choose File</strong> above</li>
+        <li>Tap <strong style="color:var(--cream)">Browse</strong> → <strong style="color:var(--cream)">On My iPhone</strong></li>
+        <li>Open <strong style="color:var(--cream)">Downloads</strong>, select file</li>
+      </ol>
+    </div>
+  </div>
+  <style>@media(max-width:600px){#upload-panels,#howto-panels{grid-template-columns:1fr}}@media(max-width:480px){#upload-zone{padding:20px 12px 16px}}</style>
 
   <!-- ERROR MSG -->
   <div id="report-error" style="display:none;background:rgba(192,57,43,.15);border:1px solid rgba(192,57,43,.4);border-radius:8px;padding:14px 18px;color:#ff8a7a;font-size:.88rem;margin-bottom:20px"></div>
@@ -879,47 +913,6 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       }
     };
     reader.readAsArrayBuffer(file);
-  };
-
-  window.loadFromDropbox = function() {
-    var raw = (document.getElementById('dropbox-url').value || '').trim();
-    if (!raw) { showError('Paste a Dropbox shared link first.'); return; }
-
-    // Convert any Dropbox share URL to a direct download URL
-    // Handles: dropbox.com/s/…?dl=0  →  dl.dropboxusercontent.com/s/…
-    var url = raw
-      .replace('www.dropbox.com', 'dl.dropboxusercontent.com')
-      .replace('?dl=0', '')
-      .replace('?dl=1', '')
-      .split('?')[0];   // strip any trailing query params
-
-    // Show loading state
-    var btn = document.querySelector('#upload-panels button');
-    var orig = btn ? btn.textContent : '';
-    if (btn) { btn.textContent = '⏳ Loading…'; btn.disabled = true; }
-    hideError();
-
-    fetch(url)
-      .then(function(resp) {
-        if (!resp.ok) throw new Error('HTTP ' + resp.status + ' — check the link is a valid shared Dropbox file.');
-        return resp.arrayBuffer();
-      })
-      .then(function(buf) {
-        if (btn) { btn.textContent = orig; btn.disabled = false; }
-        try {
-          var wb = XLSX.read(buf, {type:'array'});
-          var ws = wb.Sheets[wb.SheetNames[0]];
-          var data = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
-          var fname = url.split('/').pop() || 'dropbox-file';
-          parseSheet(data, fname + ' (Dropbox)');
-        } catch(e) {
-          showError('Could not parse file from Dropbox: ' + e.message);
-        }
-      })
-      .catch(function(err) {
-        if (btn) { btn.textContent = orig; btn.disabled = false; }
-        showError('Could not load from Dropbox: ' + err.message + '. Make sure the link is set to "Anyone with the link can view".');
-      });
   };
 
   function parseSheet(raw, filename) {
@@ -1500,6 +1493,107 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   var options = { year: 'numeric', month: 'long', day: 'numeric' };
   var el = document.getElementById('last-updated-date');
   if (el) el.textContent = updated.toLocaleDateString('en-US', options);
+
+  // ── DROPBOX CHOOSER ───────────────────────────────────────────────────────
+  var DBX_KEY_STORAGE = 'baughman_dbx_key';
+
+  function loadDbxKey() {
+    try { return localStorage.getItem(DBX_KEY_STORAGE) || ''; } catch(e) { return ''; }
+  }
+
+  function saveDbxKey() {
+    var key = (document.getElementById('dbx-key-input').value || '').trim();
+    if (!key) { showError('Please paste a Dropbox App Key first.'); return; }
+    try { localStorage.setItem(DBX_KEY_STORAGE, key); } catch(e) {}
+    initDropbox(key);
+  }
+
+  function resetDbxKey() {
+    try { localStorage.removeItem(DBX_KEY_STORAGE); } catch(e) {}
+    document.getElementById('dbx-ready').style.display = 'none';
+    document.getElementById('dbx-setup').style.display = 'block';
+    document.getElementById('dbx-key-input').value = '';
+    document.getElementById('dbx-btn-wrap').innerHTML = '';
+    // Remove old SDK script so it can be re-loaded with new key
+    var old = document.getElementById('dropboxjs');
+    if (old) old.parentNode.removeChild(old);
+  }
+
+  function initDropbox(key) {
+    // Remove any existing SDK script
+    var old = document.getElementById('dropboxjs');
+    if (old) old.parentNode.removeChild(old);
+
+    // Load Dropbox Chooser SDK with the provided key
+    var s = document.createElement('script');
+    s.id = 'dropboxjs';
+    s.src = 'https://www.dropbox.com/static/api/2/dropins.js';
+    s.setAttribute('data-app-key', key);
+    s.onload = function() { renderDbxButton(); };
+    s.onerror = function() {
+      showError('Could not load Dropbox SDK. Check that your App Key is correct.');
+      resetDbxKey();
+    };
+    document.head.appendChild(s);
+  }
+
+  function renderDbxButton() {
+    if (!window.Dropbox) {
+      showError('Dropbox SDK did not load. Check your App Key.');
+      return;
+    }
+    var wrap = document.getElementById('dbx-btn-wrap');
+    wrap.innerHTML = '';
+
+    // Use Dropbox.createChooseButton for native styled button
+    var btn = Dropbox.createChooseButton({
+      success: function(files) {
+        var file = files[0];
+        // Dropbox returns a direct link — fetch it
+        fetch(file.link)
+          .then(function(r) {
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return r.arrayBuffer();
+          })
+          .then(function(buf) {
+            var wb = XLSX.read(buf, {type:'array'});
+            var ws = wb.Sheets[wb.SheetNames[0]];
+            var data = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
+            parseSheet(data, file.name + ' (Dropbox)');
+          })
+          .catch(function(err) {
+            showError('Could not load file from Dropbox: ' + err.message +
+              '. Make sure the file is shared with "Anyone with the link".');
+          });
+      },
+      cancel: function() {},
+      linkType: 'direct',
+      multiselect: false,
+      extensions: ['.xlsx', '.csv', '.xls'],
+      folderselect: false
+    });
+
+    // Style the button to match site
+    btn.style.cssText = 'display:inline-block;background:#0061d9;color:white;' +
+      'border:none;border-radius:8px;padding:10px 22px;font-family:Oswald,sans-serif;' +
+      'font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;' +
+      'cursor:pointer;width:100%;text-align:center;margin-bottom:2px';
+    wrap.appendChild(btn);
+
+    document.getElementById('dbx-setup').style.display = 'none';
+    document.getElementById('dbx-ready').style.display = 'block';
+  }
+
+  // On page load: restore saved key if present
+  (function() {
+    var savedKey = loadDbxKey();
+    if (savedKey) {
+      document.addEventListener('DOMContentLoaded', function() {
+        initDropbox(savedKey);
+      });
+    }
+  })();
+
 })();
 </script>
 
