@@ -1016,12 +1016,50 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     }
 
     hideError();
-    // Allow persistence layer to merge rows before rendering
-    if (typeof window._onRowsParsed === 'function') {
-      window._onRowsParsed(rows, filename, exportedAt);
-    } else {
-      renderReport(filename, exportedAt);
-    }
+
+    // ── CUMULATIVE MERGE ──────────────────────────────────────────────────
+    // Load stored rows from localStorage, merge new rows in, save back.
+    // Merge key = normalized address. New non-Not-Visited response wins.
+    var MERGE_KEY  = 'baughman_rows_v2';
+    var FILES_KEY2 = 'baughman_files_v2';
+
+    function mKey(r) { return (r.address || '').toLowerCase().trim(); }
+
+    var stored = [];
+    try { stored = JSON.parse(localStorage.getItem(MERGE_KEY) || '[]'); } catch(e2) { stored = []; }
+
+    var sidx = {};
+    stored.forEach(function(r, i) { sidx[mKey(r)] = i; });
+
+    var nAdded = 0, nUpdated = 0;
+    rows.forEach(function(r) {
+      var k = mKey(r);
+      if (k in sidx) {
+        var ex = stored[sidx[k]];
+        if (r.resp && r.resp !== 'Not Visited') { ex.resp = r.resp; nUpdated++; }
+        if (r.notes && r.notes !== ex.notes) {
+          ex.notes = ex.notes ? ex.notes + ' | ' + r.notes : r.notes;
+        }
+      } else {
+        stored.push(r); sidx[k] = stored.length - 1; nAdded++;
+      }
+    });
+
+    try { localStorage.setItem(MERGE_KEY, JSON.stringify(stored)); } catch(e2) {}
+
+    var fileList = [];
+    try { fileList = JSON.parse(localStorage.getItem(FILES_KEY2) || '[]'); } catch(e2) {}
+    fileList.push({ filename: filename, uploaded: new Date().toLocaleString(), added: nAdded, updated: nUpdated });
+    try { localStorage.setItem(FILES_KEY2, JSON.stringify(fileList)); } catch(e2) {}
+
+    // Render with merged rows
+    rows = stored;
+    var mergedLabel = 'Combined Results (' + stored.length + ' households, '
+      + fileList.length + ' upload' + (fileList.length > 1 ? 's' : '') + ')';
+    renderReport(mergedLabel, exportedAt);
+
+    // Notify persistence layer to update status hint
+    if (typeof updateUploadStatus === 'function') updateUploadStatus();
   }
 
   // ── Render full report ───────────────────────────────────────────────────
@@ -1141,12 +1179,14 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     var donutHtml = '<div id="donut-wrap" style="display:flex;align-items:center;gap:20px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px 20px;margin-bottom:20px;flex-wrap:wrap">' +
       svgHtml + leftHtml + rightHtml + '</div>';
 
-    var existing = document.getElementById('donut-wrap');
-    if (existing) {
-      existing.outerHTML = donutHtml;
-    } else {
-      tilesEl.insertAdjacentHTML('beforebegin', donutHtml);
+    // Use a stable wrapper so we can innerHTML-swap without detaching nodes
+    var donutWrap = document.getElementById('donut-outer');
+    if (!donutWrap) {
+      donutWrap = document.createElement('div');
+      donutWrap.id = 'donut-outer';
+      tilesEl.insertAdjacentElement('beforebegin', donutWrap);
     }
+    donutWrap.innerHTML = donutHtml;
 
     document.getElementById('pct-label').textContent = pct + '% visited (' + visited + ' of ' + total + ')';
     document.getElementById('progress-bar').style.width = pct + '%';
@@ -1333,9 +1373,11 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     badge.textContent = visited + ' visited · ' + yes + ' Yes · ' + no + ' No · ' + (und+nh) + ' Follow-Up';
   }
 
-  // Allow persistence layer to set rows and trigger a re-render
-  window._setRows = function(newRows) { rows = newRows; };
-  window._renderReport = renderReport;
+  // Restore previously saved rows directly without re-parsing
+  window._restoreRows = function(savedRows, label) {
+    rows = savedRows;
+    renderReport(label, '');
+  };
 
   // Expose renderDetail globally for the search input's oninput
   window.renderDetail = window.renderDetail;
@@ -1843,98 +1885,56 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 <script>
 // ══════════════════════════════════════════════════════════════════════════
-// CANVASS RESULTS — PERSISTENCE & AUTO-RESTORE
-// Saves the last-uploaded CSV text to localStorage so it survives refresh.
+// PERSISTENCE — restore saved results on page load & update status hint
+// Merge logic lives inside parseSheet in the report IIFE above.
 // ══════════════════════════════════════════════════════════════════════════
-var RESULTS_KEY = 'baughman_canvass_results_v1';
-var RESULTS_META_KEY = 'baughman_canvass_meta_v1';
-
-// Called by the report IIFE after a successful file upload — save the raw CSV
-window.addEventListener('DOMContentLoaded', function() {
-
-  // Patch handleFile to also persist the raw file data after parsing
-  var _origHandleFile = window.handleFile;
-  window.handleFile = function(file) {
-    if (!file) return;
-    var ext = file.name.split('.').pop().toLowerCase();
-    // Read file for persistence too
-    var persReader = new FileReader();
-    persReader.onload = function(e) {
-      try {
-        var dataToStore = e.target.result;
-        var meta = {
-          filename: file.name,
-          uploaded: new Date().toLocaleString(),
-          size: file.size
-        };
-        localStorage.setItem(RESULTS_KEY, JSON.stringify({
-          data: dataToStore,
-          ext: ext,
-          meta: meta
-        }));
-        localStorage.setItem(RESULTS_META_KEY, JSON.stringify(meta));
-        updateUploadStatus();
-      } catch(e2) {
-        // localStorage might be full or disabled — silently ignore
-      }
-    };
-    if (ext === 'csv') {
-      persReader.readAsText(file);
-    } else {
-      persReader.readAsBinaryString(file);
-    }
-    // Still call original handler
-    _origHandleFile(file);
-  };
-
-  // Auto-restore saved results on page load
-  restoreSavedResults();
-  updateUploadStatus();
-});
-
-function restoreSavedResults() {
-  try {
-    var saved = localStorage.getItem(RESULTS_KEY);
-    if (!saved) return;
-    var obj = JSON.parse(saved);
-    if (!obj || !obj.data) return;
-
-    if (typeof XLSX === 'undefined') {
-      // XLSX not loaded yet — wait for it
-      setTimeout(restoreSavedResults, 300);
-      return;
-    }
-
-    var wb;
-    if (obj.ext === 'csv') {
-      wb = XLSX.read(obj.data, {type: 'string'});
-    } else {
-      wb = XLSX.read(obj.data, {type: 'binary'});
-    }
-    var ws  = wb.Sheets[wb.SheetNames[0]];
-    var raw = XLSX.utils.sheet_to_json(ws, {header: 1, defval: ''});
-    window.parseSheet(raw, obj.meta.filename + ' (saved)');
-  } catch(e) {
-    // Saved data corrupt — clear it
-    try { localStorage.removeItem(RESULTS_KEY); } catch(e2) {}
-  }
-}
+var ROWS_KEY  = 'baughman_rows_v2';
+var FILES_KEY = 'baughman_files_v2';
 
 function updateUploadStatus() {
   var hint = document.getElementById('upload-saved-hint');
   if (!hint) return;
   try {
-    var meta = localStorage.getItem(RESULTS_META_KEY);
-    if (meta) {
-      var m = JSON.parse(meta);
+    var stored = JSON.parse(localStorage.getItem(ROWS_KEY) || '[]');
+    var files  = JSON.parse(localStorage.getItem(FILES_KEY) || '[]');
+    if (stored.length && files.length) {
+      var last = files[files.length - 1];
       hint.style.color = '#2da44e';
-      hint.textContent = '💾 Saved: ' + m.filename + ' · Uploaded ' + m.uploaded;
+      hint.textContent = '💾 ' + stored.length + ' households · '
+        + files.length + ' upload' + (files.length > 1 ? 's' : '')
+        + ' · Last: ' + last.filename + ' (' + last.uploaded + ')';
     } else {
       hint.style.color = '#556677';
       hint.textContent = 'Select .xlsx or .csv from the canvass app';
     }
   } catch(e) {}
 }
+
+function restoreSavedRows() {
+  var stored = [], files = [];
+  try { stored = JSON.parse(localStorage.getItem(ROWS_KEY) || '[]'); } catch(e) {}
+  try { files  = JSON.parse(localStorage.getItem(FILES_KEY) || '[]'); } catch(e) {}
+  if (!stored.length) return;
+
+  if (typeof window.parseSheet !== 'function' || typeof XLSX === 'undefined') {
+    setTimeout(restoreSavedRows, 200);
+    return;
+  }
+
+  // Build a synthetic raw array that parseSheet can read, preserving stored state
+  // Instead of re-parsing, directly set rows and render
+  if (typeof window._restoreRows === 'function') {
+    var label = 'Saved Results (' + stored.length + ' households, '
+      + files.length + ' upload' + (files.length > 1 ? 's' : '') + ')';
+    window._restoreRows(stored, label);
+    updateUploadStatus();
+  }
+}
+
+window.addEventListener('DOMContentLoaded', function() {
+  updateUploadStatus();
+  restoreSavedRows();
+});
 </script>
 
 <script>
