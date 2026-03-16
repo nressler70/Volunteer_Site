@@ -278,7 +278,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 <body>
 
 <!-- ── PASSWORD GATE ── -->
-<div id="pg-overlay" style="display:none;position:fixed;inset:0;z-index:99999;background:linear-gradient(135deg,#0a0e1a 0%,#111827 60%,#0d1f0f 100%);display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif">
+<div id="pg-overlay" style="display:none;position:fixed;inset:0;z-index:99999;background:linear-gradient(135deg,#0a0e1a 0%,#111827 60%,#0d1f0f 100%);align-items:center;justify-content:center;font-family:'Inter',sans-serif">
   <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:48px 40px;max-width:400px;width:90%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.6)">
     <div style="font-size:2.4rem;margin-bottom:12px">🔒</div>
     <h2 style="color:#f0e6c8;font-size:1.4rem;font-weight:700;margin:0 0 6px">Baughman Levy Campaign</h2>
@@ -2281,6 +2281,8 @@ window._offerBakedDownload = function(binId) {
   var pwInput = document.getElementById('admin-pw-input');
   if (pwInput) pwInput.value = '';
   document.body.style.overflow = '';
+  var pgOv = document.getElementById('pg-overlay');
+  if (pgOv) pgOv.style.display = 'none';
 
   // Wait one frame for DOM to settle, then snapshot
   setTimeout(function() {
