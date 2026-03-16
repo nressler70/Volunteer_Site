@@ -714,7 +714,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     <div style="font-family:'Oswald',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-light);margin-bottom:8px">Tap to Upload Spreadsheet</div>
     <div style="font-size:.84rem;color:#8a9bb0;margin-bottom:6px">Select the .xlsx or .csv exported from the canvass app</div>
     <div style="display:inline-block;margin-top:10px;background:var(--gold);color:var(--navy);font-family:'Oswald',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:11px 32px;border-radius:8px">Choose File</div>
-    <input id="file-input" type="file" accept=".xlsx,.csv,.xls" style="display:none" onchange="handleFile(this.files[0])">
+    <input id="file-input" type="file" accept=".xlsx,.csv,.xls" style="display:none" onchange="window.handleFile(this.files[0])">
   </div>
 
   <!-- 3-STEP WORKFLOW -->
@@ -794,7 +794,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
             <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#ff8a7a;padding:9px 10px;text-align:center">❌ No</th>
             <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-light);padding:9px 10px;text-align:center">❓ Undecided</th>
             <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#8a9bb0;padding:9px 10px;text-align:center">🏠 Not Home</th>
-            <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#445566;padding:9px 10px;text-align:center">⚪ Not Visited</th>
+            <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#445566;padding:9px 10px;text-align:center">⚪ Not Visited</th><th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#667788;padding:9px 10px;text-align:left;min-width:90px">Visual</th>
           </tr></thead>
           <tbody id="street-tbody"></tbody>
         </table>
@@ -868,7 +868,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 
   function respBadge(r) {
     var s = RESP_STYLE[r] || RESP_STYLE['Not Visited'];
-    return '<span style="'+s+';font-family:'Oswald',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:2px 8px;border-radius:3px;white-space:nowrap">'+esc(r)+'</span>';
+    return '<span style="'+s+';font-family:Oswald,sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:2px 8px;border-radius:3px;white-space:nowrap">'+esc(r)+'</span>';
   }
 
   // ── File handling ────────────────────────────────────────────────────────
@@ -878,7 +878,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     zone.style.borderColor = 'rgba(201,150,42,.4)';
     zone.style.background  = 'rgba(201,150,42,.04)';
     var f = e.dataTransfer.files[0];
-    if (f) handleFile(f);
+    if (f) window.handleFile(f);
   };
 
   window.handleFile = function(file) {
@@ -969,7 +969,9 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 
   // ── Render full report ───────────────────────────────────────────────────
   function renderReport(filename, exportedAt) {
-    document.getElementById('report-wrap').style.display = 'block';
+    var rw = document.getElementById('report-wrap');
+    rw.style.display = 'block';
+    setTimeout(function(){ rw.scrollIntoView({behavior:'smooth', block:'start'}); }, 100);
 
     // Meta bar
     var total = rows.length;
@@ -991,66 +993,129 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   }
 
   function renderDashboard() {
-    var total   = rows.length;
-    var yes     = count('Yes');
-    var no      = count('No');
-    var und     = count('Undecided');
-    var nh      = count('Not Home');
-    var nv      = count('Not Visited');
+    var total = rows.length;
+    var yes   = count('Yes'), no = count('No'), und = count('Undecided');
+    var nh    = count('Not Home'), nv = count('Not Visited');
     var visited = total - nv;
-    var pct     = total ? Math.round(visited/total*100) : 0;
+    var pct   = total ? Math.round(visited / total * 100) : 0;
 
-    var tiles = [
-      { label:'✅ Yes',         val:yes,     color:'#74c69d',          bg:'rgba(39,174,96,.15)',    border:'rgba(39,174,96,.3)' },
-      { label:'❌ No',           val:no,      color:'#ff8a7a',          bg:'rgba(192,57,43,.15)',    border:'rgba(192,57,43,.3)' },
-      { label:'❓ Undecided',    val:und,     color:'var(--gold-light)', bg:'rgba(201,150,42,.12)',   border:'rgba(201,150,42,.3)' },
-      { label:'🏠 Not Home',    val:nh,      color:'#8a9bb0',          bg:'rgba(138,155,176,.1)',   border:'rgba(138,155,176,.28)' },
-      { label:'⚪ Not Visited',  val:nv,      color:'#445566',          bg:'rgba(255,255,255,.04)',  border:'rgba(255,255,255,.1)' },
-      { label:'🔁 Follow-Up',   val:und+nh,  color:'#aee2ff',          bg:'rgba(46,134,193,.12)',   border:'rgba(46,134,193,.3)' },
+    // ── Clickable summary tiles ──
+    var TILES = [
+      {f:'Yes',        label:'Yes',         val:yes,    col:'#5ce08a', bg:'rgba(39,174,96,.18)',   bdr:'rgba(39,174,96,.5)'},
+      {f:'No',         label:'No',          val:no,     col:'#ff8a7a', bg:'rgba(192,57,43,.18)',   bdr:'rgba(192,57,43,.5)'},
+      {f:'Undecided',  label:'Undecided',   val:und,    col:'#f4c460', bg:'rgba(201,150,42,.18)',  bdr:'rgba(201,150,42,.5)'},
+      {f:'Not Home',   label:'Not Home',    val:nh,     col:'#aee2ff', bg:'rgba(46,134,193,.18)',  bdr:'rgba(46,134,193,.5)'},
+      {f:'Not Visited',label:'Not Visited', val:nv,     col:'#667788', bg:'rgba(255,255,255,.05)', bdr:'rgba(255,255,255,.15)'},
+      {f:'followup',   label:'Follow-Up',   val:und+nh, col:'#c0aaff', bg:'rgba(142,68,173,.18)',  bdr:'rgba(142,68,173,.5)'},
     ];
-    document.getElementById('dash-tiles').innerHTML = tiles.map(function(t){
-      return '<div style="background:'+t.bg+';border:1px solid '+t.border+';border-radius:10px;padding:16px 12px;text-align:center">'+
-        '<div style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:'+t.color+';line-height:1">'+t.val+'</div>'+
-        '<div style="font-family:'Oswald',sans-serif;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:#556677;margin-top:5px">'+t.label+'</div>'+
+    document.getElementById('dash-tiles').innerHTML = TILES.map(function(t){
+      var active = currentFilter === t.f;
+      return '<div onclick="setFilter(''+t.f+'')" style="background:'+t.bg+';border:2px solid '+(active?t.col:t.bdr)+';border-radius:10px;padding:13px 10px;text-align:center;cursor:pointer;transition:border-color .15s" title="Click to filter table">'+
+        '<div style="font-size:1.65rem;font-weight:700;color:'+t.col+';line-height:1;font-family:monospace">'+t.val+'</div>'+
+        '<div style="font-family:Oswald,sans-serif;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:#778899;margin-top:4px">'+t.label+'</div>'+
         '</div>';
     }).join('');
 
-    document.getElementById('pct-label').textContent = pct + '% visited (' + (total-nv) + ' of ' + total + ')';
-    document.getElementById('progress-bar').style.width = pct + '%';
+    // ── Donut chart ──
+    var SEG = [
+      {val:yes, col:'#5ce08a'}, {val:no,  col:'#ff8a7a'},
+      {val:und, col:'#f4c460'}, {val:nh,  col:'#aee2ff'},
+      {val:nv,  col:'rgba(255,255,255,.1)'},
+    ];
+    var r=46, cx=60, cy=60, sw=13, circ=2*Math.PI*r, off=0;
+    var arcs = SEG.map(function(s){
+      var d = total ? s.val/total*circ : 0;
+      var arc = '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+s.col+'" stroke-width="'+sw+'" stroke-dasharray="'+d.toFixed(2)+' '+(circ-d).toFixed(2)+'" stroke-dashoffset="'+(-off).toFixed(2)+'" transform="rotate(-90 '+cx+' '+cy+')" />';
+      off += d; return arc;
+    }).join('');
+
+    var LEGS = [
+      {col:'#5ce08a',label:'Yes',val:yes},
+      {col:'#ff8a7a',label:'No',val:no},
+      {col:'#f4c460',label:'Undecided',val:und},
+      {col:'#aee2ff',label:'Not Home',val:nh},
+      {col:'rgba(255,255,255,.3)',label:'Not Visited',val:nv},
+    ];
+    var legend = LEGS.filter(function(l){return l.val>0;}).map(function(l){
+      var p = total ? Math.round(l.val/total*100) : 0;
+      return '<div style="display:flex;align-items:center;gap:7px;margin-bottom:5px">'+
+        '<div style="width:9px;height:9px;border-radius:50%;background:'+l.col+';flex-shrink:0"></div>'+
+        '<span style="font-size:.76rem;color:#c0ccdd;min-width:24px;font-family:monospace">'+l.val+'</span>'+
+        '<span style="font-size:.74rem;color:#7a8fa0">'+l.label+'</span>'+
+        '<span style="font-size:.7rem;color:#445566;margin-left:auto">'+p+'%</span>'+
+        '</div>';
+    }).join('');
+
+    var yPct = total ? Math.round(yes/total*100) : 0;
+    var vPct = pct;
+
+    var donutHtml =
+      '<div id="donut-wrap" style="display:flex;align-items:center;gap:20px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px 20px;margin-bottom:20px;flex-wrap:wrap">'+
+      '<svg width="120" height="120" viewBox="0 0 120 120" style="flex-shrink:0">'+arcs+
+      '<text x="60" y="56" text-anchor="middle" fill="#f0f0f0" font-size="17" font-weight="700" font-family="monospace">'+vPct+'%</text>'+
+      '<text x="60" y="70" text-anchor="middle" fill="#556677" font-size="8.5" font-family="Oswald,sans-serif" letter-spacing="1">VISITED</text>'+
+      '</svg>'+
+      '<div style="flex:1;min-width:130px">'+
+        '<div style="font-family:Oswald,sans-serif;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:#556677;margin-bottom:8px">Breakdown</div>'+
+        legend+
+      '</div>'+
+      '<div style="flex:1;min-width:180px">'+
+        '<div style="font-family:Oswald,sans-serif;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:#556677;margin-bottom:6px">'+visited+' of '+total+' visited</div>'+
+        '<div style="height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden;margin-bottom:10px"><div style="height:100%;width:'+vPct+'%;background:linear-gradient(90deg,#5ce08a,#aee2ff);border-radius:4px;transition:width .6s"></div></div>'+
+        '<div style="font-family:Oswald,sans-serif;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:#556677;margin-bottom:6px">'+yes+' confirmed Yes ('+yPct+'%)</div>'+
+        '<div style="height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden"><div style="height:100%;width:'+yPct+'%;background:#5ce08a;border-radius:4px;transition:width .6s"></div></div>'+
+      '</div>'+
+      '</div>';
+
+    var existing = document.getElementById('donut-wrap');
+    var tiles = document.getElementById('dash-tiles');
+    if (existing) { existing.outerHTML = donutHtml; }
+    else { tiles.insertAdjacentHTML('beforebegin', donutHtml); }
+
+    document.getElementById('pct-label').textContent = vPct + '% visited (' + visited + ' of ' + total + ')';
+    document.getElementById('progress-bar').style.width = vPct + '%';
   }
 
   function renderStreets() {
     var streets = {};
     rows.forEach(function(r){
       if (!streets[r.street]) streets[r.street] = {total:0,Yes:0,No:0,Undecided:0,'Not Home':0,'Not Visited':0};
-      var s = streets[r.street];
-      s.total++;
-      s[r.resp] = (s[r.resp]||0) + 1;
+      streets[r.street].total++;
+      streets[r.street][r.resp] = (streets[r.street][r.resp]||0) + 1;
     });
+    var BAR_COLORS = {Yes:'#5ce08a',No:'#ff8a7a',Undecided:'#f4c460','Not Home':'#aee2ff','Not Visited':'rgba(255,255,255,.08)'};
     var sorted = Object.keys(streets).sort();
-    var tbody = document.getElementById('street-tbody');
-    tbody.innerHTML = sorted.map(function(st){
+    document.getElementById('street-tbody').innerHTML = sorted.map(function(st){
       var s = streets[st];
-      var pctDone = Math.round((s.total - (s['Not Visited']||0)) / s.total * 100);
-      var barW = pctDone > 0 ? '<div style="display:inline-block;width:'+pctDone+'%!important;height:4px;background:var(--gold);border-radius:2px;vertical-align:middle;margin-left:6px;min-width:2px"></div>' : '';
-      return '<tr style="border-bottom:1px solid rgba(255,255,255,.04)">'+
-        '<td style="padding:8px 14px;font-size:.83rem;font-weight:600;color:var(--cream)">'+esc(st)+'</td>'+
-        '<td style="padding:8px 10px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#8a9bb0">'+s.total+'</td>'+
-        '<td style="padding:8px 10px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#74c69d;font-weight:700">'+(s['Yes']||0)+'</td>'+
-        '<td style="padding:8px 10px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#ff8a7a">'+(s['No']||0)+'</td>'+
-        '<td style="padding:8px 10px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--gold-light)">'+(s['Undecided']||0)+'</td>'+
-        '<td style="padding:8px 10px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#8a9bb0">'+(s['Not Home']||0)+'</td>'+
-        '<td style="padding:8px 10px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#334455">'+(s['Not Visited']||0)+'</td>'+
+      var bar = ['Yes','No','Undecided','Not Home','Not Visited'].map(function(resp){
+        var w = s.total ? (s[resp]||0)/s.total*100 : 0;
+        return w>0 ? '<div style="width:'+w.toFixed(1)+'%;background:'+BAR_COLORS[resp]+';height:100%;display:inline-block;vertical-align:top" title="'+resp+': '+(s[resp]||0)+'"></div>' : '';
+      }).join('');
+      var dPct = s.total ? Math.round((s.total-(s['Not Visited']||0))/s.total*100) : 0;
+      return '<tr style="border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer" onclick="setFilter('all');var el=document.getElementById('det-search');el.value=''+st.replace(/'/g,"\'") +'';window.renderDetail();setTimeout(function(){el.scrollIntoView({behavior:'smooth',block:'center'})},100)" title="Click to filter by '+st+'">'+
+        '<td style="padding:8px 14px;font-size:.82rem;font-weight:600;color:var(--cream)">'+esc(st)+'</td>'+
+        '<td style="padding:8px 10px;text-align:center;font-family:monospace;font-size:.78rem;color:#8a9bb0">'+s.total+'</td>'+
+        '<td style="padding:8px 10px;text-align:center;font-family:monospace;font-size:.78rem;color:#5ce08a;font-weight:700">'+(s['Yes']||0)+'</td>'+
+        '<td style="padding:8px 10px;text-align:center;font-family:monospace;font-size:.78rem;color:#ff8a7a">'+(s['No']||0)+'</td>'+
+        '<td style="padding:8px 10px;text-align:center;font-family:monospace;font-size:.78rem;color:#f4c460">'+(s['Undecided']||0)+'</td>'+
+        '<td style="padding:8px 10px;text-align:center;font-family:monospace;font-size:.78rem;color:#aee2ff">'+(s['Not Home']||0)+'</td>'+
+        '<td style="padding:8px 10px;text-align:center;font-family:monospace;font-size:.78rem;color:#445566">'+(s['Not Visited']||0)+'</td>'+
+        '<td style="padding:6px 14px 6px 8px;min-width:90px">'+
+          '<div style="height:10px;background:rgba(255,255,255,.04);border-radius:3px;overflow:hidden;display:flex">'+bar+'</div>'+
+          '<div style="font-size:.6rem;color:#445566;margin-top:2px;text-align:right">'+dPct+'%</div>'+
+        '</td>'+
       '</tr>';
     }).join('');
   }
 
-  // ── Detail table ─────────────────────────────────────────────────────────
+
+  // ── Detail table   // ── Detail table ─────────────────────────────────────────────────────────
   window.setFilter = function(f) {
     currentFilter = f;
     document.querySelectorAll('.rf-btn').forEach(function(b){
       b.classList.toggle('rf-active', b.dataset.f === f);
     });
+    renderDashboard();
     renderDetail();
   };
 
@@ -1067,20 +1132,28 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     document.getElementById('det-count').textContent = 'Showing ' + filtered.length + ' of ' + rows.length + ' households';
 
     var likeTag = function(l) {
-      if (l==='LIKELY')   return '<span style="font-family:'Oswald',sans-serif;font-size:.58rem;padding:1px 5px;border-radius:3px;background:rgba(39,174,96,.15);color:#74c69d;margin-left:5px">★ Likely</span>';
-      if (l==='POSSIBLE') return '<span style="font-family:'Oswald',sans-serif;font-size:.58rem;padding:1px 5px;border-radius:3px;background:rgba(201,150,42,.12);color:var(--gold-light);margin-left:5px">◐ Possible</span>';
+      if (l==='LIKELY')   return '<span style="font-family:Oswald,sans-serif;font-size:.58rem;padding:1px 5px;border-radius:3px;background:rgba(39,174,96,.15);color:#74c69d;margin-left:5px">★ Likely</span>';
+      if (l==='POSSIBLE') return '<span style="font-family:Oswald,sans-serif;font-size:.58rem;padding:1px 5px;border-radius:3px;background:rgba(201,150,42,.12);color:var(--gold-light);margin-left:5px">◐ Possible</span>';
       return '';
     };
 
+    var ROW_STYLE = {
+      'Yes':        {bg:'rgba(39,174,96,.14)',   left:'3px solid #5ce08a'},
+      'No':         {bg:'rgba(192,57,43,.14)',   left:'3px solid #ff8a7a'},
+      'Undecided':  {bg:'rgba(201,150,42,.12)',  left:'3px solid #f4c460'},
+      'Not Home':   {bg:'rgba(46,134,193,.12)',  left:'3px solid #aee2ff'},
+      'Not Visited':{bg:'transparent',           left:'3px solid transparent'},
+    };
     document.getElementById('detail-tbody').innerHTML = filtered.map(function(r){
-      return '<tr style="border-bottom:1px solid rgba(255,255,255,.04)">'+
+      var rs = ROW_STYLE[r.resp] || ROW_STYLE['Not Visited'];
+      return '<tr style="border-bottom:1px solid rgba(255,255,255,.04);background:'+rs.bg+';border-left:'+rs.left+'">'+
         '<td style="padding:7px 12px;font-size:.82rem;font-weight:600;color:var(--cream)">'+esc(r.name)+likeTag(r.like)+'</td>'+
         '<td style="padding:7px 12px;font-size:.82rem;color:#8a9bb0">'+esc(r.address)+'</td>'+
-        '<td style="padding:7px 8px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.7rem;color:#667788">'+esc(r.prec)+'</td>'+
-        '<td style="padding:7px 8px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#aee2ff">'+r.voters+'</td>'+
-        '<td style="padding:7px 8px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--gold-light)">$'+r.levy.toFixed(2)+'</td>'+
+        '<td style="padding:7px 8px;text-align:center;font-family:monospace;font-size:.7rem;color:#667788">'+esc(r.prec)+'</td>'+
+        '<td style="padding:7px 8px;text-align:center;font-family:monospace;font-size:.78rem;color:#aee2ff">'+r.voters+'</td>'+
+        '<td style="padding:7px 8px;text-align:right;font-family:monospace;font-size:.78rem;color:var(--gold-light)">$'+r.levy.toFixed(2)+'</td>'+
         '<td style="padding:7px 12px;text-align:center">'+respBadge(r.resp)+'</td>'+
-        '<td style="padding:7px 12px;font-size:.78rem;color:#8a9bb0;font-style:'+( r.notes ? 'normal' : 'italic')+';color:'+(r.notes?'#c0ccdd':'#445566')+'">'+esc(r.notes||'—')+'</td>'+
+        '<td style="padding:7px 12px;font-size:.78rem;font-style:'+(r.notes?'normal':'italic')+';color:'+(r.notes?'#c0ccdd':'#445566')+'">'+esc(r.notes||'—')+'</td>'+
       '</tr>';
     }).join('');
   };
@@ -1118,8 +1191,6 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   // Expose renderDetail globally for the search input's oninput
   window.renderDetail = window.renderDetail;
   window.parseSheet = parseSheet;
-  window.handleFile = handleFile;
-  window.handleDrop = handleDrop;
 })();
 </script>
 
@@ -1201,7 +1272,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Suzi Byall</div>
       <div class="vc-role">Canvasser · Signed In 3/15/2026</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304656433">330-465-6433</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:suzibyall@gmail.com">suzibyall@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#4e3d3b34272c372f22220e29232f2722602d2123"><span class="__cf_email__" data-cfemail="ff8c8a85969d869e9393bf98929e9693d19c9092">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Burkhart Rd · 70 stops</span></div>
     </div>
 
@@ -1210,7 +1281,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-role">Canvasser &amp; Campaign Support · Signed In 3/15/2026</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304659001">330-465-9001</a></div>
       <div class="vc-info"><span class="icon">📟</span><span style="color:#8a9bb0">Campaign Cell: 330-465-8982</span></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:jrutter@hypercrawl.com">jrutter@hypercrawl.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#adc7dfd8d9d9c8dfedc5d4ddc8dfcedfccdac183cec2c0"><span class="__cf_email__" data-cfemail="640e161110100116240c1d14011607160513084a070b09">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Burton City / Mt Eaton / N West Lebanon / Krug · 102 stops</span></div>
     </div>
 
@@ -1218,7 +1289,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Mike Raff</div>
       <div class="vc-role">Canvasser · Signed In 3/15/2026</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3303172059">330-317-2059</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:mikerett86@gmail.com">mikerett86@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#c6abafada3b4a3b2b2fef086a1aba7afaae8a5a9ab"><span class="__cf_email__" data-cfemail="5e3337353b2c3b2a2a66681e39333f3732703d3133">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Church Rd / Good Rd / N Kohler / Wenger · 75 stops</span></div>
     </div>
 
@@ -1226,7 +1297,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Pat Turchiano</div>
       <div class="vc-role">Canvasser · Selected Streets (couldn't attend 3/15)</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304665110">330-466-5110</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:pdjtrchn1@zoominternet.net">pdjtrchn1@zoominternet.net</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#91e1f5fbe5e3f2f9ffa0d1ebfefefcf8ffe5f4e3fff4e5bffff4e5"><span class="__cf_email__" data-cfemail="9dedf9f7e9effef5f3acdde7f2f2f0f4f3e9f8eff3f8e9b3f3f8e9">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 York Rd / Emmitsburg / Hanover / Chambersburg / Market / Misere · 79 stops</span></div>
     </div>
 
@@ -1234,7 +1305,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Robin Coppola</div>
       <div class="vc-role">Canvasser · Signed In 3/15/2026</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3302013020">330-201-3020</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:robin.coppola2@gmail.com">robin.coppola2@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#d9abb6bbb0b7f7bab6a9a9b6b5b8eb99beb4b8b0b5f7bab6b4"><span class="__cf_email__" data-cfemail="d2a0bdb0bbbcfcb1bda2a2bdbeb3e092b5bfb3bbbefcb1bdbf">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">🪧 Yard Signs</span><span class="vc-tag">📍 Tannerville / Wayne St / Paradise Ext · 64 stops</span></div>
     </div>
 
@@ -1242,7 +1313,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Joe Rubino</div>
       <div class="vc-role">Canvasser</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3306214717">330-621-4717</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:jjrubino@gmail.com">jjrubino@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#4c26263e392e2522230c2b212d2520622f2321"><span class="__cf_email__" data-cfemail="c3a9a9b1b6a1aaadac83a4aea2aaafeda0acae">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📞 Phone</span><span class="vc-tag">🚗 Rides</span><span class="vc-tag">📬 Absentee</span><span class="vc-tag">📍 Coal Bank / Fosnight / Rehm / West St · 68 stops</span></div>
     </div>
 
@@ -1250,7 +1321,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">David Stoll</div>
       <div class="vc-role">Canvasser</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304662409">330-466-2409</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:dnhstoll@gmail.com">dnhstoll@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#eb8f8583989f848787ab8c868a8287c5888486"><span class="__cf_email__" data-cfemail="93f7fdfbe0e7fcffffd3f4fef2faffbdf0fcfe">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">🪧 Yard Signs</span><span class="vc-tag">📍 Ault Rd / Huprick Rd · 25 stops</span></div>
     </div>
 
@@ -1258,7 +1329,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Diane Jarrett</div>
       <div class="vc-role">Canvasser</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304654110">330-465-4110</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:djarrett@gojarrett.com">djarrett@gojarrett.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#f4909e958686918080b4939b9e958686918080da979b99"><span class="__cf_email__" data-cfemail="c4a0aea5b6b6a1b0b084a3abaea5b6b6a1b0b0eaa7aba9">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Forrer Rd · 12 stops</span></div>
     </div>
 
@@ -1266,7 +1337,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Matt Slicker</div>
       <div class="vc-role">Canvasser · Signed In 3/15/2026</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3308542557">330-854-2557</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:matt@slickerfarms.com">matt@slickerfarms.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#1f727e6b6b5f6c73767c747a6d797e6d726c317c7072"><span class="__cf_email__" data-cfemail="5934382d2d192a35303a323c2b3f382b342a773a3634">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">🪧 Yard Signs</span><span class="vc-tag">📍 Deerfield NW / Fulton / Lovers Lane / Shifferly / Black Diamond + shared · 124+ stops</span></div>
     </div>
 
@@ -1274,14 +1345,14 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Shelly Brenner</div>
       <div class="vc-role">Canvasser</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3306212421">330-621-2421</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:shellybrenner38@gmail.com">shellybrenner38@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#02716a676e6e7b6070676c6c6770313a42656f636b6e2c616d6f"><span class="__cf_email__" data-cfemail="daa9b2bfb6b6a3b8a8bfb4b4bfa8e9e29abdb7bbb3b6f4b9b5b7">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📞 Phone</span><span class="vc-tag">🚗 Rides</span><span class="vc-tag">📬 Absentee</span><span class="vc-tag">📍 Back Massillon Rd (split w/ Matt)</span></div>
     </div>
 
     <div class="vc-card vc-green">
       <div class="vc-name">Noelle Ressler</div>
       <div class="vc-role">Canvasser &amp; Campaign Support · Signed In 3/15/2026</div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:noeller@rbrconsulting.biz">noeller@rbrconsulting.biz</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#dab4b5bfb6b6bfa89aa8b8a8b9b5b4a9afb6aeb3b4bdf4b8b3a0"><span class="__cf_email__" data-cfemail="365859535a5a53447644544455595845435a425f585118545f4c">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Dalton Fox Lake Rd (split w/ Matt)</span></div>
     </div>
 
@@ -1289,7 +1360,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Julie Finney</div>
       <div class="vc-role">Canvasser</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3302340141">330-234-0141</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:julie.finney77@gmail.com">julie.finney77@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#e78d928b8e82c9818e8989829ed0d0a7808a868e8bc984888a"><span class="__cf_email__" data-cfemail="4d2738212428632b24232328347a7a0d2a202c2421632e2220">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Fox Lake Rd (split w/ Matt) + Wadsworth Rd + Keck Rd · 64 stops</span></div>
     </div>
 
@@ -1303,7 +1374,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Cathy Pamer</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3307494073">330-749-4073</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:caparmer1983@gmail.com">caparmer1983@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#fd9e9c8d9c8f90988fccc4c5cebd9a909c9491d39e9290"><span class="__cf_email__" data-cfemail="0261637263706f6770333b3a3142656f636b6e2c616d6f">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag tag-any">✋ Anything</span></div>
     </div>
 
@@ -1319,7 +1390,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Justin Haislip</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><span style="color:#8a9bb0">—</span></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:Justin@justinhaislipagency.com">Justin@justinhaislipagency.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#246e5157504d4a644e5157504d4a4c454d57484d544543414a475d0a474b49"><span class="__cf_email__" data-cfemail="eaa09f999e8384aa809f999e8384828b839986839a8b8d8f848993c4898587">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag tag-any">✋ Anything</span></div>
     </div>
 
@@ -1327,7 +1398,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Stephanie Geiser</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><span style="color:#8a9bb0">—</span></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:markstephanieg96@gmail.com">markstephanieg96@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#4a272b3821393e2f3a222b24232f2d737c0a2d272b232664292527"><span class="__cf_email__" data-cfemail="dcb1bdaeb7afa8b9acb4bdb2b5b9bbe5ea9cbbb1bdb5b0f2bfb3b1">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag tag-any">✋ Anything</span></div>
     </div>
 
@@ -1335,7 +1406,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Tim Horst</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><span style="color:#8a9bb0">—</span></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:tkhorst3@gmail.com">tkhorst3@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#a5d1cecdcad7d6d196e5c2c8c4ccc98bc6cac8"><span class="__cf_email__" data-cfemail="e0948b888f929394d3a0878d81898cce838f8d">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag tag-any">✋ Anything</span></div>
     </div>
 
@@ -1381,7 +1452,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Bob Graber</div>
       <div class="vc-role">Trustee</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304661662">330-466-1662</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:BGraberAuctions@aol.com">BGraberAuctions@aol.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#387a7f4a595a5d4a794d5b4c5157564b78595754165b5755"><span class="__cf_email__" data-cfemail="3c7e7b4e5d5e594e7d495f485553524f7c5d5350125f5351">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag" style="background:rgba(46,134,193,.15);color:#aee2ff;border-color:rgba(46,134,193,.3)">🏛️ Trustee</span></div>
     </div>
 
@@ -1442,12 +1513,12 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     <div class="contact-card">
       <h4>Noelle Ressler</h4><div class="role">Campaign Support</div>
       <div class="ci"><span class="icon">📞</span><a href="tel:2162948358">216-294-8358</a></div>
-      <div class="ci"><span class="icon">📧</span><a href="mailto:noeller@rbrconsulting.biz">noeller@rbrconsulting.biz</a></div>
+      <div class="ci"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#e886878d84848d9aa89a8a9a8b87869b9d849c81868fc68a8192"><span class="__cf_email__" data-cfemail="ea84858f86868f98aa988898898584999f869e83848dc4888390">[email&#160;protected]</span></a></div>
     </div>
     <div class="contact-card">
       <h4>John Rutter</h4><div class="role">Campaign Support</div>
       <div class="ci"><span class="icon">📞</span><a href="tel:3304659001">330-465-9001</a></div>
-      <div class="ci"><span class="icon">📧</span><a href="mailto:jrutter@hypercrawl.com">jrutter@hypercrawl.com</a></div>
+      <div class="ci"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#5a30282f2e2e3f281a32232a3f2839283b2d3674393537"><span class="__cf_email__" data-cfemail="5b31292e2f2f3e291b33222b3e2938293a2c3775383436">[email&#160;protected]</span></a></div>
     </div>
     <div class="contact-card cc-blue">
       <h4>Wayne County Board of Elections</h4>
@@ -1484,7 +1555,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   <a class="pbtn pbtn-out" href="#teams">🗺 Canvasser Routes</a>
   <button class="pbtn pbtn-out" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Top</button>
 </div>
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 
 // ── LIVE EARLY VOTING COUNTER STRIP ──
 // This runs a separate live countdown specifically for the early voting strip
@@ -1536,88 +1607,4 @@ document.addEventListener('DOMContentLoaded', function() {
       el('ev-s-m').textContent          = '00';
       el('ev-s-s').textContent          = '00';
       el('ev-strip-status').textContent = 'May 5, 2026';
-      el('ev-strip-status').className   = 'ev-strip-status ev-closed';
-      return;
-    }
-
-    var diff = target - now;
-    if (diff <= 0) { setTimeout(tickStrip, 1000); return; }
-
-    var days    = Math.floor(diff / 86400000);
-    var hours   = Math.floor((diff % 86400000) / 3600000);
-    var minutes = Math.floor((diff % 3600000)  / 60000);
-    var seconds = Math.floor((diff % 60000)    / 1000);
-
-    el('ev-strip-label').textContent  = labelText;
-    el('ev-s-d').textContent          = pad(days);
-    el('ev-s-h').textContent          = pad(hours);
-    el('ev-s-m').textContent          = pad(minutes);
-    el('ev-s-s').textContent          = pad(seconds);
-    el('ev-strip-status').textContent = statusText;
-    el('ev-strip-status').className   = 'ev-strip-status ' + statusClass;
-
-    setTimeout(tickStrip, 1000);
-  }
-
-  tickStrip();
-});
-
-// ── HERO COUNTDOWN (large countdown in the hero section) ──
-document.addEventListener('DOMContentLoaded', function() {
-
-  var EV_START = new Date('2026-04-07T08:00:00');
-  var EV_END   = new Date('2026-05-05T17:00:00');
-  var ELECTION = new Date('2026-05-05T19:30:00');
-
-  function pad(n) { return String(n).padStart(2, '0'); }
-  function el(id) { return document.getElementById(id); }
-
-  function tickHero() {
-    var now = new Date();
-    var target, labelText, tagText;
-
-    if (now < EV_START) {
-      target    = EV_START;
-      labelText = '⏳ Early Voting Opens In';
-      tagText   = 'Until April 7 early voting start';
-    } else if (now < EV_END) {
-      target    = EV_END;
-      labelText = '✅ Early Voting IS OPEN — Closes In';
-      tagText   = 'Early voting open now at Wayne County BOE';
-    } else if (now < ELECTION) {
-      target    = ELECTION;
-      labelText = '🗳️ Election Day — Polls Close In';
-      tagText   = 'May 5, 2026 · Polls open 6:30 AM – 7:30 PM';
-    } else {
-      el('cd-label').textContent = '🗳️ Election Complete — Thank You!';
-      el('cd-d').textContent = '00';
-      el('cd-h').textContent = '00';
-      el('cd-m').textContent = '00';
-      el('cd-s').textContent = '00';
-      el('cd-tag').textContent = 'May 5, 2026';
-      return;
-    }
-
-    var diff = target - now;
-    if (diff <= 0) { setTimeout(tickHero, 1000); return; }
-
-    var days    = Math.floor(diff / 86400000);
-    var hours   = Math.floor((diff % 86400000) / 3600000);
-    var minutes = Math.floor((diff % 3600000)  / 60000);
-    var seconds = Math.floor((diff % 60000)    / 1000);
-
-    el('cd-label').textContent = labelText;
-    el('cd-d').textContent     = pad(days);
-    el('cd-h').textContent     = pad(hours);
-    el('cd-m').textContent     = pad(minutes);
-    el('cd-s').textContent     = pad(seconds);
-    el('cd-tag').textContent   = tagText;
-
-    setTimeout(tickHero, 1000);
-  }
-
-  tickHero();
-});
-</script>
-</body>
-</html>
+      el('ev-s
