@@ -324,7 +324,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     var error = document.getElementById('pg-error');
     if (!input) return;
     if (input.value === TEAM_PASSWORD) {
-      try { localStorage.setItem('pg_unlocked', '1'); } catch(e) {}
+      try { sessionStorage.setItem('pg_unlocked', '1'); } catch(e) {}
       unlockSite();
     } else {
       if (error) error.textContent = 'Incorrect password. Try again.';
@@ -337,7 +337,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 
   // Check lock state on load
   var unlocked = false;
-  try { unlocked = localStorage.getItem('pg_unlocked') === '1'; } catch(e) {}
+  try { unlocked = sessionStorage.getItem('pg_unlocked') === '1'; } catch(e) {}
 
   if (unlocked) {
     // Already unlocked — hide overlay immediately, restore after DOM ready
@@ -1995,7 +1995,7 @@ var FILES_KEY = 'baughman_files_v2';
 
 // Write key stored only on the uploader's device
 function jbWriteKey() {
-  try { return localStorage.getItem('baughman_jb_key') || ''; } catch(e) { return ''; }
+  return '$2a$10$el71.1j4wiZ87uKBZM14Q.px5l/2h6Wu1Vs4LoU46/Ulz4glVWLzC';
 }
 
 // Get the active bin ID — prefer hardcoded, fall back to localStorage
@@ -2008,7 +2008,36 @@ function jbBin() {
 window.jsonbinPush = function(rows, fileList) {
   var key = jbWriteKey();
   var bin = jbBin();
-  if (!key || !bin) return;
+  if (!key) return;
+
+  // If no bin yet, create one first then push
+  if (!bin) {
+    var slim = rows.map(function(r) {
+      return { address: r.address, street: r.street || '', resp: r.resp, notes: r.notes || '' };
+    });
+    fetch('https://api.jsonbin.io/v3/b', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Master-Key': key,
+        'X-Bin-Name': 'BaughmanCanvass',
+        'X-Bin-Private': 'false'
+      },
+      body: JSON.stringify({ rows: slim, files: fileList })
+    }).then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.metadata && data.metadata.id) {
+        var newBin = data.metadata.id;
+        try { localStorage.setItem('baughman_jb_bin', newBin); } catch(e2) {}
+        updateCloudStatus('synced');
+        // Show bin ID in debug bar so it can be hardcoded
+        var dbg = document.getElementById('dbg-jb');
+        if (dbg) dbg.textContent = 'JSONBin CREATED: ' + newBin + ' — copy this ID!';
+        if (dbg) dbg.style.color = '#f4c460';
+      }
+    }).catch(function(e) { console.warn('JSONBin create error:', e); });
+    return;
+  }
 
   // Store address+street+resp+notes — stays under 100KB free limit (77KB)
   // Full row data (names, levy etc) stays in localStorage on the uploader device
@@ -2032,13 +2061,32 @@ window.jsonbinPush = function(rows, fileList) {
 // ── FETCH from JSONBin on page load — PUBLIC READ, no key needed ──────────
 function jsonbinFetch() {
   var bin = jbBin();
-  if (!bin) { restoreFromLocal(); return; }
+  if (!bin) {
+    // Try to find an existing bin by listing them
+    fetch('https://api.jsonbin.io/v3/b?collectionId=false', {
+      headers: { 'X-Master-Key': jbWriteKey() }
+    }).then(function(r) { return r.json(); })
+    .then(function(data) {
+      // Look for BaughmanCanvass bin
+      var bins = Array.isArray(data) ? data : (data.result || []);
+      var found = bins.find(function(b) {
+        return b.snippetMeta && (b.snippetMeta.name === 'BaughmanCanvass' || b.snippetMeta.name === 'BaughmanCanvassResults');
+      });
+      if (found && found.record && found.record.id) {
+        try { localStorage.setItem('baughman_jb_bin', found.record.id); } catch(e2) {}
+        jsonbinFetch(); // retry now that we have the bin ID
+      } else {
+        restoreFromLocal();
+      }
+    }).catch(function() { restoreFromLocal(); });
+    return;
+  }
 
   updateCloudStatus('loading');
 
-  // Public bin — no key needed for reading, any browser can fetch
+  // Use master key for reading — works for both public and private bins
   fetch('https://api.jsonbin.io/v3/b/' + bin + '/latest', {
-    headers: { 'X-Bin-Meta': 'false' }
+    headers: { 'X-Master-Key': jbWriteKey(), 'X-Bin-Meta': 'false' }
   }).then(function(r) {
     if (!r.ok) throw new Error('HTTP ' + r.status);
     return r.json();
@@ -2219,7 +2267,7 @@ window.adminSaveCloudConfig = function() {
     var binEl  = document.getElementById('admin-bin-id');
     if (binRow) binRow.style.display = 'block';
     if (binEl)  binEl.value = existingBin;
-    statusEl.innerHTML = '✓ Connected. Bin ID: ' + existingBin + '<br><button onclick="window._offerBakedDownload(\'' + existingBin + '\')" style="margin-top:6px;background:#1a3355;color:#aee2ff;border:1px solid #2a4a70;border-radius:6px;padding:5px 12px;font-size:.72rem;cursor:pointer">Download Updated HTML with Bin ID Baked In</button>';
+    statusEl.innerHTML = '✓ Connected. Bin ID: ' + existingBin + '<br><button onclick="" style="margin-top:6px;background:#1a3355;color:#aee2ff;border:1px solid #2a4a70;border-radius:6px;padding:5px 12px;font-size:.72rem;cursor:pointer">Download Updated HTML with Bin ID Baked In</button>';
     statusEl.style.color = '#2da44e';
     return;
   }
@@ -2258,7 +2306,7 @@ window.adminSaveCloudConfig = function() {
       // Trigger a fetch immediately so results load in this browser too
       if (typeof jsonbinFetch === 'function') setTimeout(jsonbinFetch, 500);
       // Offer to download updated HTML with bin ID baked in
-      setTimeout(function() { window._offerBakedDownload(binId); }, 800);
+      
     } else {
       statusEl.textContent = 'Error: ' + (data.message || 'Check your API key.');
       statusEl.style.color = '#f87171';
@@ -2269,42 +2317,6 @@ window.adminSaveCloudConfig = function() {
   });
 };
 
-// Download updated HTML with bin ID baked in
-window._offerBakedDownload = function(binId) {
-  var statusEl = document.getElementById('admin-jb-status');
-  if (!binId) return;
-
-  // Close and fully reset the admin overlay BEFORE snapshotting the DOM
-  // so the downloaded HTML doesn't open with admin panel visible
-  var overlay = document.getElementById('admin-overlay');
-  if (overlay) overlay.style.display = 'none';
-  var actions = document.getElementById('admin-actions');
-  if (actions) actions.style.display = 'none';
-  var pwWrap  = document.getElementById('admin-pw-wrap');
-  if (pwWrap)  pwWrap.style.display  = 'block';
-  var pwInput = document.getElementById('admin-pw-input');
-  if (pwInput) pwInput.value = '';
-  document.body.style.overflow = '';
-  var pgOv = document.getElementById('pg-overlay');
-  if (pgOv) pgOv.style.display = 'none';
-
-  // Wait one frame for DOM to settle, then snapshot
-  setTimeout(function() {
-    var src     = document.documentElement.outerHTML;
-    // Replace bin ID — handles both empty string and any previously baked ID
-    var patched = src.replace(/var JB_BIN_ID = '[^']*';/,
-                              "var JB_BIN_ID = '" + binId + "';");
-    var blob = new Blob([patched], {type:'text/html'});
-    var a    = document.createElement('a');
-    a.href   = URL.createObjectURL(blob);
-    a.download = 'volunteer_site_updated.html';
-    a.click();
-    if (statusEl) {
-      statusEl.innerHTML = '✓ Connected! <strong style="color:#f4c460">' +
-        'File downloaded — upload it to GitHub to sync all browsers.</strong>';
-    }
-  }, 50);
-};
 
 window.adminDeleteResults = function() {
   if (!confirm('Delete ALL saved canvass results from all uploads? This cannot be undone.')) return;
