@@ -350,7 +350,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   </div>
 </div>
 
-<nav><div class="nav-inner"><a href="#" class="nav-brand">🔥 Baughman Township Fire &amp; EMS Levy</a><ul class="nav-links"><li><a href="#early-voting" class="nav-ev">🗳 Vote Early</a></li><li><a href="#about">Levy Info</a></li><li><a href="#pros-cons">Pros &amp; Cons</a></li><li><a href="#costs">Costs</a></li><li><a href="#strategy">Strategy</a></li><li><a href="#teams">Canvassers</a></li><li><a href="#talking">Scripts</a></li><li><a href="#timeline">Schedule</a></li><li><a href="#vol-contacts" style="color:#74c69d">👥 Team</a></li><li><a href="#contact">Contact</a></li></ul></div></nav>
+<nav><div class="nav-inner"><a href="#" class="nav-brand">🔥 Baughman Township Fire &amp; EMS Levy</a><ul class="nav-links"><li><a href="#early-voting" class="nav-ev">🗳 Vote Early</a></li><li><a href="#about">Levy Info</a></li><li><a href="#pros-cons">Pros &amp; Cons</a></li><li><a href="#costs">Costs</a></li><li><a href="#strategy">Strategy</a></li><li><a href="#tally" style="color:#74c69d">📊 Results</a></li><li><a href="#teams">Canvassers</a></li><li><a href="#talking">Scripts</a></li><li><a href="#timeline">Schedule</a></li><li><a href="#vol-contacts" style="color:#74c69d">👥 Team</a></li><li><a href="#contact">Contact</a></li></ul></div></nav>
 
 <section class="hero"><div class="hero-inner">
   <div class="hero-eyebrow"><span class="hero-badge">🗳 May 5, 2026 · Wayne County Ohio</span><span class="hero-badge-blue">Early Voting · April 7 – May 5</span></div>
@@ -694,6 +694,452 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   </table></div></div>
 </div></section>
 </div></section>
+
+
+<!-- CANVASS RESULTS REPORT -->
+<section id="tally" style="background:var(--navy);border-top:3px solid var(--gold)">
+<div class="sec">
+  <div class="sec-label">Canvass Results</div>
+  <h2>Field <em>Report &amp; Follow-Up</em></h2>
+  <p class="lead">Upload the exported spreadsheet from the canvassing app to see the latest results. Works with any version — just re-upload when a new file comes in from the field.</p>
+
+  <!-- UPLOAD ZONE -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px" id="upload-panels">
+
+    <!-- LEFT: Local file -->
+    <div id="upload-zone"
+      style="border:2px dashed rgba(201,150,42,.4);border-radius:12px;padding:32px 20px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(201,150,42,.04)"
+      onclick="document.getElementById('file-input').click()"
+      ondragover="event.preventDefault();this.style.borderColor='var(--gold)';this.style.background='rgba(201,150,42,.1)'"
+      ondragleave="this.style.borderColor='rgba(201,150,42,.4)';this.style.background='rgba(201,150,42,.04)'"
+      ondrop="handleDrop(event)">
+      <div style="font-size:2rem;margin-bottom:8px">📂</div>
+      <div style="font-family:'Oswald',sans-serif;font-size:.82rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-light);margin-bottom:5px">From Your Device</div>
+      <div style="font-size:.78rem;color:#667788">Drag &amp; drop or click to browse<br><span style="font-size:.72rem">.xlsx or .csv from the canvass app</span></div>
+      <input id="file-input" type="file" accept=".xlsx,.csv" style="display:none" onchange="handleFile(this.files[0])">
+    </div>
+
+    <!-- RIGHT: Dropbox link -->
+    <div style="border:2px dashed rgba(46,134,193,.35);border-radius:12px;padding:32px 20px;text-align:center;background:rgba(46,134,193,.04);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px">
+      <div style="font-size:2rem;margin-bottom:2px">📦</div>
+      <div style="font-family:'Oswald',sans-serif;font-size:.82rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#aee2ff;margin-bottom:2px">From Dropbox</div>
+      <div style="font-size:.75rem;color:#667788;margin-bottom:4px">Paste a shared Dropbox link below</div>
+      <div style="display:flex;gap:8px;width:100%;max-width:360px">
+        <input id="dropbox-url" type="url" placeholder="https://www.dropbox.com/s/…"
+          style="flex:1;background:rgba(0,0,0,.3);border:1px solid rgba(46,134,193,.3);border-radius:6px;padding:8px 10px;color:var(--cream);font-size:.78rem;outline:none;min-width:0"
+          onkeydown="if(event.key==='Enter')loadFromDropbox()"
+          onfocus="this.style.borderColor='rgba(46,134,193,.7)'"
+          onblur="this.style.borderColor='rgba(46,134,193,.3)'">
+        <button onclick="loadFromDropbox()"
+          style="background:var(--blue-light);color:white;border:none;border-radius:6px;padding:8px 14px;font-family:'Oswald',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;white-space:nowrap">Load</button>
+      </div>
+      <div style="font-size:.68rem;color:#445566;line-height:1.5">In Dropbox: open the file → Share → Copy link<br>Paste it here and click Load</div>
+    </div>
+
+  </div>
+  <style>@media(max-width:600px){#upload-panels{grid-template-columns:1fr}}</style>
+
+  <!-- ERROR MSG -->
+  <div id="report-error" style="display:none;background:rgba(192,57,43,.15);border:1px solid rgba(192,57,43,.4);border-radius:8px;padding:14px 18px;color:#ff8a7a;font-size:.88rem;margin-bottom:20px"></div>
+
+  <!-- REPORT (hidden until file loaded) -->
+  <div id="report-wrap" style="display:none">
+
+    <!-- FILE META -->
+    <div id="file-meta" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:12px 18px;margin-bottom:24px;font-size:.82rem;color:#8a9bb0"></div>
+
+    <!-- DASHBOARD TILES -->
+    <div id="dash-tiles" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:28px"></div>
+
+    <!-- PROGRESS BAR -->
+    <div style="margin-bottom:28px">
+      <div style="display:flex;justify-content:space-between;font-family:'Oswald',sans-serif;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:#667788;margin-bottom:6px">
+        <span>Canvass Progress</span><span id="pct-label"></span>
+      </div>
+      <div style="height:10px;background:rgba(255,255,255,.06);border-radius:5px;overflow:hidden">
+        <div id="progress-bar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--gold),#74c69d);border-radius:5px;transition:width .5s"></div>
+      </div>
+    </div>
+
+    <!-- STREET BREAKDOWN -->
+    <div style="margin-bottom:32px">
+      <div class="sec-label" style="margin-bottom:14px">By Street</div>
+      <div style="overflow-x:auto;border-radius:10px;border:1px solid rgba(255,255,255,.08)">
+        <table style="width:100%;border-collapse:collapse;min-width:500px">
+          <thead><tr style="background:var(--navy-light)">
+            <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 14px;text-align:left">Street</th>
+            <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 10px;text-align:center">Stops</th>
+            <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#74c69d;padding:9px 10px;text-align:center">✅ Yes</th>
+            <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#ff8a7a;padding:9px 10px;text-align:center">❌ No</th>
+            <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-light);padding:9px 10px;text-align:center">❓ Undecided</th>
+            <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#8a9bb0;padding:9px 10px;text-align:center">🏠 Not Home</th>
+            <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#445566;padding:9px 10px;text-align:center">⚪ Not Visited</th>
+          </tr></thead>
+          <tbody id="street-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- DETAIL TABLE -->
+    <div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px">
+        <div class="sec-label" style="margin-bottom:0">Household Detail</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap" id="filter-btns">
+          <button class="rf-btn rf-active" data-f="all"         onclick="setFilter('all')">All</button>
+          <button class="rf-btn rf-yes"    data-f="Yes"         onclick="setFilter('Yes')">✅ Yes</button>
+          <button class="rf-btn rf-no"     data-f="No"          onclick="setFilter('No')">❌ No</button>
+          <button class="rf-btn rf-und"    data-f="Undecided"   onclick="setFilter('Undecided')">❓ Undecided</button>
+          <button class="rf-btn rf-nh"     data-f="Not Home"    onclick="setFilter('Not Home')">🏠 Not Home</button>
+          <button class="rf-btn rf-nv"     data-f="Not Visited" onclick="setFilter('Not Visited')">⚪ Not Visited</button>
+          <button class="rf-btn rf-fu"     data-f="followup"    onclick="setFilter('followup')">🔁 Follow-Up List</button>
+        </div>
+        <input id="det-search" type="text" placeholder="🔍 Search name or address…" oninput="renderDetail()"
+          style="flex:1;min-width:180px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:7px 11px;color:var(--cream);font-size:.82rem;outline:none">
+        <button onclick="exportCSV()"
+          style="background:var(--gold);color:var(--navy);border:none;border-radius:6px;padding:7px 16px;font-family:'Oswald',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;white-space:nowrap">⬇ Export CSV</button>
+      </div>
+      <div id="det-count" style="font-size:.75rem;color:var(--gray);margin-bottom:8px"></div>
+      <div style="overflow-x:auto;border-radius:10px;border:1px solid rgba(255,255,255,.08)">
+        <table style="width:100%;border-collapse:collapse;min-width:640px">
+          <thead><tr style="background:var(--navy-light)">
+            <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 12px;text-align:left">Name</th>
+            <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 12px;text-align:left">Address</th>
+            <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 8px;text-align:center">Prec</th>
+            <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 8px;text-align:center">Voters</th>
+            <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 8px;text-align:right">Levy/Yr</th>
+            <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 12px;text-align:center">Response</th>
+            <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 12px;text-align:left">Notes</th>
+          </tr></thead>
+          <tbody id="detail-tbody"></tbody>
+        </table>
+      </div>
+      <p style="font-size:.72rem;color:var(--gray);margin-top:10px;font-style:italic">Use the Follow-Up List filter + Export CSV to generate your Wave 2 re-knock list.</p>
+    </div>
+  </div><!-- /report-wrap -->
+</div>
+</section>
+
+<style>
+.rf-btn{font-family:'Oswald',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:5px 11px;border-radius:5px;cursor:pointer;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:#7788aa;transition:all .15s}
+.rf-btn:hover{background:rgba(255,255,255,.12);color:var(--cream)}
+.rf-btn.rf-active{border-color:rgba(201,150,42,.5)!important;background:rgba(201,150,42,.18)!important;color:var(--gold-light)!important}
+.rf-btn.rf-yes{border-color:rgba(39,174,96,.3);color:#74c69d}
+.rf-btn.rf-no{border-color:rgba(192,57,43,.3);color:#ff8a7a}
+.rf-btn.rf-und{border-color:rgba(201,150,42,.3);color:var(--gold-light)}
+.rf-btn.rf-nh{border-color:rgba(138,155,176,.3);color:#8a9bb0}
+.rf-btn.rf-nv{border-color:rgba(255,255,255,.1);color:#445566}
+.rf-btn.rf-fu{border-color:rgba(46,134,193,.35);color:#aee2ff}
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+(function(){
+  var rows = [];
+  var currentFilter = 'all';
+
+  var RESP_STYLE = {
+    'Yes':         'background:rgba(39,174,96,.2);color:#74c69d;border:1px solid rgba(39,174,96,.35)',
+    'No':          'background:rgba(192,57,43,.2);color:#ff8a7a;border:1px solid rgba(192,57,43,.35)',
+    'Undecided':   'background:rgba(201,150,42,.18);color:var(--gold-light);border:1px solid rgba(201,150,42,.35)',
+    'Not Home':    'background:rgba(138,155,176,.15);color:#8a9bb0;border:1px solid rgba(138,155,176,.3)',
+    'Not Visited': 'background:rgba(255,255,255,.05);color:#445566;border:1px solid rgba(255,255,255,.1)',
+  };
+
+  function respBadge(r) {
+    var s = RESP_STYLE[r] || RESP_STYLE['Not Visited'];
+    return '<span style="'+s+';font-family:'Oswald',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:2px 8px;border-radius:3px;white-space:nowrap">'+esc(r)+'</span>';
+  }
+
+  // ── File handling ────────────────────────────────────────────────────────
+  window.handleDrop = function(e) {
+    e.preventDefault();
+    var zone = document.getElementById('upload-zone');
+    zone.style.borderColor = 'rgba(201,150,42,.4)';
+    zone.style.background  = 'rgba(201,150,42,.04)';
+    var f = e.dataTransfer.files[0];
+    if (f) handleFile(f);
+  };
+
+  window.handleFile = function(file) {
+    if (!file) return;
+    var ext = file.name.split('.').pop().toLowerCase();
+    if (ext !== 'xlsx' && ext !== 'csv') {
+      showError('Please upload an .xlsx or .csv file exported from the canvass app.');
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        var wb = XLSX.read(e.target.result, {type:'array'});
+        var ws = wb.Sheets[wb.SheetNames[0]];
+        var raw = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
+        parseSheet(raw, file.name);
+      } catch(err) {
+        showError('Could not read file: ' + err.message);
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  };
+
+  window.loadFromDropbox = function() {
+    var raw = (document.getElementById('dropbox-url').value || '').trim();
+    if (!raw) { showError('Paste a Dropbox shared link first.'); return; }
+
+    // Convert any Dropbox share URL to a direct download URL
+    // Handles: dropbox.com/s/…?dl=0  →  dl.dropboxusercontent.com/s/…
+    var url = raw
+      .replace('www.dropbox.com', 'dl.dropboxusercontent.com')
+      .replace('?dl=0', '')
+      .replace('?dl=1', '')
+      .split('?')[0];   // strip any trailing query params
+
+    // Show loading state
+    var btn = document.querySelector('#upload-panels button');
+    var orig = btn ? btn.textContent : '';
+    if (btn) { btn.textContent = '⏳ Loading…'; btn.disabled = true; }
+    hideError();
+
+    fetch(url)
+      .then(function(resp) {
+        if (!resp.ok) throw new Error('HTTP ' + resp.status + ' — check the link is a valid shared Dropbox file.');
+        return resp.arrayBuffer();
+      })
+      .then(function(buf) {
+        if (btn) { btn.textContent = orig; btn.disabled = false; }
+        try {
+          var wb = XLSX.read(buf, {type:'array'});
+          var ws = wb.Sheets[wb.SheetNames[0]];
+          var data = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
+          var fname = url.split('/').pop() || 'dropbox-file';
+          parseSheet(data, fname + ' (Dropbox)');
+        } catch(e) {
+          showError('Could not parse file from Dropbox: ' + e.message);
+        }
+      })
+      .catch(function(err) {
+        if (btn) { btn.textContent = orig; btn.disabled = false; }
+        showError('Could not load from Dropbox: ' + err.message + '. Make sure the link is set to "Anyone with the link can view".');
+      });
+  };
+
+  function parseSheet(raw, filename) {
+    // Find the header row (contains "Street" and "Response")
+    var headerIdx = -1;
+    for (var i = 0; i < Math.min(raw.length, 10); i++) {
+      var rowStr = raw[i].join('|').toLowerCase();
+      if (rowStr.indexOf('street') >= 0 && rowStr.indexOf('response') >= 0) {
+        headerIdx = i; break;
+      }
+    }
+    if (headerIdx < 0) { showError('Could not find the header row. Make sure this is the correct canvass spreadsheet.'); return; }
+
+    var headers = raw[headerIdx].map(function(h){ return String(h).trim().toLowerCase(); });
+    var col = function(name) {
+      var idx = headers.findIndex(function(h){ return h.indexOf(name.toLowerCase()) >= 0; });
+      return idx;
+    };
+
+    var cStreet   = col('street');
+    var cHouse    = col('house');
+    var cVoter    = col('voter name');
+    var cLast     = col('last name');
+    var cPrec     = col('precinct');
+    var cVoters   = col('# voter');
+    var cLike     = col('likelihood');
+    var cLevy     = col('levy/yr');
+    var cResp     = col('response');
+    var cNotes    = col('notes');
+    var cExported = -1;
+
+    // Grab export timestamp from row 1
+    var exportedAt = '';
+    for (var i = 0; i < headerIdx; i++) {
+      var cell = String(raw[i][0] || '');
+      if (cell.toLowerCase().indexOf('exported') >= 0) { exportedAt = cell; break; }
+    }
+
+    if (cStreet < 0 || cResp < 0) {
+      showError('Missing expected columns (Street, Response). Check this is the correct file.');
+      return;
+    }
+
+    rows = [];
+    for (var i = headerIdx + 1; i < raw.length; i++) {
+      var r = raw[i];
+      var street = String(r[cStreet] || '').trim();
+      if (!street || street.toLowerCase() === 'street') continue;
+      var house   = String(r[cHouse]  || '').replace('.0','').trim();
+      var vname   = String(r[cVoter]  || '').trim();
+      var lname   = cLast >= 0 ? String(r[cLast] || '').trim() : '';
+      var name    = (vname + (lname ? ' ' + lname : '')).trim();
+      var prec    = String(r[cPrec]   || '').replace('BAUGHMAN TWP ','P').trim();
+      var voters  = parseInt(r[cVoters]) || 0;
+      var like    = String(r[cLike]   || '').trim();
+      var levy    = parseFloat(r[cLevy])  || 0;
+      var resp    = String(r[cResp]   || 'Not Visited').trim() || 'Not Visited';
+      var notes   = cNotes >= 0 ? String(r[cNotes] || '').trim() : '';
+      rows.push({ name:name, address:house+' '+street, street:street, prec:prec, voters:voters, like:like, levy:levy, resp:resp, notes:notes });
+    }
+
+    if (rows.length === 0) { showError('No data rows found in the file.'); return; }
+
+    hideError();
+    renderReport(filename, exportedAt);
+  }
+
+  // ── Render full report ───────────────────────────────────────────────────
+  function renderReport(filename, exportedAt) {
+    document.getElementById('report-wrap').style.display = 'block';
+
+    // Meta bar
+    var total = rows.length;
+    var visited = rows.filter(function(r){ return r.resp !== 'Not Visited'; }).length;
+    document.getElementById('file-meta').innerHTML =
+      '<span style="color:var(--gold-light);font-weight:700">📄 '+esc(filename)+'</span>' +
+      (exportedAt ? ' &nbsp;·&nbsp; <span>'+esc(exportedAt)+'</span>' : '') +
+      ' &nbsp;·&nbsp; <span><strong style="color:var(--cream)">'+total+'</strong> households</span>' +
+      ' &nbsp;·&nbsp; <span><strong style="color:var(--cream)">'+visited+'</strong> visited</span>';
+
+    renderDashboard();
+    renderStreets();
+    setFilter('all');
+  }
+
+  function count(resp) {
+    if (resp === 'followup') return rows.filter(function(r){ return r.resp==='Undecided'||r.resp==='Not Home'; }).length;
+    return rows.filter(function(r){ return r.resp === resp; }).length;
+  }
+
+  function renderDashboard() {
+    var total   = rows.length;
+    var yes     = count('Yes');
+    var no      = count('No');
+    var und     = count('Undecided');
+    var nh      = count('Not Home');
+    var nv      = count('Not Visited');
+    var visited = total - nv;
+    var pct     = total ? Math.round(visited/total*100) : 0;
+
+    var tiles = [
+      { label:'✅ Yes',         val:yes,     color:'#74c69d',          bg:'rgba(39,174,96,.15)',    border:'rgba(39,174,96,.3)' },
+      { label:'❌ No',           val:no,      color:'#ff8a7a',          bg:'rgba(192,57,43,.15)',    border:'rgba(192,57,43,.3)' },
+      { label:'❓ Undecided',    val:und,     color:'var(--gold-light)', bg:'rgba(201,150,42,.12)',   border:'rgba(201,150,42,.3)' },
+      { label:'🏠 Not Home',    val:nh,      color:'#8a9bb0',          bg:'rgba(138,155,176,.1)',   border:'rgba(138,155,176,.28)' },
+      { label:'⚪ Not Visited',  val:nv,      color:'#445566',          bg:'rgba(255,255,255,.04)',  border:'rgba(255,255,255,.1)' },
+      { label:'🔁 Follow-Up',   val:und+nh,  color:'#aee2ff',          bg:'rgba(46,134,193,.12)',   border:'rgba(46,134,193,.3)' },
+    ];
+    document.getElementById('dash-tiles').innerHTML = tiles.map(function(t){
+      return '<div style="background:'+t.bg+';border:1px solid '+t.border+';border-radius:10px;padding:16px 12px;text-align:center">'+
+        '<div style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:'+t.color+';line-height:1">'+t.val+'</div>'+
+        '<div style="font-family:'Oswald',sans-serif;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:#556677;margin-top:5px">'+t.label+'</div>'+
+        '</div>';
+    }).join('');
+
+    document.getElementById('pct-label').textContent = pct + '% visited (' + (total-nv) + ' of ' + total + ')';
+    document.getElementById('progress-bar').style.width = pct + '%';
+  }
+
+  function renderStreets() {
+    var streets = {};
+    rows.forEach(function(r){
+      if (!streets[r.street]) streets[r.street] = {total:0,Yes:0,No:0,Undecided:0,'Not Home':0,'Not Visited':0};
+      var s = streets[r.street];
+      s.total++;
+      s[r.resp] = (s[r.resp]||0) + 1;
+    });
+    var sorted = Object.keys(streets).sort();
+    var tbody = document.getElementById('street-tbody');
+    tbody.innerHTML = sorted.map(function(st){
+      var s = streets[st];
+      var pctDone = Math.round((s.total - (s['Not Visited']||0)) / s.total * 100);
+      var barW = pctDone > 0 ? '<div style="display:inline-block;width:'+pctDone+'%!important;height:4px;background:var(--gold);border-radius:2px;vertical-align:middle;margin-left:6px;min-width:2px"></div>' : '';
+      return '<tr style="border-bottom:1px solid rgba(255,255,255,.04)">'+
+        '<td style="padding:8px 14px;font-size:.83rem;font-weight:600;color:var(--cream)">'+esc(st)+'</td>'+
+        '<td style="padding:8px 10px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#8a9bb0">'+s.total+'</td>'+
+        '<td style="padding:8px 10px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#74c69d;font-weight:700">'+(s['Yes']||0)+'</td>'+
+        '<td style="padding:8px 10px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#ff8a7a">'+(s['No']||0)+'</td>'+
+        '<td style="padding:8px 10px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--gold-light)">'+(s['Undecided']||0)+'</td>'+
+        '<td style="padding:8px 10px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#8a9bb0">'+(s['Not Home']||0)+'</td>'+
+        '<td style="padding:8px 10px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#334455">'+(s['Not Visited']||0)+'</td>'+
+      '</tr>';
+    }).join('');
+  }
+
+  // ── Detail table ─────────────────────────────────────────────────────────
+  window.setFilter = function(f) {
+    currentFilter = f;
+    document.querySelectorAll('.rf-btn').forEach(function(b){
+      b.classList.toggle('rf-active', b.dataset.f === f);
+    });
+    renderDetail();
+  };
+
+  window.renderDetail = function() {
+    var q = (document.getElementById('det-search').value || '').toLowerCase();
+    var filtered = rows.filter(function(r){
+      var matchF = currentFilter === 'all'      ? true
+                 : currentFilter === 'followup' ? (r.resp==='Undecided'||r.resp==='Not Home')
+                 : r.resp === currentFilter;
+      var matchQ = !q || r.name.toLowerCase().indexOf(q)>=0 || r.address.toLowerCase().indexOf(q)>=0;
+      return matchF && matchQ;
+    });
+
+    document.getElementById('det-count').textContent = 'Showing ' + filtered.length + ' of ' + rows.length + ' households';
+
+    var likeTag = function(l) {
+      if (l==='LIKELY')   return '<span style="font-family:'Oswald',sans-serif;font-size:.58rem;padding:1px 5px;border-radius:3px;background:rgba(39,174,96,.15);color:#74c69d;margin-left:5px">★ Likely</span>';
+      if (l==='POSSIBLE') return '<span style="font-family:'Oswald',sans-serif;font-size:.58rem;padding:1px 5px;border-radius:3px;background:rgba(201,150,42,.12);color:var(--gold-light);margin-left:5px">◐ Possible</span>';
+      return '';
+    };
+
+    document.getElementById('detail-tbody').innerHTML = filtered.map(function(r){
+      return '<tr style="border-bottom:1px solid rgba(255,255,255,.04)">'+
+        '<td style="padding:7px 12px;font-size:.82rem;font-weight:600;color:var(--cream)">'+esc(r.name)+likeTag(r.like)+'</td>'+
+        '<td style="padding:7px 12px;font-size:.82rem;color:#8a9bb0">'+esc(r.address)+'</td>'+
+        '<td style="padding:7px 8px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.7rem;color:#667788">'+esc(r.prec)+'</td>'+
+        '<td style="padding:7px 8px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#aee2ff">'+r.voters+'</td>'+
+        '<td style="padding:7px 8px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--gold-light)">$'+r.levy.toFixed(2)+'</td>'+
+        '<td style="padding:7px 12px;text-align:center">'+respBadge(r.resp)+'</td>'+
+        '<td style="padding:7px 12px;font-size:.78rem;color:#8a9bb0;font-style:'+( r.notes ? 'normal' : 'italic')+';color:'+(r.notes?'#c0ccdd':'#445566')+'">'+esc(r.notes||'—')+'</td>'+
+      '</tr>';
+    }).join('');
+  };
+
+  // ── Export CSV ────────────────────────────────────────────────────────────
+  window.exportCSV = function() {
+    var q = (document.getElementById('det-search').value || '').toLowerCase();
+    var filtered = rows.filter(function(r){
+      var matchF = currentFilter === 'all'      ? true
+                 : currentFilter === 'followup' ? (r.resp==='Undecided'||r.resp==='Not Home')
+                 : r.resp === currentFilter;
+      var matchQ = !q || r.name.toLowerCase().indexOf(q)>=0 || r.address.toLowerCase().indexOf(q)>=0;
+      return matchF && matchQ;
+    });
+    var lines = [['Name','Address','Street','Precinct','Voters','Levy/Yr','Likelihood','Response','Notes']];
+    filtered.forEach(function(r){
+      lines.push([r.name,r.address,r.street,r.prec,r.voters,r.levy,r.like,r.resp,r.notes]);
+    });
+    var csv = lines.map(function(l){
+      return l.map(function(v){ return '"'+String(v).replace(/"/g,'\"')+'"'; }).join(',');
+    }).join('\n');
+    var blob = new Blob([csv],{type:'text/csv'});
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    var fname = 'canvass_' + (currentFilter==='all'?'all':currentFilter.replace(/ /g,'_')) + '_' + new Date().toISOString().slice(0,10) + '.csv';
+    a.download = fname;
+    a.click();
+  };
+
+  // ── Helpers ───────────────────────────────────────────────────────────────
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function showError(msg){ var e=document.getElementById('report-error'); e.textContent=msg; e.style.display='block'; }
+  function hideError(){ document.getElementById('report-error').style.display='none'; }
+
+  // Expose renderDetail globally for the search input's oninput
+  window.renderDetail = window.renderDetail;
+})();
+</script>
+
 <!-- TALKING POINTS -->
 <section id="talking"><div class="sec">
   <div class="sec-label">Door Scripts</div>
