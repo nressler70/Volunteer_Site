@@ -703,52 +703,39 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   <h2>Field <em>Report &amp; Follow-Up</em></h2>
   <p class="lead">Upload the exported spreadsheet from the canvassing app to see the latest results. Works with any version — just re-upload when a new file comes in from the field.</p>
 
-  <!-- UPLOAD ZONE -->
+  <!-- UPLOAD BAR — compact, always visible at top of results -->
   <div id="upload-zone"
-    style="border:2px dashed rgba(201,150,42,.4);border-radius:14px;padding:36px 24px 28px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:20px;background:rgba(201,150,42,.04);-webkit-tap-highlight-color:transparent"
-    onclick="document.getElementById('file-input').click()"
-    ondragover="event.preventDefault();this.style.borderColor='var(--gold)';this.style.background='rgba(201,150,42,.1)'"
-    ondragleave="this.style.borderColor='rgba(201,150,42,.4)';this.style.background='rgba(201,150,42,.04)'"
+    style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:rgba(201,150,42,.06);border:1.5px dashed rgba(201,150,42,.35);border-radius:12px;padding:14px 20px;margin-bottom:24px;cursor:pointer;transition:border-color .2s"
+    ondragover="event.preventDefault();this.style.borderColor='var(--gold)'"
+    ondragleave="this.style.borderColor='rgba(201,150,42,.35)'"
     ondrop="handleDrop(event)">
-    <div style="font-size:2.8rem;margin-bottom:10px">📂</div>
-    <div style="font-family:'Oswald',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-light);margin-bottom:8px">Upload Canvass Results</div>
-    <div style="font-size:.84rem;color:#8a9bb0;margin-bottom:6px">Select the .xlsx or .csv exported from the canvass app — report saves automatically</div>
-    <div style="display:inline-block;margin-top:10px;background:var(--gold);color:var(--navy);font-family:'Oswald',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:11px 32px;border-radius:8px">Choose File</div>
+    <span style="font-size:1.5rem;flex-shrink:0">📂</span>
+    <div style="flex:1;min-width:140px">
+      <div style="font-family:'Oswald',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-light)">Upload New Results</div>
+      <div id="upload-saved-hint" style="font-size:.72rem;color:#556677;margin-top:2px">Select .xlsx or .csv from the canvass app</div>
+    </div>
+    <button onclick="document.getElementById('file-input').click()"
+      style="background:var(--gold);color:var(--navy);border:none;border-radius:8px;padding:9px 22px;font-family:'Oswald',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;white-space:nowrap;flex-shrink:0">
+      Choose File
+    </button>
     <input id="file-input" type="file" accept=".xlsx,.csv,.xls" style="display:none" onchange="window.handleFile(this.files[0])">
   </div>
-
-  <!-- HOW-TO INSTRUCTIONS -->
-
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px" id="howto-panels">
-    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:16px 18px">
-      <div style="font-family:'Oswald',sans-serif;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:#aee2ff;margin-bottom:10px">🤖 Android</div>
-      <ol style="padding-left:16px;font-size:.78rem;color:#8a9bb0;line-height:1.9;margin:0">
-        <li>Export file from the canvass app</li>
-        <li>Tap <strong style="color:var(--cream)">Choose File</strong> above</li>
-        <li>Tap <strong style="color:var(--cream)">Downloads</strong> in file picker</li>
-        <li>Select the spreadsheet</li>
-      </ol>
-    </div>
-    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:16px 18px">
-      <div style="font-family:'Oswald',sans-serif;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:#74c69d;margin-bottom:10px">🍎 iPhone</div>
-      <ol style="padding-left:16px;font-size:.78rem;color:#8a9bb0;line-height:1.9;margin:0">
-        <li>Export file from the canvass app</li>
-        <li>Tap <strong style="color:var(--cream)">Choose File</strong> above</li>
-        <li>Tap <strong style="color:var(--cream)">Browse</strong> → <strong style="color:var(--cream)">On My iPhone</strong></li>
-        <li>Open <strong style="color:var(--cream)">Downloads</strong>, select file</li>
-      </ol>
-    </div>
-  </div>
-  <style>@media(max-width:600px){#upload-panels,#howto-panels{grid-template-columns:1fr}}@media(max-width:480px){#upload-zone{padding:20px 12px 16px}}</style>
 
   <!-- ERROR MSG -->
   <div id="report-error" style="display:none;background:rgba(192,57,43,.15);border:1px solid rgba(192,57,43,.4);border-radius:8px;padding:14px 18px;color:#ff8a7a;font-size:.88rem;margin-bottom:20px"></div>
 
-  <!-- REPORT (hidden until file loaded) -->
-  <div id="report-wrap" style="display:none">
+  <!-- REPORT — always visible, empty state shown until data loads -->
+  <div id="report-wrap" style="display:block">
+
+    <!-- EMPTY STATE — shown when no data loaded yet -->
+    <div id="report-empty" style="text-align:center;padding:48px 24px;color:#445566;border:1.5px dashed rgba(255,255,255,.08);border-radius:12px;margin-bottom:24px">
+      <div style="font-size:2.5rem;margin-bottom:12px">📊</div>
+      <div style="font-family:'Oswald',sans-serif;font-size:.9rem;letter-spacing:.1em;text-transform:uppercase;color:#556677;margin-bottom:8px">No Results Loaded Yet</div>
+      <div style="font-size:.82rem;color:#445566">Upload a canvass export above to see the live report.<br>Results are saved automatically and reload on each visit.</div>
+    </div>
 
     <!-- FILE META -->
-    <div id="file-meta" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:12px 18px;margin-bottom:24px;font-size:.82rem;color:#8a9bb0"></div>
+    <div id="file-meta" style="display:none" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:12px 18px;margin-bottom:24px;font-size:.82rem;color:#8a9bb0"></div>
 
     <!-- DASHBOARD TILES -->
     <div id="dash-tiles" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:28px"></div>
@@ -763,59 +750,97 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       </div>
     </div>
 
-    <!-- STREET BREAKDOWN -->
-    <div style="margin-bottom:32px">
-      <div class="sec-label" style="margin-bottom:14px">By Street</div>
-      <div style="overflow-x:auto;border-radius:10px;border:1px solid rgba(255,255,255,.08)">
-        <table style="width:100%;border-collapse:collapse;min-width:500px">
-          <thead><tr style="background:var(--navy-light)">
-            <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 14px;text-align:left">Street</th>
-            <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 10px;text-align:center">Stops</th>
-            <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#74c69d;padding:9px 10px;text-align:center">✅ Yes</th>
-            <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#ff8a7a;padding:9px 10px;text-align:center">❌ No</th>
-            <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-light);padding:9px 10px;text-align:center">❓ Undecided</th>
-            <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#8a9bb0;padding:9px 10px;text-align:center">🏠 Not Home</th>
-            <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#445566;padding:9px 10px;text-align:center">⚪ Not Visited</th>
-          </tr></thead>
-          <tbody id="street-tbody"></tbody>
-        </table>
+    <!-- STREET BREAKDOWN — collapsible -->
+    <div id="street-section" style="margin-bottom:32px">
+
+      <div id="street-toggle"
+        onclick="toggleStreetTable()"
+        style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:14px 18px;cursor:pointer;user-select:none;transition:background .15s;margin-bottom:0"
+        onmouseover="this.style.background='rgba(255,255,255,.07)'"
+        onmouseout="this.style.background='rgba(255,255,255,.04)'">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-family:'Oswald',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-light)">By Street</span>
+          <span id="street-count-badge" style="font-size:.7rem;color:#8a9bb0;font-family:monospace"></span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:.7rem;color:#556677">Click to expand</span>
+          <span id="street-chevron" style="color:var(--gold-light);font-size:1rem;transition:transform .25s;display:inline-block">▼</span>
+        </div>
       </div>
+
+      <div id="street-body" style="display:none;margin-top:12px">
+        <div style="overflow-x:auto;border-radius:10px;border:1px solid rgba(255,255,255,.08)">
+          <table style="width:100%;border-collapse:collapse;min-width:500px">
+            <thead><tr style="background:var(--navy-light)">
+              <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 14px;text-align:left">Street</th>
+              <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 10px;text-align:center">Stops</th>
+              <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#74c69d;padding:9px 10px;text-align:center">✅ Yes</th>
+              <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#ff8a7a;padding:9px 10px;text-align:center">❌ No</th>
+              <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-light);padding:9px 10px;text-align:center">❓ Undecided</th>
+              <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#8a9bb0;padding:9px 10px;text-align:center">🏠 Not Home</th>
+              <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#445566;padding:9px 10px;text-align:center">⚪ Not Visited</th>
+            </tr></thead>
+            <tbody id="street-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
     </div>
 
-    <!-- DETAIL TABLE -->
-    <div>
-      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px">
-        <div class="sec-label" style="margin-bottom:0">Household Detail</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap" id="filter-btns">
-          <button class="rf-btn rf-active" data-f="all"         onclick="setFilter('all')">All</button>
-          <button class="rf-btn rf-yes"    data-f="Yes"         onclick="setFilter('Yes')">✅ Yes</button>
-          <button class="rf-btn rf-no"     data-f="No"          onclick="setFilter('No')">❌ No</button>
-          <button class="rf-btn rf-und"    data-f="Undecided"   onclick="setFilter('Undecided')">❓ Undecided</button>
-          <button class="rf-btn rf-nh"     data-f="Not Home"    onclick="setFilter('Not Home')">🏠 Not Home</button>
-          <button class="rf-btn rf-nv"     data-f="Not Visited" onclick="setFilter('Not Visited')">⚪ Not Visited</button>
-          <button class="rf-btn rf-fu"     data-f="followup"    onclick="setFilter('followup')">🔁 Follow-Up List</button>
+    <!-- DETAIL TABLE — collapsible -->
+    <div id="detail-section">
+
+      <!-- Collapsed header — click to expand -->
+      <div id="detail-toggle"
+        onclick="toggleDetailTable()"
+        style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:14px 18px;cursor:pointer;user-select:none;transition:background .15s;margin-bottom:0"
+        onmouseover="this.style.background='rgba(255,255,255,.07)'"
+        onmouseout="this.style.background='rgba(255,255,255,.04)'">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-family:'Oswald',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-light)">Household Detail</span>
+          <span id="detail-count-badge" style="font-size:.7rem;color:#8a9bb0;font-family:monospace"></span>
         </div>
-        <input id="det-search" type="text" placeholder="🔍 Search name or address…" oninput="renderDetail()"
-          style="flex:1;min-width:180px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:7px 11px;color:var(--cream);font-size:.82rem;outline:none">
-        <button onclick="exportCSV()"
-          style="background:var(--gold);color:var(--navy);border:none;border-radius:6px;padding:7px 16px;font-family:'Oswald',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;white-space:nowrap">⬇ Export CSV</button>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:.7rem;color:#556677">Click to expand</span>
+          <span id="detail-chevron" style="color:var(--gold-light);font-size:1rem;transition:transform .25s;display:inline-block">▼</span>
+        </div>
       </div>
-      <div id="det-count" style="font-size:.75rem;color:var(--gray);margin-bottom:8px"></div>
-      <div style="overflow-x:auto;border-radius:10px;border:1px solid rgba(255,255,255,.08)">
-        <table style="width:100%;border-collapse:collapse;min-width:640px">
-          <thead><tr style="background:var(--navy-light)">
-            <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 12px;text-align:left">Name</th>
-            <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 12px;text-align:left">Address</th>
-            <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 8px;text-align:center">Prec</th>
-            <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 8px;text-align:center">Voters</th>
-            <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 8px;text-align:right">Levy/Yr</th>
-            <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 12px;text-align:center">Response</th>
-            <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 12px;text-align:left">Notes</th>
-          </tr></thead>
-          <tbody id="detail-tbody"></tbody>
-        </table>
+
+      <!-- Expandable body -->
+      <div id="detail-body" style="display:none;margin-top:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px">
+          <div style="display:flex;gap:6px;flex-wrap:wrap" id="filter-btns">
+            <button class="rf-btn rf-active" data-f="all"         onclick="setFilter('all')">All</button>
+            <button class="rf-btn rf-yes"    data-f="Yes"         onclick="setFilter('Yes')">✅ Yes</button>
+            <button class="rf-btn rf-no"     data-f="No"          onclick="setFilter('No')">❌ No</button>
+            <button class="rf-btn rf-und"    data-f="Undecided"   onclick="setFilter('Undecided')">❓ Undecided</button>
+            <button class="rf-btn rf-nh"     data-f="Not Home"    onclick="setFilter('Not Home')">🏠 Not Home</button>
+            <button class="rf-btn rf-nv"     data-f="Not Visited" onclick="setFilter('Not Visited')">⚪ Not Visited</button>
+            <button class="rf-btn rf-fu"     data-f="followup"    onclick="setFilter('followup')">🔁 Follow-Up List</button>
+          </div>
+          <input id="det-search" type="text" placeholder="🔍 Search name or address…" oninput="renderDetail()"
+            style="flex:1;min-width:180px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:7px 11px;color:var(--cream);font-size:.82rem;outline:none">
+          <button onclick="exportCSV()"
+            style="background:var(--gold);color:var(--navy);border:none;border-radius:6px;padding:7px 16px;font-family:'Oswald',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;white-space:nowrap">⬇ Export CSV</button>
+        </div>
+        <div id="det-count" style="font-size:.75rem;color:var(--gray);margin-bottom:8px"></div>
+        <div style="overflow-x:auto;border-radius:10px;border:1px solid rgba(255,255,255,.08)">
+          <table style="width:100%;border-collapse:collapse;min-width:640px">
+            <thead><tr style="background:var(--navy-light)">
+              <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 12px;text-align:left">Name</th>
+              <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 12px;text-align:left">Address</th>
+              <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 8px;text-align:center">Prec</th>
+              <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 8px;text-align:center">Voters</th>
+              <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 8px;text-align:right">Levy/Yr</th>
+              <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 12px;text-align:center">Response</th>
+              <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 12px;text-align:left">Notes</th>
+            </tr></thead>
+            <tbody id="detail-tbody"></tbody>
+          </table>
+        </div>
+        <p style="font-size:.72rem;color:var(--gray);margin-top:10px;font-style:italic">Use the Follow-Up List filter + Export CSV to generate your Wave 2 re-knock list.</p>
       </div>
-      <p style="font-size:.72rem;color:var(--gray);margin-top:10px;font-style:italic">Use the Follow-Up List filter + Export CSV to generate your Wave 2 re-knock list.</p>
+
     </div>
   </div><!-- /report-wrap -->
 </div>
@@ -991,14 +1016,21 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     }
 
     hideError();
-    renderReport(filename, exportedAt);
+    // Allow persistence layer to merge rows before rendering
+    if (typeof window._onRowsParsed === 'function') {
+      window._onRowsParsed(rows, filename, exportedAt);
+    } else {
+      renderReport(filename, exportedAt);
+    }
   }
 
   // ── Render full report ───────────────────────────────────────────────────
   function renderReport(filename, exportedAt) {
-    var rw = document.getElementById('report-wrap');
-    rw.style.display = 'block';
-    setTimeout(function(){ rw.scrollIntoView({behavior:'smooth', block:'start'}); }, 100);
+    // Hide empty state, show meta bar
+    var emptyEl = document.getElementById('report-empty');
+    var metaEl  = document.getElementById('file-meta');
+    if (emptyEl) emptyEl.style.display = 'none';
+    if (metaEl)  metaEl.style.display  = 'flex';
 
     // Meta bar
     var total = rows.length;
@@ -1152,6 +1184,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
         '</td>' +
       '</tr>';
     }).join('');
+    updateStreetBadge();
     tbody.onclick = function(e) {
       var tr = e.target.closest('tr[data-street]');
       if (!tr) return;
@@ -1185,6 +1218,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     });
 
     document.getElementById('det-count').textContent = 'Showing ' + filtered.length + ' of ' + rows.length + ' households';
+    updateDetailBadge();
 
     var likeTag = function(l) {
       if (l==='LIKELY')   return '<span style="font-family:Oswald,sans-serif;font-size:.58rem;padding:1px 5px;border-radius:3px;background:rgba(39,174,96,.15);color:#74c69d;margin-left:5px">★ Likely</span>';
@@ -1242,6 +1276,66 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
   function showError(msg){ var e=document.getElementById('report-error'); e.textContent=msg; e.style.display='block'; }
   function hideError(){ document.getElementById('report-error').style.display='none'; }
+
+  // Toggle street table open/closed
+  window.toggleStreetTable = function() {
+    var body    = document.getElementById('street-body');
+    var chevron = document.getElementById('street-chevron');
+    var isOpen  = body.style.display !== 'none';
+    body.style.display      = isOpen ? 'none' : 'block';
+    chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+    var hint = document.querySelector('#street-toggle span:nth-child(2)');
+    if (hint) hint.textContent = isOpen ? 'Click to expand' : 'Click to collapse';
+    if (!isOpen) {
+      setTimeout(function() {
+        document.getElementById('street-toggle').scrollIntoView({behavior:'smooth', block:'nearest'});
+      }, 50);
+    }
+  };
+
+  // Update street badge
+  function updateStreetBadge() {
+    var badge = document.getElementById('street-count-badge');
+    if (!badge || !rows.length) return;
+    var streets = {};
+    rows.forEach(function(r) { streets[r.street] = true; });
+    var nStreets = Object.keys(streets).length;
+    var visited  = rows.filter(function(r) { return r.resp !== 'Not Visited'; }).length;
+    var total    = rows.length;
+    var pct      = total ? Math.round(visited / total * 100) : 0;
+    badge.textContent = nStreets + ' streets · ' + visited + '/' + total + ' visited (' + pct + '%)';
+  }
+
+  // Toggle detail table open/closed
+  window.toggleDetailTable = function() {
+    var body    = document.getElementById('detail-body');
+    var chevron = document.getElementById('detail-chevron');
+    var hint    = document.querySelector('#detail-toggle span:nth-child(2)');
+    var isOpen  = body.style.display !== 'none';
+    body.style.display    = isOpen ? 'none' : 'block';
+    chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+    var toggleEl = document.getElementById('detail-toggle');
+    if (hint) hint.textContent = isOpen ? 'Click to expand' : 'Click to collapse';
+    if (!isOpen) {
+      setTimeout(function() {
+        toggleEl.scrollIntoView({behavior:'smooth', block:'nearest'});
+      }, 50);
+    }
+  };
+
+  // Update the count badge on the collapsed header
+  function updateDetailBadge() {
+    var badge = document.getElementById('detail-count-badge');
+    if (!badge) return;
+    var total   = rows.length;
+    var yes     = count('Yes'), no = count('No'), und = count('Undecided'), nh = count('Not Home');
+    var visited = total - count('Not Visited');
+    badge.textContent = visited + ' visited · ' + yes + ' Yes · ' + no + ' No · ' + (und+nh) + ' Follow-Up';
+  }
+
+  // Allow persistence layer to set rows and trigger a re-render
+  window._setRows = function(newRows) { rows = newRows; };
+  window._renderReport = renderReport;
 
   // Expose renderDetail globally for the search input's oninput
   window.renderDetail = window.renderDetail;
@@ -1327,7 +1421,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Suzi Byall</div>
       <div class="vc-role">Canvasser · Signed In 3/15/2026</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304656433">330-465-6433</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:suzibyall@gmail.com">suzibyall@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#dba8aea1b2b9a2bab7b79bbcb6bab2b7f5b8b4b6"><span class="__cf_email__" data-cfemail="7a090f001318031b16163a1d171b131654191517">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Burkhart Rd · 70 stops</span></div>
     </div>
 
@@ -1336,7 +1430,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-role">Canvasser &amp; Campaign Support · Signed In 3/15/2026</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304659001">330-465-9001</a></div>
       <div class="vc-info"><span class="icon">📟</span><span style="color:#8a9bb0">Campaign Cell: 330-465-8982</span></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:jrutter@hypercrawl.com">jrutter@hypercrawl.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#f8928a8d8c8c9d8ab89081889d8a9b8a998f94d69b9795"><span class="__cf_email__" data-cfemail="214b535455554453614958514453425340564d0f424e4c">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Burton City / Mt Eaton / N West Lebanon / Krug · 102 stops</span></div>
     </div>
 
@@ -1344,7 +1438,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Mike Raff</div>
       <div class="vc-role">Canvasser · Signed In 3/15/2026</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3303172059">330-317-2059</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:mikerett86@gmail.com">mikerett86@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#cea3a7a5abbcabbabaf6f88ea9a3afa7a2e0ada1a3"><span class="__cf_email__" data-cfemail="066b6f6d63746372723e3046616b676f6a2865696b">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Church Rd / Good Rd / N Kohler / Wenger · 75 stops</span></div>
     </div>
 
@@ -1352,7 +1446,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Pat Turchiano</div>
       <div class="vc-role">Canvasser · Selected Streets (couldn't attend 3/15)</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304665110">330-466-5110</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:pdjtrchn1@zoominternet.net">pdjtrchn1@zoominternet.net</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#94e4f0fee0e6f7fcfaa5d4eefbfbf9fdfae0f1e6faf1e0bafaf1e0"><span class="__cf_email__" data-cfemail="29594d435d5b4a414718695346464440475d4c5b474c5d07474c5d">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 York Rd / Emmitsburg / Hanover / Chambersburg / Market / Misere · 79 stops</span></div>
     </div>
 
@@ -1360,7 +1454,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Robin Coppola</div>
       <div class="vc-role">Canvasser · Signed In 3/15/2026</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3302013020">330-201-3020</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:robin.coppola2@gmail.com">robin.coppola2@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#02706d606b6c2c616d72726d6e633042656f636b6e2c616d6f"><span class="__cf_email__" data-cfemail="3c4e535e5552125f534c4c53505d0e7c5b515d5550125f5351">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">🪧 Yard Signs</span><span class="vc-tag">📍 Tannerville / Wayne St / Paradise Ext · 64 stops</span></div>
     </div>
 
@@ -1368,7 +1462,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Joe Rubino</div>
       <div class="vc-role">Canvasser</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3306214717">330-621-4717</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:jjrubino@gmail.com">jjrubino@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#3b5151494e595255547b5c565a525715585456"><span class="__cf_email__" data-cfemail="2349495156414a4d4c63444e424a4f0d404c4e">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📞 Phone</span><span class="vc-tag">🚗 Rides</span><span class="vc-tag">📬 Absentee</span><span class="vc-tag">📍 Coal Bank / Fosnight / Rehm / West St · 68 stops</span></div>
     </div>
 
@@ -1376,7 +1470,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">David Stoll</div>
       <div class="vc-role">Canvasser</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304662409">330-466-2409</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:dnhstoll@gmail.com">dnhstoll@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#96f2f8fee5e2f9fafad6f1fbf7fffab8f5f9fb"><span class="__cf_email__" data-cfemail="04606a6c77706b6868446369656d682a676b69">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">🪧 Yard Signs</span><span class="vc-tag">📍 Ault Rd / Huprick Rd · 25 stops</span></div>
     </div>
 
@@ -1384,7 +1478,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Diane Jarrett</div>
       <div class="vc-role">Canvasser</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304654110">330-465-4110</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:djarrett@gojarrett.com">djarrett@gojarrett.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#781c12190a0a1d0c0c381f1712190a0a1d0c0c561b1715"><span class="__cf_email__" data-cfemail="7e1a141f0c0c1b0a0a3e1911141f0c0c1b0a0a501d1113">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Forrer Rd · 12 stops</span></div>
     </div>
 
@@ -1392,7 +1486,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Matt Slicker</div>
       <div class="vc-role">Canvasser · Signed In 3/15/2026</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3308542557">330-854-2557</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:matt@slickerfarms.com">matt@slickerfarms.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#ec818d9898ac9f80858f87899e8a8d9e819fc28f8381"><span class="__cf_email__" data-cfemail="f19c908585b1829d98929a94839790839c82df929e9c">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">🪧 Yard Signs</span><span class="vc-tag">📍 Deerfield NW / Fulton / Lovers Lane / Shifferly / Black Diamond + shared · 124+ stops</span></div>
     </div>
 
@@ -1400,14 +1494,14 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Shelly Brenner</div>
       <div class="vc-role">Canvasser</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3306212421">330-621-2421</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:shellybrenner38@gmail.com">shellybrenner38@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#7f0c171a1313061d0d1a11111a0d4c473f18121e1613511c1012"><span class="__cf_email__" data-cfemail="7e0d161b1212071c0c1b10101b0c4d463e19131f1712501d1113">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📞 Phone</span><span class="vc-tag">🚗 Rides</span><span class="vc-tag">📬 Absentee</span><span class="vc-tag">📍 Back Massillon Rd (split w/ Matt)</span></div>
     </div>
 
     <div class="vc-card vc-green">
       <div class="vc-name">Noelle Ressler</div>
       <div class="vc-role">Canvasser &amp; Campaign Support · Signed In 3/15/2026</div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:noeller@rbrconsulting.biz">noeller@rbrconsulting.biz</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#f49a9b9198989186b4869686979b9a878198809d9a93da969d8e"><span class="__cf_email__" data-cfemail="3d5352585151584f7d4f5f4f5e52534e48514954535a135f5447">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Dalton Fox Lake Rd (split w/ Matt)</span></div>
     </div>
 
@@ -1415,7 +1509,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Julie Finney</div>
       <div class="vc-role">Canvasser</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3302340141">330-234-0141</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:julie.finney77@gmail.com">julie.finney77@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#19736c75707c377f7077777c602e2e597e74787075377a7674"><span class="__cf_email__" data-cfemail="b3d9c6dfdad69dd5daddddd6ca8484f3d4ded2dadf9dd0dcde">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Fox Lake Rd (split w/ Matt) + Wadsworth Rd + Keck Rd · 64 stops</span></div>
     </div>
 
@@ -1429,7 +1523,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Cathy Pamer</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3307494073">330-749-4073</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:caparmer1983@gmail.com">caparmer1983@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#9bf8faebfae9f6fee9aaa2a3a8dbfcf6faf2f7b5f8f4f6"><span class="__cf_email__" data-cfemail="640705140516090116555d5c57240309050d084a070b09">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag tag-any">✋ Anything</span></div>
     </div>
 
@@ -1445,7 +1539,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Justin Haislip</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><span style="color:#8a9bb0">—</span></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:Justin@justinhaislipagency.com">Justin@justinhaislipagency.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#12586761667b7c52786761667b7c7a737b617e7b627375777c716b3c717d7f"><span class="__cf_email__" data-cfemail="b3f9c6c0c7daddf3d9c6c0c7dadddbd2dac0dfdac3d2d4d6ddd0ca9dd0dcde">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag tag-any">✋ Anything</span></div>
     </div>
 
@@ -1453,7 +1547,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Stephanie Geiser</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><span style="color:#8a9bb0">—</span></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:markstephanieg96@gmail.com">markstephanieg96@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#85e8e4f7eef6f1e0f5ede4ebece0e2bcb3c5e2e8e4ece9abe6eae8"><span class="__cf_email__" data-cfemail="b1dcd0c3dac2c5d4c1d9d0dfd8d4d68887f1d6dcd0d8dd9fd2dedc">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag tag-any">✋ Anything</span></div>
     </div>
 
@@ -1461,7 +1555,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Tim Horst</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><span style="color:#8a9bb0">—</span></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:tkhorst3@gmail.com">tkhorst3@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#483c2320273a3b3c7b082f25292124662b2725"><span class="__cf_email__" data-cfemail="57233c3f382524236417303a363e3b7934383a">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag tag-any">✋ Anything</span></div>
     </div>
 
@@ -1507,7 +1601,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Bob Graber</div>
       <div class="vc-role">Trustee</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304661662">330-466-1662</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:BGraberAuctions@aol.com">BGraberAuctions@aol.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#edafaa9f8c8f889fac988e998482839ead8c8281c38e8280"><span class="__cf_email__" data-cfemail="612326130003041320140215080e0f1221000e0d4f020e0c">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag" style="background:rgba(46,134,193,.15);color:#aee2ff;border-color:rgba(46,134,193,.3)">🏛️ Trustee</span></div>
     </div>
 
@@ -1568,12 +1662,12 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     <div class="contact-card">
       <h4>Noelle Ressler</h4><div class="role">Campaign Support</div>
       <div class="ci"><span class="icon">📞</span><a href="tel:2162948358">216-294-8358</a></div>
-      <div class="ci"><span class="icon">📧</span><a href="mailto:noeller@rbrconsulting.biz">noeller@rbrconsulting.biz</a></div>
+      <div class="ci"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#c7a9a8a2ababa2b587b5a5b5a4a8a9b4b2abb3aea9a0e9a5aebd"><span class="__cf_email__" data-cfemail="fd9392989191988fbd8f9f8f9e92938e88918994939ad39f9487">[email&#160;protected]</span></a></div>
     </div>
     <div class="contact-card">
       <h4>John Rutter</h4><div class="role">Campaign Support</div>
       <div class="ci"><span class="icon">📞</span><a href="tel:3304659001">330-465-9001</a></div>
-      <div class="ci"><span class="icon">📧</span><a href="mailto:jrutter@hypercrawl.com">jrutter@hypercrawl.com</a></div>
+      <div class="ci"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#3359414647475641735b4a435641504152445f1d505c5e"><span class="__cf_email__" data-cfemail="167c646362627364567e6f667364756477617a3875797b">[email&#160;protected]</span></a></div>
     </div>
     <div class="contact-card cc-blue">
       <h4>Wayne County Board of Elections</h4>
@@ -1612,7 +1706,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   <a class="pbtn pbtn-out" href="#teams">🗺 Canvasser Routes</a>
   <button class="pbtn pbtn-out" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Top</button>
 </div>
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 
 // ── LIVE EARLY VOTING COUNTER STRIP ──
 // This runs a separate live countdown specifically for the early voting strip
@@ -1827,22 +1921,17 @@ function restoreSavedResults() {
 }
 
 function updateUploadStatus() {
-  var zone = document.getElementById('upload-zone');
-  if (!zone) return;
   var hint = document.getElementById('upload-saved-hint');
+  if (!hint) return;
   try {
     var meta = localStorage.getItem(RESULTS_META_KEY);
     if (meta) {
       var m = JSON.parse(meta);
-      if (!hint) {
-        hint = document.createElement('div');
-        hint.id = 'upload-saved-hint';
-        hint.style.cssText = 'font-size:.74rem;color:#2da44e;margin-top:8px;font-weight:600';
-        zone.appendChild(hint);
-      }
-      hint.textContent = '💾 Showing saved: ' + m.filename + ' (uploaded ' + m.uploaded + ')';
-    } else if (hint) {
-      hint.textContent = '';
+      hint.style.color = '#2da44e';
+      hint.textContent = '💾 Saved: ' + m.filename + ' · Uploaded ' + m.uploaded;
+    } else {
+      hint.style.color = '#556677';
+      hint.textContent = 'Select .xlsx or .csv from the canvass app';
     }
   } catch(e) {}
 }
@@ -1885,13 +1974,20 @@ function refreshAdminStatus() {
   var el = document.getElementById('admin-data-status');
   if (!el) return;
   try {
-    var meta = localStorage.getItem(RESULTS_META_KEY);
-    if (meta) {
-      var m = JSON.parse(meta);
-      el.innerHTML = '<span style="color:#5ce08a">&#10003; Saved results:</span> ' +
-        m.filename + '<br><span style="color:#8a9bb0;font-size:.78rem">Uploaded: ' + m.uploaded + '</span>';
+    var rows  = JSON.parse(localStorage.getItem('baughman_rows_v2')  || '[]');
+    var files = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]');
+    if (rows.length) {
+      var fileLines = files.map(function(f) {
+        return '<div style="margin-top:5px;padding-top:5px;border-top:1px solid rgba(255,255,255,.06)">' +
+          '<span style="color:#c0ccdd">' + f.filename + '</span>' +
+          '<span style="color:#445566;font-size:.75rem"> &mdash; ' + f.uploaded + '</span>' +
+          '<br><span style="color:#5ce08a;font-size:.72rem">+' + f.added + ' new households, ' + f.updated + ' updated</span>' +
+          '</div>';
+      }).join('');
+      el.innerHTML = '<span style="color:#5ce08a">&#10003; ' + rows.length + ' total households &middot; ' +
+        files.length + ' upload' + (files.length > 1 ? 's' : '') + '</span>' + fileLines;
     } else {
-      el.innerHTML = '<span style="color:#8a9bb0">No saved results found.</span>';
+      el.innerHTML = '<span style="color:#8a9bb0">No saved results.</span>';
     }
   } catch(e) {
     el.innerHTML = '<span style="color:#8a9bb0">No saved results.</span>';
@@ -1899,10 +1995,12 @@ function refreshAdminStatus() {
 }
 
 window.adminDeleteResults = function() {
-  if (!confirm('Delete all saved canvass results? The report will be cleared from this site until a new file is uploaded.')) return;
+  if (!confirm('Delete ALL saved canvass results from all uploads? This cannot be undone.')) return;
   try {
-    localStorage.removeItem(RESULTS_KEY);
-    localStorage.removeItem(RESULTS_META_KEY);
+    localStorage.removeItem('baughman_rows_v2');
+    localStorage.removeItem('baughman_files_v2');
+    localStorage.removeItem('baughman_canvass_results_v1');
+    localStorage.removeItem('baughman_canvass_meta_v1');
   } catch(e) {}
   // Hide the report
   var rw = document.getElementById('report-wrap');
@@ -1918,7 +2016,6 @@ window.adminDeleteResults = function() {
   }, 3000);
 };
 </script>
-
 <script>
 // ══════════════════════════════════════════════════════════════════════════
 // COUNTDOWNS — Early Voting Strip + Hero Section
@@ -1931,19 +2028,18 @@ document.addEventListener('DOMContentLoaded', function() {
   function pad(n) { return String(n).padStart(2, '0'); }
   function el(id) { return document.getElementById(id); }
 
-  // ── Strip countdown ──
   function tickStrip() {
     var now = new Date();
     var target, labelText, statusText, statusClass;
     if (now < EV_START) {
       target = EV_START; labelText = 'Early Voting Opens In';
-      statusText = 'April 7 – May 5'; statusClass = 'ev-waiting';
+      statusText = 'April 7 - May 5'; statusClass = 'ev-waiting';
     } else if (now < EV_END) {
-      target = EV_END; labelText = 'Early Voting OPEN — Closes In';
+      target = EV_END; labelText = 'Early Voting OPEN - Closes In';
       statusText = 'VOTING OPEN NOW'; statusClass = 'ev-open';
     } else if (now < ELECTION) {
       target = ELECTION; labelText = 'Polls Close In';
-      statusText = 'Election Day — May 5'; statusClass = 'ev-waiting';
+      statusText = 'Election Day - May 5'; statusClass = 'ev-waiting';
     } else {
       if (el('ev-strip-label')) el('ev-strip-label').textContent = 'Voting has concluded';
       ['ev-s-d','ev-s-h','ev-s-m','ev-s-s'].forEach(function(id) { if (el(id)) el(id).textContent = '00'; });
@@ -1965,16 +2061,15 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   tickStrip();
 
-  // ── Hero countdown ──
   function tickHero() {
     var now = new Date();
     var target, labelText, tagText;
     if (now < EV_START) {
-      target = EV_START; labelText = 'Early Voting Opens In'; tagText = 'April 7 – May 5 · Wayne County BOE';
+      target = EV_START; labelText = 'Early Voting Opens In'; tagText = 'April 7 - May 5 · Wayne County BOE';
     } else if (now < EV_END) {
-      target = EV_END; labelText = 'Early Voting IS OPEN — Closes In'; tagText = 'Early voting open now at Wayne County BOE';
+      target = EV_END; labelText = 'Early Voting IS OPEN - Closes In'; tagText = 'Early voting open now at Wayne County BOE';
     } else if (now < ELECTION) {
-      target = ELECTION; labelText = 'Election Day — Polls Close In'; tagText = 'May 5, 2026 · Polls 6:30 AM – 7:30 PM';
+      target = ELECTION; labelText = 'Election Day - Polls Close In'; tagText = 'May 5, 2026 · Polls 6:30 AM - 7:30 PM';
     } else {
       if (el('cd-label')) el('cd-label').textContent = 'Election Complete';
       ['cd-d','cd-h','cd-m','cd-s'].forEach(function(id) { if (el(id)) el(id).textContent = '00'; });
@@ -2005,8 +2100,6 @@ document.addEventListener('DOMContentLoaded', function() {
       <div style="font-family:'Oswald',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#c1121f">Admin Panel</div>
       <button onclick="closeAdminPanel()" style="background:none;border:none;color:#8a9bb0;font-size:20px;cursor:pointer;line-height:1">&#x2715;</button>
     </div>
-
-    <!-- Password prompt -->
     <div id="admin-pw-wrap">
       <div style="font-size:.85rem;color:#8a9bb0;margin-bottom:12px">Enter admin password to continue:</div>
       <div style="display:flex;gap:8px;margin-bottom:8px">
@@ -2017,21 +2110,15 @@ document.addEventListener('DOMContentLoaded', function() {
       </div>
       <div id="admin-pw-error" style="font-size:.78rem;color:#f87171;min-height:18px"></div>
     </div>
-
-    <!-- Admin actions (shown after login) -->
     <div id="admin-actions" style="display:none">
       <div style="background:#0d1117;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:12px 14px;margin-bottom:16px;font-size:.82rem;line-height:1.6" id="admin-data-status"></div>
-
       <button onclick="adminDeleteResults()" style="width:100%;background:#3d1a1a;color:#f87171;border:1.5px solid #6b1a1a;border-radius:10px;padding:14px;font-family:'Oswald',sans-serif;font-size:.82rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;margin-bottom:8px">
         &#x1F5D1; Delete Saved Results
       </button>
-
       <div id="admin-delete-confirm" style="display:none;text-align:center;color:#5ce08a;font-size:.82rem;font-weight:700;margin-bottom:8px">&#10003; Results cleared successfully</div>
-
       <button onclick="closeAdminPanel()" style="width:100%;background:transparent;color:#8a9bb0;border:1px solid #21262d;border-radius:10px;padding:10px;font-size:.78rem;cursor:pointer">Close</button>
     </div>
   </div>
 </div>
-
 </body>
 </html>
