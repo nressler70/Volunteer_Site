@@ -883,85 +883,131 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 
   window.handleFile = function(file) {
     if (!file) return;
+    hideError();
     var ext = file.name.split('.').pop().toLowerCase();
-    if (ext !== 'xlsx' && ext !== 'csv') {
-      showError('Please upload an .xlsx or .csv file exported from the canvass app.');
+    if (ext !== 'xlsx' && ext !== 'xls' && ext !== 'csv') {
+      showError('Please select an .xlsx or .csv file exported from the canvass app.');
+      return;
+    }
+    if (typeof XLSX === 'undefined') {
+      showError('Spreadsheet library not loaded yet. Wait a moment and try again.');
       return;
     }
     var reader = new FileReader();
+    reader.onerror = function() { showError('Could not read the file. Please try again.'); };
     reader.onload = function(e) {
       try {
-        var wb = XLSX.read(e.target.result, {type:'array'});
-        var ws = wb.Sheets[wb.SheetNames[0]];
-        var raw = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
+        var wb;
+        if (ext === 'csv') {
+          wb = XLSX.read(e.target.result, {type: 'string'});
+        } else {
+          wb = XLSX.read(e.target.result, {type: 'binary'});
+        }
+        var ws  = wb.Sheets[wb.SheetNames[0]];
+        var raw = XLSX.utils.sheet_to_json(ws, {header: 1, defval: ''});
         parseSheet(raw, file.name);
       } catch(err) {
         showError('Could not read file: ' + err.message);
       }
     };
-    reader.readAsArrayBuffer(file);
+    if (ext === 'csv') {
+      reader.readAsText(file);
+    } else {
+      reader.readAsBinaryString(file);
+    }
   };
 
   function parseSheet(raw, filename) {
-    // Find the header row (contains "Street" and "Response")
+    if (!raw || raw.length === 0) { showError('The file appears to be empty.'); return; }
+
+    // Find header row containing "street" and "response"
     var headerIdx = -1;
-    for (var i = 0; i < Math.min(raw.length, 10); i++) {
+    for (var i = 0; i < Math.min(raw.length, 15); i++) {
+      if (!raw[i] || !raw[i].length) continue;
       var rowStr = raw[i].join('|').toLowerCase();
       if (rowStr.indexOf('street') >= 0 && rowStr.indexOf('response') >= 0) {
         headerIdx = i; break;
       }
     }
-    if (headerIdx < 0) { showError('Could not find the header row. Make sure this is the correct canvass spreadsheet.'); return; }
+    if (headerIdx < 0) {
+      showError('Could not find data headers (Street, Response) in the first 15 rows. Is this the correct canvass export file?');
+      return;
+    }
 
-    var headers = raw[headerIdx].map(function(h){ return String(h).trim().toLowerCase(); });
-    var col = function(name) {
-      var idx = headers.findIndex(function(h){ return h.indexOf(name.toLowerCase()) >= 0; });
-      return idx;
-    };
+    var headers = raw[headerIdx].map(function(h) { return String(h).trim().toLowerCase(); });
+    function col(name) {
+      var n = name.toLowerCase();
+      for (var k = 0; k < headers.length; k++) {
+        if (headers[k].indexOf(n) >= 0) return k;
+      }
+      return -1;
+    }
 
-    var cStreet   = col('street');
-    var cHouse    = col('house');
-    var cVoter    = col('voter name');
-    var cLast     = col('last name');
-    var cPrec     = col('precinct');
-    var cVoters   = col('# voter');
-    var cLike     = col('likelihood');
-    var cLevy     = col('levy/yr');
-    var cResp     = col('response');
-    var cNotes    = col('notes');
-    var cExported = -1;
+    var cStreet = col('street');
+    var cHouse  = col('house');
+    var cVoter  = col('voter');
+    var cLast   = col('last name');
+    var cPrec   = col('precinct');
+    var cVoters = col('# voter');
+    var cLike   = col('likelihood');
+    var cLevy   = col('levy/yr');
+    var cResp   = col('response');
+    var cNotes  = col('notes');
 
-    // Grab export timestamp from row 1
+    if (cStreet < 0 || cResp < 0) {
+      showError('Missing required columns. Headers found: ' + headers.slice(0, 8).join(', '));
+      return;
+    }
+
+    // Grab export timestamp
     var exportedAt = '';
     for (var i = 0; i < headerIdx; i++) {
-      var cell = String(raw[i][0] || '');
+      var cell = String(raw[i] && raw[i][0] || '');
       if (cell.toLowerCase().indexOf('exported') >= 0) { exportedAt = cell; break; }
     }
 
-    if (cStreet < 0 || cResp < 0) {
-      showError('Missing expected columns (Street, Response). Check this is the correct file.');
-      return;
+    // Normalize response — canvass app exports "Unsure" for undecided
+    function normalizeResp(val) {
+      var v = String(val || '').trim();
+      if (v === 'Unsure' || v === 'U')  return 'Undecided';
+      if (v === 'Y')                    return 'Yes';
+      if (v === 'N')                    return 'No';
+      if (v === 'NH')                   return 'Not Home';
+      if (v === '')                     return 'Not Visited';
+      return v;
     }
 
     rows = [];
     for (var i = headerIdx + 1; i < raw.length; i++) {
       var r = raw[i];
+      if (!r || !r.length) continue;
       var street = String(r[cStreet] || '').trim();
       if (!street || street.toLowerCase() === 'street') continue;
-      var house   = String(r[cHouse]  || '').replace('.0','').trim();
-      var vname   = String(r[cVoter]  || '').trim();
-      var lname   = cLast >= 0 ? String(r[cLast] || '').trim() : '';
-      var name    = (vname + (lname ? ' ' + lname : '')).trim();
-      var prec    = String(r[cPrec]   || '').replace('BAUGHMAN TWP ','P').trim();
-      var voters  = parseInt(r[cVoters]) || 0;
-      var like    = String(r[cLike]   || '').trim();
-      var levy    = parseFloat(r[cLevy])  || 0;
-      var resp    = String(r[cResp]   || 'Not Visited').trim() || 'Not Visited';
-      var notes   = cNotes >= 0 ? String(r[cNotes] || '').trim() : '';
-      rows.push({ name:name, address:house+' '+street, street:street, prec:prec, voters:voters, like:like, levy:levy, resp:resp, notes:notes });
+      if (street.toLowerCase() === 'summary') continue;
+
+      var house  = cHouse  >= 0 ? String(r[cHouse]  || '').replace(/\.0$/, '').trim() : '';
+      var vname  = cVoter  >= 0 ? String(r[cVoter]  || '').trim() : '';
+      var lname  = cLast   >= 0 ? String(r[cLast]   || '').trim() : '';
+      var name   = (vname + (lname ? ' ' + lname : '')).trim() || house;
+      var prec   = cPrec   >= 0 ? String(r[cPrec]   || '').replace('BAUGHMAN TWP ', 'P').trim() : '';
+      var voters = cVoters >= 0 ? (parseInt(r[cVoters]) || 0) : 0;
+      var like   = cLike   >= 0 ? String(r[cLike]   || '').trim() : '';
+      var levy   = cLevy   >= 0 ? (parseFloat(r[cLevy]) || 0) : 0;
+      var resp   = normalizeResp(cResp >= 0 ? r[cResp] : '');
+      var notes  = cNotes  >= 0 ? String(r[cNotes]  || '').trim() : '';
+
+      rows.push({
+        name: name,
+        address: (house ? house + ' ' : '') + street,
+        street: street, prec: prec, voters: voters,
+        like: like, levy: levy, resp: resp, notes: notes
+      });
     }
 
-    if (rows.length === 0) { showError('No data rows found in the file.'); return; }
+    if (rows.length === 0) {
+      showError('No data rows found in the file. Check that this is a canvass export with household data.');
+      return;
+    }
 
     hideError();
     renderReport(filename, exportedAt);
@@ -994,118 +1040,146 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 
   function renderDashboard() {
     var total = rows.length;
-    var yes   = count('Yes'), no = count('No'), und = count('Undecided');
-    var nh    = count('Not Home'), nv = count('Not Visited');
+    var yes = count('Yes'), no = count('No'), und = count('Undecided');
+    var nh = count('Not Home'), nv = count('Not Visited');
     var visited = total - nv;
-    var pct   = total ? Math.round(visited / total * 100) : 0;
+    var pct = total ? Math.round(visited / total * 100) : 0;
+    var yPct = total ? Math.round(yes / total * 100) : 0;
 
-    // ── Clickable summary tiles ──
     var TILES = [
-      {f:'Yes',        label:'Yes',         val:yes,    col:'#5ce08a', bg:'rgba(39,174,96,.18)',   bdr:'rgba(39,174,96,.5)'},
-      {f:'No',         label:'No',          val:no,     col:'#ff8a7a', bg:'rgba(192,57,43,.18)',   bdr:'rgba(192,57,43,.5)'},
-      {f:'Undecided',  label:'Undecided',   val:und,    col:'#f4c460', bg:'rgba(201,150,42,.18)',  bdr:'rgba(201,150,42,.5)'},
-      {f:'Not Home',   label:'Not Home',    val:nh,     col:'#aee2ff', bg:'rgba(46,134,193,.18)',  bdr:'rgba(46,134,193,.5)'},
-      {f:'Not Visited',label:'Not Visited', val:nv,     col:'#667788', bg:'rgba(255,255,255,.05)', bdr:'rgba(255,255,255,.15)'},
-      {f:'followup',   label:'Follow-Up',   val:und+nh, col:'#c0aaff', bg:'rgba(142,68,173,.18)',  bdr:'rgba(142,68,173,.5)'},
+      {f:'Yes',         label:'Yes',         val:yes,    col:'#5ce08a', bg:'rgba(39,174,96,.18)',   bdr:'rgba(39,174,96,.5)'},
+      {f:'No',          label:'No',          val:no,     col:'#ff8a7a', bg:'rgba(192,57,43,.18)',   bdr:'rgba(192,57,43,.5)'},
+      {f:'Undecided',   label:'Undecided',   val:und,    col:'#f4c460', bg:'rgba(201,150,42,.18)',  bdr:'rgba(201,150,42,.5)'},
+      {f:'Not Home',    label:'Not Home',    val:nh,     col:'#aee2ff', bg:'rgba(46,134,193,.18)',  bdr:'rgba(46,134,193,.5)'},
+      {f:'Not Visited', label:'Not Visited', val:nv,     col:'#667788', bg:'rgba(255,255,255,.05)', bdr:'rgba(255,255,255,.15)'},
+      {f:'followup',    label:'Follow-Up',   val:und+nh, col:'#c0aaff', bg:'rgba(142,68,173,.18)',  bdr:'rgba(142,68,173,.5)'}
     ];
-    document.getElementById('dash-tiles').innerHTML = TILES.map(function(t){
-      var active = currentFilter === t.f;
-      return '<div onclick="setFilter(''+t.f+'')" style="background:'+t.bg+';border:2px solid '+(active?t.col:t.bdr)+';border-radius:10px;padding:13px 10px;text-align:center;cursor:pointer;transition:border-color .15s" title="Click to filter table">'+
-        '<div style="font-size:1.65rem;font-weight:700;color:'+t.col+';line-height:1;font-family:monospace">'+t.val+'</div>'+
-        '<div style="font-family:Oswald,sans-serif;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:#778899;margin-top:4px">'+t.label+'</div>'+
-        '</div>';
-    }).join('');
 
-    // ── Donut chart ──
+    var tilesEl = document.getElementById('dash-tiles');
+    tilesEl.innerHTML = TILES.map(function(t) {
+      var active = currentFilter === t.f;
+      var div = document.createElement('div');
+      div.setAttribute('data-filter', t.f);
+      div.style.cssText = 'background:' + t.bg + ';border:2px solid ' + (active ? t.col : t.bdr) + ';border-radius:10px;padding:13px 10px;text-align:center;cursor:pointer';
+      div.title = 'Click to filter';
+      div.innerHTML = '<div style="font-size:1.65rem;font-weight:700;color:' + t.col + ';line-height:1;font-family:monospace">' + t.val + '</div>' +
+        '<div style="font-family:Oswald,sans-serif;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:#778899;margin-top:4px">' + t.label + '</div>';
+      return div.outerHTML;
+    }).join('');
+    tilesEl.onclick = function(e) {
+      var tile = e.target.closest('[data-filter]');
+      if (tile) setFilter(tile.getAttribute('data-filter'));
+    };
+
     var SEG = [
-      {val:yes, col:'#5ce08a'}, {val:no,  col:'#ff8a7a'},
-      {val:und, col:'#f4c460'}, {val:nh,  col:'#aee2ff'},
-      {val:nv,  col:'rgba(255,255,255,.1)'},
+      {val:yes, col:'#5ce08a'}, {val:no, col:'#ff8a7a'},
+      {val:und, col:'#f4c460'}, {val:nh, col:'#aee2ff'},
+      {val:nv,  col:'rgba(255,255,255,.1)'}
     ];
-    var r=46, cx=60, cy=60, sw=13, circ=2*Math.PI*r, off=0;
-    var arcs = SEG.map(function(s){
-      var d = total ? s.val/total*circ : 0;
-      var arc = '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+s.col+'" stroke-width="'+sw+'" stroke-dasharray="'+d.toFixed(2)+' '+(circ-d).toFixed(2)+'" stroke-dashoffset="'+(-off).toFixed(2)+'" transform="rotate(-90 '+cx+' '+cy+')" />';
-      off += d; return arc;
+    var r = 46, cx = 60, cy = 60, sw = 13, circ = 2 * Math.PI * r, off = 0;
+    var arcs = SEG.map(function(s) {
+      var d = total ? s.val / total * circ : 0;
+      var arc = '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none"' +
+        ' stroke="' + s.col + '" stroke-width="' + sw + '"' +
+        ' stroke-dasharray="' + d.toFixed(2) + ' ' + (circ - d).toFixed(2) + '"' +
+        ' stroke-dashoffset="' + (-off).toFixed(2) + '"' +
+        ' transform="rotate(-90 ' + cx + ' ' + cy + ')" />';
+      off += d;
+      return arc;
     }).join('');
 
     var LEGS = [
-      {col:'#5ce08a',label:'Yes',val:yes},
-      {col:'#ff8a7a',label:'No',val:no},
-      {col:'#f4c460',label:'Undecided',val:und},
-      {col:'#aee2ff',label:'Not Home',val:nh},
-      {col:'rgba(255,255,255,.3)',label:'Not Visited',val:nv},
+      {col:'#5ce08a', label:'Yes', val:yes},
+      {col:'#ff8a7a', label:'No', val:no},
+      {col:'#f4c460', label:'Undecided', val:und},
+      {col:'#aee2ff', label:'Not Home', val:nh},
+      {col:'rgba(255,255,255,.3)', label:'Not Visited', val:nv}
     ];
-    var legend = LEGS.filter(function(l){return l.val>0;}).map(function(l){
-      var p = total ? Math.round(l.val/total*100) : 0;
-      return '<div style="display:flex;align-items:center;gap:7px;margin-bottom:5px">'+
-        '<div style="width:9px;height:9px;border-radius:50%;background:'+l.col+';flex-shrink:0"></div>'+
-        '<span style="font-size:.76rem;color:#c0ccdd;min-width:24px;font-family:monospace">'+l.val+'</span>'+
-        '<span style="font-size:.74rem;color:#7a8fa0">'+l.label+'</span>'+
-        '<span style="font-size:.7rem;color:#445566;margin-left:auto">'+p+'%</span>'+
+    var legend = LEGS.filter(function(l) { return l.val > 0; }).map(function(l) {
+      var lp = total ? Math.round(l.val / total * 100) : 0;
+      return '<div style="display:flex;align-items:center;gap:7px;margin-bottom:5px">' +
+        '<div style="width:9px;height:9px;border-radius:50%;background:' + l.col + ';flex-shrink:0"></div>' +
+        '<span style="font-size:.76rem;color:#c0ccdd;min-width:24px;font-family:monospace">' + l.val + '</span>' +
+        '<span style="font-size:.74rem;color:#7a8fa0">' + l.label + '</span>' +
+        '<span style="font-size:.7rem;color:#445566;margin-left:auto">' + lp + '%</span>' +
         '</div>';
     }).join('');
 
-    var yPct = total ? Math.round(yes/total*100) : 0;
-    var vPct = pct;
+    var svgHtml = '<svg width="120" height="120" viewBox="0 0 120 120" style="flex-shrink:0">' +
+      arcs +
+      '<text x="60" y="56" text-anchor="middle" fill="#f0f0f0" font-size="17" font-weight="700" font-family="monospace">' + pct + '%</text>' +
+      '<text x="60" y="70" text-anchor="middle" fill="#556677" font-size="8.5" font-family="Oswald,sans-serif" letter-spacing="1">VISITED</text>' +
+      '</svg>';
 
-    var donutHtml =
-      '<div id="donut-wrap" style="display:flex;align-items:center;gap:20px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px 20px;margin-bottom:20px;flex-wrap:wrap">'+
-      '<svg width="120" height="120" viewBox="0 0 120 120" style="flex-shrink:0">'+arcs+
-      '<text x="60" y="56" text-anchor="middle" fill="#f0f0f0" font-size="17" font-weight="700" font-family="monospace">'+vPct+'%</text>'+
-      '<text x="60" y="70" text-anchor="middle" fill="#556677" font-size="8.5" font-family="Oswald,sans-serif" letter-spacing="1">VISITED</text>'+
-      '</svg>'+
-      '<div style="flex:1;min-width:130px">'+
-        '<div style="font-family:Oswald,sans-serif;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:#556677;margin-bottom:8px">Breakdown</div>'+
-        legend+
-      '</div>'+
-      '<div style="flex:1;min-width:180px">'+
-        '<div style="font-family:Oswald,sans-serif;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:#556677;margin-bottom:6px">'+visited+' of '+total+' visited</div>'+
-        '<div style="height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden;margin-bottom:10px"><div style="height:100%;width:'+vPct+'%;background:linear-gradient(90deg,#5ce08a,#aee2ff);border-radius:4px;transition:width .6s"></div></div>'+
-        '<div style="font-family:Oswald,sans-serif;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:#556677;margin-bottom:6px">'+yes+' confirmed Yes ('+yPct+'%)</div>'+
-        '<div style="height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden"><div style="height:100%;width:'+yPct+'%;background:#5ce08a;border-radius:4px;transition:width .6s"></div></div>'+
-      '</div>'+
-      '</div>';
+    var leftHtml = '<div style="flex:1;min-width:130px">' +
+      '<div style="font-family:Oswald,sans-serif;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:#556677;margin-bottom:8px">Breakdown</div>' +
+      legend + '</div>';
+
+    var rightHtml = '<div style="flex:1;min-width:180px">' +
+      '<div style="font-family:Oswald,sans-serif;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:#556677;margin-bottom:6px">' + visited + ' of ' + total + ' visited</div>' +
+      '<div style="height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden;margin-bottom:10px">' +
+        '<div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,#5ce08a,#aee2ff);border-radius:4px;transition:width .6s"></div>' +
+      '</div>' +
+      '<div style="font-family:Oswald,sans-serif;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:#556677;margin-bottom:6px">' + yes + ' confirmed Yes (' + yPct + '%)</div>' +
+      '<div style="height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden">' +
+        '<div style="height:100%;width:' + yPct + '%;background:#5ce08a;border-radius:4px;transition:width .6s"></div>' +
+      '</div></div>';
+
+    var donutHtml = '<div id="donut-wrap" style="display:flex;align-items:center;gap:20px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px 20px;margin-bottom:20px;flex-wrap:wrap">' +
+      svgHtml + leftHtml + rightHtml + '</div>';
 
     var existing = document.getElementById('donut-wrap');
-    var tiles = document.getElementById('dash-tiles');
-    if (existing) { existing.outerHTML = donutHtml; }
-    else { tiles.insertAdjacentHTML('beforebegin', donutHtml); }
+    if (existing) {
+      existing.outerHTML = donutHtml;
+    } else {
+      tilesEl.insertAdjacentHTML('beforebegin', donutHtml);
+    }
 
-    document.getElementById('pct-label').textContent = vPct + '% visited (' + visited + ' of ' + total + ')';
-    document.getElementById('progress-bar').style.width = vPct + '%';
+    document.getElementById('pct-label').textContent = pct + '% visited (' + visited + ' of ' + total + ')';
+    document.getElementById('progress-bar').style.width = pct + '%';
   }
 
   function renderStreets() {
     var streets = {};
-    rows.forEach(function(r){
-      if (!streets[r.street]) streets[r.street] = {total:0,Yes:0,No:0,Undecided:0,'Not Home':0,'Not Visited':0};
+    rows.forEach(function(r) {
+      if (!streets[r.street]) streets[r.street] = {total:0, Yes:0, No:0, Undecided:0, 'Not Home':0, 'Not Visited':0};
       streets[r.street].total++;
-      streets[r.street][r.resp] = (streets[r.street][r.resp]||0) + 1;
+      streets[r.street][r.resp] = (streets[r.street][r.resp] || 0) + 1;
     });
-    var BAR_COLORS = {Yes:'#5ce08a',No:'#ff8a7a',Undecided:'#f4c460','Not Home':'#aee2ff','Not Visited':'rgba(255,255,255,.08)'};
+    var BAR = {Yes:'#5ce08a', No:'#ff8a7a', Undecided:'#f4c460', 'Not Home':'#aee2ff', 'Not Visited':'rgba(255,255,255,.08)'};
     var sorted = Object.keys(streets).sort();
-    document.getElementById('street-tbody').innerHTML = sorted.map(function(st){
+    var tbody = document.getElementById('street-tbody');
+    tbody.innerHTML = sorted.map(function(st) {
       var s = streets[st];
-      var bar = ['Yes','No','Undecided','Not Home','Not Visited'].map(function(resp){
-        var w = s.total ? (s[resp]||0)/s.total*100 : 0;
-        return w>0 ? '<div style="width:'+w.toFixed(1)+'%;background:'+BAR_COLORS[resp]+';height:100%;display:inline-block;vertical-align:top" title="'+resp+': '+(s[resp]||0)+'"></div>' : '';
+      var bar = ['Yes','No','Undecided','Not Home','Not Visited'].map(function(resp) {
+        var w = s.total ? (s[resp] || 0) / s.total * 100 : 0;
+        if (w <= 0) return '';
+        return '<div style="width:' + w.toFixed(1) + '%;background:' + BAR[resp] + ';height:100%;display:inline-block;vertical-align:top" title="' + resp + ': ' + (s[resp]||0) + '"></div>';
       }).join('');
-      var dPct = s.total ? Math.round((s.total-(s['Not Visited']||0))/s.total*100) : 0;
-      return '<tr style="border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer" onclick="setFilter('all');var el=document.getElementById('det-search');el.value=''+st.replace(/'/g,"\'") +'';window.renderDetail();setTimeout(function(){el.scrollIntoView({behavior:'smooth',block:'center'})},100)" title="Click to filter by '+st+'">'+
-        '<td style="padding:8px 14px;font-size:.82rem;font-weight:600;color:var(--cream)">'+esc(st)+'</td>'+
-        '<td style="padding:8px 10px;text-align:center;font-family:monospace;font-size:.78rem;color:#8a9bb0">'+s.total+'</td>'+
-        '<td style="padding:8px 10px;text-align:center;font-family:monospace;font-size:.78rem;color:#5ce08a;font-weight:700">'+(s['Yes']||0)+'</td>'+
-        '<td style="padding:8px 10px;text-align:center;font-family:monospace;font-size:.78rem;color:#ff8a7a">'+(s['No']||0)+'</td>'+
-        '<td style="padding:8px 10px;text-align:center;font-family:monospace;font-size:.78rem;color:#f4c460">'+(s['Undecided']||0)+'</td>'+
-        '<td style="padding:8px 10px;text-align:center;font-family:monospace;font-size:.78rem;color:#aee2ff">'+(s['Not Home']||0)+'</td>'+
-        '<td style="padding:8px 10px;text-align:center;font-family:monospace;font-size:.78rem;color:#445566">'+(s['Not Visited']||0)+'</td>'+
-        '<td style="padding:6px 14px 6px 8px;min-width:90px">'+
-          '<div style="height:10px;background:rgba(255,255,255,.04);border-radius:3px;overflow:hidden;display:flex">'+bar+'</div>'+
-          '<div style="font-size:.6rem;color:#445566;margin-top:2px;text-align:right">'+dPct+'%</div>'+
-        '</td>'+
+      var dPct = s.total ? Math.round((s.total - (s['Not Visited'] || 0)) / s.total * 100) : 0;
+      return '<tr data-street="' + esc(st) + '" style="border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer">' +
+        '<td style="padding:8px 14px;font-size:.82rem;font-weight:600;color:var(--cream)">' + esc(st) + '</td>' +
+        '<td style="padding:8px 10px;text-align:center;font-family:monospace;font-size:.78rem;color:#8a9bb0">' + s.total + '</td>' +
+        '<td style="padding:8px 10px;text-align:center;font-family:monospace;font-size:.78rem;color:#5ce08a;font-weight:700">' + (s['Yes']||0) + '</td>' +
+        '<td style="padding:8px 10px;text-align:center;font-family:monospace;font-size:.78rem;color:#ff8a7a">' + (s['No']||0) + '</td>' +
+        '<td style="padding:8px 10px;text-align:center;font-family:monospace;font-size:.78rem;color:#f4c460">' + (s['Undecided']||0) + '</td>' +
+        '<td style="padding:8px 10px;text-align:center;font-family:monospace;font-size:.78rem;color:#aee2ff">' + (s['Not Home']||0) + '</td>' +
+        '<td style="padding:8px 10px;text-align:center;font-family:monospace;font-size:.78rem;color:#445566">' + (s['Not Visited']||0) + '</td>' +
+        '<td style="padding:6px 14px 6px 8px;min-width:90px">' +
+          '<div style="height:10px;background:rgba(255,255,255,.04);border-radius:3px;overflow:hidden;display:flex">' + bar + '</div>' +
+          '<div style="font-size:.6rem;color:#445566;margin-top:2px;text-align:right">' + dPct + '%</div>' +
+        '</td>' +
       '</tr>';
     }).join('');
+    tbody.onclick = function(e) {
+      var tr = e.target.closest('tr[data-street]');
+      if (!tr) return;
+      setFilter('all');
+      var el = document.getElementById('det-search');
+      el.value = tr.getAttribute('data-street');
+      window.renderDetail();
+      setTimeout(function() { el.scrollIntoView({behavior:'smooth', block:'center'}); }, 100);
+    };
   }
 
 
@@ -1272,7 +1346,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Suzi Byall</div>
       <div class="vc-role">Canvasser · Signed In 3/15/2026</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304656433">330-465-6433</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#4e3d3b34272c372f22220e29232f2722602d2123"><span class="__cf_email__" data-cfemail="ff8c8a85969d869e9393bf98929e9693d19c9092">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:suzibyall@gmail.com">suzibyall@gmail.com</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Burkhart Rd · 70 stops</span></div>
     </div>
 
@@ -1281,7 +1355,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-role">Canvasser &amp; Campaign Support · Signed In 3/15/2026</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304659001">330-465-9001</a></div>
       <div class="vc-info"><span class="icon">📟</span><span style="color:#8a9bb0">Campaign Cell: 330-465-8982</span></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#adc7dfd8d9d9c8dfedc5d4ddc8dfcedfccdac183cec2c0"><span class="__cf_email__" data-cfemail="640e161110100116240c1d14011607160513084a070b09">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:jrutter@hypercrawl.com">jrutter@hypercrawl.com</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Burton City / Mt Eaton / N West Lebanon / Krug · 102 stops</span></div>
     </div>
 
@@ -1289,7 +1363,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Mike Raff</div>
       <div class="vc-role">Canvasser · Signed In 3/15/2026</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3303172059">330-317-2059</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#c6abafada3b4a3b2b2fef086a1aba7afaae8a5a9ab"><span class="__cf_email__" data-cfemail="5e3337353b2c3b2a2a66681e39333f3732703d3133">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:mikerett86@gmail.com">mikerett86@gmail.com</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Church Rd / Good Rd / N Kohler / Wenger · 75 stops</span></div>
     </div>
 
@@ -1297,7 +1371,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Pat Turchiano</div>
       <div class="vc-role">Canvasser · Selected Streets (couldn't attend 3/15)</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304665110">330-466-5110</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#91e1f5fbe5e3f2f9ffa0d1ebfefefcf8ffe5f4e3fff4e5bffff4e5"><span class="__cf_email__" data-cfemail="9dedf9f7e9effef5f3acdde7f2f2f0f4f3e9f8eff3f8e9b3f3f8e9">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:pdjtrchn1@zoominternet.net">pdjtrchn1@zoominternet.net</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 York Rd / Emmitsburg / Hanover / Chambersburg / Market / Misere · 79 stops</span></div>
     </div>
 
@@ -1305,7 +1379,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Robin Coppola</div>
       <div class="vc-role">Canvasser · Signed In 3/15/2026</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3302013020">330-201-3020</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#d9abb6bbb0b7f7bab6a9a9b6b5b8eb99beb4b8b0b5f7bab6b4"><span class="__cf_email__" data-cfemail="d2a0bdb0bbbcfcb1bda2a2bdbeb3e092b5bfb3bbbefcb1bdbf">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:robin.coppola2@gmail.com">robin.coppola2@gmail.com</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">🪧 Yard Signs</span><span class="vc-tag">📍 Tannerville / Wayne St / Paradise Ext · 64 stops</span></div>
     </div>
 
@@ -1313,7 +1387,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Joe Rubino</div>
       <div class="vc-role">Canvasser</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3306214717">330-621-4717</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#4c26263e392e2522230c2b212d2520622f2321"><span class="__cf_email__" data-cfemail="c3a9a9b1b6a1aaadac83a4aea2aaafeda0acae">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:jjrubino@gmail.com">jjrubino@gmail.com</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📞 Phone</span><span class="vc-tag">🚗 Rides</span><span class="vc-tag">📬 Absentee</span><span class="vc-tag">📍 Coal Bank / Fosnight / Rehm / West St · 68 stops</span></div>
     </div>
 
@@ -1321,7 +1395,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">David Stoll</div>
       <div class="vc-role">Canvasser</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304662409">330-466-2409</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#eb8f8583989f848787ab8c868a8287c5888486"><span class="__cf_email__" data-cfemail="93f7fdfbe0e7fcffffd3f4fef2faffbdf0fcfe">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:dnhstoll@gmail.com">dnhstoll@gmail.com</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">🪧 Yard Signs</span><span class="vc-tag">📍 Ault Rd / Huprick Rd · 25 stops</span></div>
     </div>
 
@@ -1329,7 +1403,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Diane Jarrett</div>
       <div class="vc-role">Canvasser</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304654110">330-465-4110</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#f4909e958686918080b4939b9e958686918080da979b99"><span class="__cf_email__" data-cfemail="c4a0aea5b6b6a1b0b084a3abaea5b6b6a1b0b0eaa7aba9">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:djarrett@gojarrett.com">djarrett@gojarrett.com</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Forrer Rd · 12 stops</span></div>
     </div>
 
@@ -1337,7 +1411,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Matt Slicker</div>
       <div class="vc-role">Canvasser · Signed In 3/15/2026</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3308542557">330-854-2557</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#1f727e6b6b5f6c73767c747a6d797e6d726c317c7072"><span class="__cf_email__" data-cfemail="5934382d2d192a35303a323c2b3f382b342a773a3634">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:matt@slickerfarms.com">matt@slickerfarms.com</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">🪧 Yard Signs</span><span class="vc-tag">📍 Deerfield NW / Fulton / Lovers Lane / Shifferly / Black Diamond + shared · 124+ stops</span></div>
     </div>
 
@@ -1345,14 +1419,14 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Shelly Brenner</div>
       <div class="vc-role">Canvasser</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3306212421">330-621-2421</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#02716a676e6e7b6070676c6c6770313a42656f636b6e2c616d6f"><span class="__cf_email__" data-cfemail="daa9b2bfb6b6a3b8a8bfb4b4bfa8e9e29abdb7bbb3b6f4b9b5b7">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:shellybrenner38@gmail.com">shellybrenner38@gmail.com</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📞 Phone</span><span class="vc-tag">🚗 Rides</span><span class="vc-tag">📬 Absentee</span><span class="vc-tag">📍 Back Massillon Rd (split w/ Matt)</span></div>
     </div>
 
     <div class="vc-card vc-green">
       <div class="vc-name">Noelle Ressler</div>
       <div class="vc-role">Canvasser &amp; Campaign Support · Signed In 3/15/2026</div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#dab4b5bfb6b6bfa89aa8b8a8b9b5b4a9afb6aeb3b4bdf4b8b3a0"><span class="__cf_email__" data-cfemail="365859535a5a53447644544455595845435a425f585118545f4c">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:noeller@rbrconsulting.biz">noeller@rbrconsulting.biz</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Dalton Fox Lake Rd (split w/ Matt)</span></div>
     </div>
 
@@ -1360,7 +1434,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Julie Finney</div>
       <div class="vc-role">Canvasser</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3302340141">330-234-0141</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#e78d928b8e82c9818e8989829ed0d0a7808a868e8bc984888a"><span class="__cf_email__" data-cfemail="4d2738212428632b24232328347a7a0d2a202c2421632e2220">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:julie.finney77@gmail.com">julie.finney77@gmail.com</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Fox Lake Rd (split w/ Matt) + Wadsworth Rd + Keck Rd · 64 stops</span></div>
     </div>
 
@@ -1374,7 +1448,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Cathy Pamer</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3307494073">330-749-4073</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#fd9e9c8d9c8f90988fccc4c5cebd9a909c9491d39e9290"><span class="__cf_email__" data-cfemail="0261637263706f6770333b3a3142656f636b6e2c616d6f">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:caparmer1983@gmail.com">caparmer1983@gmail.com</a></div>
       <div class="vc-tags"><span class="vc-tag tag-any">✋ Anything</span></div>
     </div>
 
@@ -1390,7 +1464,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Justin Haislip</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><span style="color:#8a9bb0">—</span></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#246e5157504d4a644e5157504d4a4c454d57484d544543414a475d0a474b49"><span class="__cf_email__" data-cfemail="eaa09f999e8384aa809f999e8384828b839986839a8b8d8f848993c4898587">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:Justin@justinhaislipagency.com">Justin@justinhaislipagency.com</a></div>
       <div class="vc-tags"><span class="vc-tag tag-any">✋ Anything</span></div>
     </div>
 
@@ -1398,7 +1472,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Stephanie Geiser</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><span style="color:#8a9bb0">—</span></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#4a272b3821393e2f3a222b24232f2d737c0a2d272b232664292527"><span class="__cf_email__" data-cfemail="dcb1bdaeb7afa8b9acb4bdb2b5b9bbe5ea9cbbb1bdb5b0f2bfb3b1">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:markstephanieg96@gmail.com">markstephanieg96@gmail.com</a></div>
       <div class="vc-tags"><span class="vc-tag tag-any">✋ Anything</span></div>
     </div>
 
@@ -1406,7 +1480,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Tim Horst</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><span style="color:#8a9bb0">—</span></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#a5d1cecdcad7d6d196e5c2c8c4ccc98bc6cac8"><span class="__cf_email__" data-cfemail="e0948b888f929394d3a0878d81898cce838f8d">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:tkhorst3@gmail.com">tkhorst3@gmail.com</a></div>
       <div class="vc-tags"><span class="vc-tag tag-any">✋ Anything</span></div>
     </div>
 
@@ -1452,7 +1526,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Bob Graber</div>
       <div class="vc-role">Trustee</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304661662">330-466-1662</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#387a7f4a595a5d4a794d5b4c5157564b78595754165b5755"><span class="__cf_email__" data-cfemail="3c7e7b4e5d5e594e7d495f485553524f7c5d5350125f5351">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="mailto:BGraberAuctions@aol.com">BGraberAuctions@aol.com</a></div>
       <div class="vc-tags"><span class="vc-tag" style="background:rgba(46,134,193,.15);color:#aee2ff;border-color:rgba(46,134,193,.3)">🏛️ Trustee</span></div>
     </div>
 
@@ -1513,12 +1587,12 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     <div class="contact-card">
       <h4>Noelle Ressler</h4><div class="role">Campaign Support</div>
       <div class="ci"><span class="icon">📞</span><a href="tel:2162948358">216-294-8358</a></div>
-      <div class="ci"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#e886878d84848d9aa89a8a9a8b87869b9d849c81868fc68a8192"><span class="__cf_email__" data-cfemail="ea84858f86868f98aa988898898584999f869e83848dc4888390">[email&#160;protected]</span></a></div>
+      <div class="ci"><span class="icon">📧</span><a href="mailto:noeller@rbrconsulting.biz">noeller@rbrconsulting.biz</a></div>
     </div>
     <div class="contact-card">
       <h4>John Rutter</h4><div class="role">Campaign Support</div>
       <div class="ci"><span class="icon">📞</span><a href="tel:3304659001">330-465-9001</a></div>
-      <div class="ci"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#5a30282f2e2e3f281a32232a3f2839283b2d3674393537"><span class="__cf_email__" data-cfemail="5b31292e2f2f3e291b33222b3e2938293a2c3775383436">[email&#160;protected]</span></a></div>
+      <div class="ci"><span class="icon">📧</span><a href="mailto:jrutter@hypercrawl.com">jrutter@hypercrawl.com</a></div>
     </div>
     <div class="contact-card cc-blue">
       <h4>Wayne County Board of Elections</h4>
@@ -1555,7 +1629,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   <a class="pbtn pbtn-out" href="#teams">🗺 Canvasser Routes</a>
   <button class="pbtn pbtn-out" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Top</button>
 </div>
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 
 // ── LIVE EARLY VOTING COUNTER STRIP ──
 // This runs a separate live countdown specifically for the early voting strip
