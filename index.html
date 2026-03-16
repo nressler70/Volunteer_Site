@@ -1469,7 +1469,8 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       if (el('dbg-ls-rows'))  el('dbg-ls-rows').textContent  = 'rows: ' + rows.length;
       if (el('dbg-ls-files')) el('dbg-ls-files').textContent = 'uploads: ' + files.length;
       if (el('dbg-session'))  el('dbg-session').textContent  = 'session: ' + (sess ? 'unlocked' : 'locked');
-      if (el('dbg-jb'))       el('dbg-jb').textContent       = 'JSONBin: ' + (jbKey ? (jbBin ? 'configured (bin:' + jbBin.slice(-6) + ')' : 'key only') : 'not set');
+      var binVal = localStorage.getItem('baughman_jb_bin') || JB_BIN_ID || '';
+      if (el('dbg-jb'))       el('dbg-jb').textContent       = 'JSONBin: ' + (binVal ? 'bin:' + binVal : (jbKey ? 'key set, no bin' : 'not set'));
       if (rows.length > 0 && el('dbg-ls-rows')) el('dbg-ls-rows').style.color = '#5ce08a';
     } catch(e) {}
   };
@@ -1987,7 +1988,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // ══════════════════════════════════════════════════════════════════════════
 
 // ▼▼▼ SET THIS ONCE after admin creates the bin — baked into the HTML file ▼▼▼
-var JB_BIN_ID = '';   // e.g. '67abc123def456' — filled in by adminSaveCloudConfig
+var JB_BIN_ID = '69b85326c3097a1dd52eccfa';   // e.g. '67abc123def456' — filled in by adminSaveCloudConfig
 // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
 var ROWS_KEY  = 'baughman_rows_v2';
@@ -2062,23 +2063,9 @@ window.jsonbinPush = function(rows, fileList) {
 function jsonbinFetch() {
   var bin = jbBin();
   if (!bin) {
-    // Try to find an existing bin by listing them
-    fetch('https://api.jsonbin.io/v3/b?collectionId=false', {
-      headers: { 'X-Master-Key': jbWriteKey() }
-    }).then(function(r) { return r.json(); })
-    .then(function(data) {
-      // Look for BaughmanCanvass bin
-      var bins = Array.isArray(data) ? data : (data.result || []);
-      var found = bins.find(function(b) {
-        return b.snippetMeta && (b.snippetMeta.name === 'BaughmanCanvass' || b.snippetMeta.name === 'BaughmanCanvassResults');
-      });
-      if (found && found.record && found.record.id) {
-        try { localStorage.setItem('baughman_jb_bin', found.record.id); } catch(e2) {}
-        jsonbinFetch(); // retry now that we have the bin ID
-      } else {
-        restoreFromLocal();
-      }
-    }).catch(function() { restoreFromLocal(); });
+    // No bin ID known yet — show empty state, wait for upload to create one
+    restoreFromLocal();
+    updateCloudStatus('none');
     return;
   }
 
