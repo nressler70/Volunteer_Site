@@ -1013,6 +1013,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     var cLevy   = col('levy/yr');
     var cResp   = col('response');
     var cNotes  = col('notes');
+    var cSign   = col('wants sign');
 
     if (cStreet < 0 || cResp < 0) {
       showError('Missing required columns. Headers found: ' + headers.slice(0, 8).join(', '));
@@ -1055,12 +1056,17 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       var levy   = cLevy   >= 0 ? (parseFloat(r[cLevy]) || 0) : 0;
       var resp   = normalizeResp(cResp >= 0 ? r[cResp] : '');
       var notes  = cNotes  >= 0 ? String(r[cNotes]  || '').trim() : '';
+      // Detect sign request: from Wants Sign column OR notes containing "sign needed"
+      var signVal = cSign >= 0 ? String(r[cSign] || '').trim().toLowerCase() : '';
+      var sign = signVal === 'yes' || signVal === 'y' || signVal === 'true' ||
+                 notes.toLowerCase().indexOf('sign needed') >= 0 ||
+                 notes.toLowerCase().indexOf('wants sign') >= 0;
 
       rows.push({
         name: name,
         address: (house ? house + ' ' : '') + street,
         street: street, prec: prec, voters: voters,
-        like: like, levy: levy, resp: resp, notes: notes
+        like: like, levy: levy, resp: resp, notes: notes, sign: sign
       });
     }
 
@@ -1094,6 +1100,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
         if (r.notes && r.notes !== ex.notes) {
           ex.notes = ex.notes ? ex.notes + ' | ' + r.notes : r.notes;
         }
+        if (r.sign) ex.sign = true;
       } else {
         stored.push(r); sidx[k] = stored.length - 1; nAdded++;
       }
@@ -1154,34 +1161,32 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     var total = rows.length;
     var yes = count('Yes'), no = count('No'), und = count('Undecided');
     var nh = count('Not Home'), nv = count('Not Visited');
+    var signCount = rows.filter(function(r) { return r.sign; }).length;
     var visited = total - nv;
     var pct = total ? Math.round(visited / total * 100) : 0;
     var yPct = total ? Math.round(yes / total * 100) : 0;
 
     var TILES = [
-      {f:'Yes',         label:'Yes',         val:yes,    col:'#5ce08a', bg:'rgba(39,174,96,.18)',   bdr:'rgba(39,174,96,.5)'},
-      {f:'No',          label:'No',          val:no,     col:'#ff8a7a', bg:'rgba(192,57,43,.18)',   bdr:'rgba(192,57,43,.5)'},
-      {f:'Undecided',   label:'Undecided',   val:und,    col:'#f4c460', bg:'rgba(201,150,42,.18)',  bdr:'rgba(201,150,42,.5)'},
-      {f:'Not Home',    label:'Not Home',    val:nh,     col:'#aee2ff', bg:'rgba(46,134,193,.18)',  bdr:'rgba(46,134,193,.5)'},
-      {f:'Not Visited', label:'Not Visited', val:nv,     col:'#667788', bg:'rgba(255,255,255,.05)', bdr:'rgba(255,255,255,.15)'},
-      {f:'followup',    label:'Follow-Up',   val:und+nh, col:'#c0aaff', bg:'rgba(142,68,173,.18)',  bdr:'rgba(142,68,173,.5)'}
+      {f:'Yes',         label:'Yes',         val:yes,       col:'#5ce08a', bg:'rgba(39,174,96,.18)',   bdr:'rgba(39,174,96,.5)'},
+      {f:'No',          label:'No',          val:no,        col:'#ff8a7a', bg:'rgba(192,57,43,.18)',   bdr:'rgba(192,57,43,.5)'},
+      {f:'Undecided',   label:'Undecided',   val:und,       col:'#f4c460', bg:'rgba(201,150,42,.18)',  bdr:'rgba(201,150,42,.5)'},
+      {f:'Not Home',    label:'Not Home',    val:nh,        col:'#aee2ff', bg:'rgba(46,134,193,.18)',  bdr:'rgba(46,134,193,.5)'},
+      {f:'Not Visited', label:'Not Visited', val:nv,        col:'#667788', bg:'rgba(255,255,255,.05)', bdr:'rgba(255,255,255,.15)'},
+      {f:'followup',    label:'Follow-Up',   val:und+nh,    col:'#c0aaff', bg:'rgba(142,68,173,.18)',  bdr:'rgba(142,68,173,.5)'},
+      {f:'sign',        label:'Sign Needed', val:signCount, col:'#f4a460', bg:'rgba(244,164,96,.15)',  bdr:'rgba(244,164,96,.4)'}
     ];
 
     var tilesEl = document.getElementById('dash-tiles');
     tilesEl.innerHTML = TILES.map(function(t) {
       var active = currentFilter === t.f;
-      var div = document.createElement('div');
-      div.setAttribute('data-filter', t.f);
-      div.style.cssText = 'background:' + t.bg + ';border:2px solid ' + (active ? t.col : t.bdr) + ';border-radius:10px;padding:13px 10px;text-align:center;cursor:pointer';
-      div.title = 'Click to filter';
-      div.innerHTML = '<div style="font-size:1.65rem;font-weight:700;color:' + t.col + ';line-height:1;font-family:monospace">' + t.val + '</div>' +
-        '<div style="font-family:Oswald,sans-serif;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:#778899;margin-top:4px">' + t.label + '</div>';
-      return div.outerHTML;
+      var border = active ? t.col : t.bdr;
+      return '<div data-filter="' + t.f + '" onclick="window.setFilter(\'' + t.f + '\')" title="Click to view ' + t.label + ' households"' +
+        ' style="background:' + t.bg + ';border:2px solid ' + border + ';border-radius:10px;padding:13px 10px;text-align:center;cursor:pointer;transition:border-color .15s">' +
+        '<div style="font-size:1.65rem;font-weight:700;color:' + t.col + ';line-height:1;font-family:monospace">' + t.val + '</div>' +
+        '<div style="font-family:Oswald,sans-serif;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:#778899;margin-top:4px">' + t.label + '</div>' +
+        '<div style="font-size:.52rem;color:' + t.col + ';opacity:.6;margin-top:3px">▼ view list</div>' +
+        '</div>';
     }).join('');
-    tilesEl.onclick = function(e) {
-      var tile = e.target.closest('[data-filter]');
-      if (tile) setFilter(tile.getAttribute('data-filter'));
-    };
 
     var SEG = [
       {val:yes, col:'#5ce08a'}, {val:no, col:'#ff8a7a'},
