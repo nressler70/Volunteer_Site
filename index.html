@@ -856,12 +856,12 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
           <div style="display:flex;gap:6px;flex-wrap:wrap" id="filter-btns">
             <button class="rf-btn rf-active" data-f="all"         onclick="setFilter('all')">All</button>
             <button class="rf-btn rf-yes"    data-f="Yes"         onclick="setFilter('Yes')">✅ Yes</button>
+            <button class="rf-btn"           data-f="sign"        onclick="setFilter('sign')" style="border-color:rgba(244,164,96,.35);color:var(--gold-light)">🪧 Sign Needed</button>
             <button class="rf-btn rf-no"     data-f="No"          onclick="setFilter('No')">❌ No</button>
             <button class="rf-btn rf-und"    data-f="Undecided"   onclick="setFilter('Undecided')">❓ Undecided</button>
             <button class="rf-btn rf-nh"     data-f="Not Home"    onclick="setFilter('Not Home')">🏠 Not Home</button>
             <button class="rf-btn rf-nv"     data-f="Not Visited" onclick="setFilter('Not Visited')">⚪ Not Visited</button>
             <button class="rf-btn rf-fu"     data-f="followup"    onclick="setFilter('followup')">🔁 Follow-Up List</button>
-            <button class="rf-btn"           data-f="sign"        onclick="setFilter('sign')" style="border-color:rgba(244,164,96,.35);color:var(--gold-light)">🪧 Sign Needed</button>
           </div>
           <input id="det-search" type="text" placeholder="🔍 Search name or address…" oninput="renderDetail()"
             style="flex:1;min-width:180px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:7px 11px;color:var(--cream);font-size:.82rem;outline:none">
@@ -1320,21 +1320,13 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     var hint    = document.querySelector('#detail-toggle span:nth-child(2)');
     var isOpen  = body && body.style.display !== 'none';
 
-    // Clicking the same active filter while open → collapse
-    if (f === currentFilter && isOpen) {
-      body.style.display = 'none';
-      if (chevron) chevron.style.transform = '';
-      if (hint) hint.textContent = 'Click to expand';
-      return;
-    }
-
     currentFilter = f;
     document.querySelectorAll('.rf-btn').forEach(function(b){
       b.classList.toggle('rf-active', b.dataset.f === f);
     });
     renderDashboard();
 
-    // Auto-expand if collapsed
+    // Always expand if collapsed
     if (!isOpen) {
       body.style.display = 'block';
       if (chevron) chevron.style.transform = 'rotate(180deg)';
