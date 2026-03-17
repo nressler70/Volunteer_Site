@@ -758,6 +758,10 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       style="background:var(--gold);color:var(--navy);border:none;border-radius:8px;padding:9px 22px;font-family:'Oswald',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;white-space:nowrap;flex-shrink:0">
       Choose File
     </button>
+    <button onclick="openManualEntry()"
+      style="background:rgba(46,134,193,.15);color:#aee2ff;border:1.5px solid rgba(46,134,193,.35);border-radius:8px;padding:9px 18px;font-family:'Oswald',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;white-space:nowrap;flex-shrink:0">
+      ＋ Manual Entry
+    </button>
     <input id="file-input" type="file" accept=".xlsx,.csv,.xls" style="display:none" onchange="window.handleFile(this.files[0])">
   </div>
 
@@ -2674,6 +2678,148 @@ document.addEventListener('DOMContentLoaded', function() {
     } catch(ex) {}
   });
 });
+</script>
+<!-- ══ MANUAL ENTRY MODAL ══ -->
+<div id="manual-entry-overlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.82);z-index:99999;align-items:center;justify-content:center">
+  <div style="background:#161b22;border:2px solid #2e86c1;border-radius:16px;padding:24px 26px;width:92%;max-width:440px;max-height:92vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.8)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+      <div style="font-family:'Oswald',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#2e86c1">➕ Add Manual Entry</div>
+      <button onclick="closeManualEntry()" style="background:none;border:none;color:#8a9bb0;font-size:20px;cursor:pointer;line-height:1">&#x2715;</button>
+    </div>
+    <div style="font-size:.75rem;color:#556677;margin-bottom:16px;line-height:1.55">Record a household that was visited but not on the original canvass list.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <div style="grid-column:1/-1">
+        <div class="me-label">Voter / Household Name</div>
+        <input id="me-name" type="text" placeholder="e.g. Smith Family" class="me-input">
+      </div>
+      <div style="grid-column:1/-1">
+        <div class="me-label">Full Address <span style="color:#e74c3c">*</span></div>
+        <input id="me-address" type="text" placeholder="e.g. 1234 Ault Rd" class="me-input">
+      </div>
+      <div>
+        <div class="me-label">Street Name</div>
+        <input id="me-street" type="text" placeholder="e.g. Ault Rd" class="me-input">
+      </div>
+      <div>
+        <div class="me-label">Precinct</div>
+        <input id="me-prec" type="text" placeholder="e.g. P1" class="me-input">
+      </div>
+      <div>
+        <div class="me-label"># Voters at Address</div>
+        <input id="me-voters" type="number" min="1" placeholder="1" class="me-input">
+      </div>
+      <div>
+        <div class="me-label">Likelihood</div>
+        <select id="me-like" class="me-input">
+          <option value="">— Unknown —</option>
+          <option value="LIKELY">★ Likely</option>
+          <option value="POSSIBLE">◐ Possible</option>
+          <option value="NOTLIKELY">Not Likely</option>
+        </select>
+      </div>
+      <div style="grid-column:1/-1">
+        <div class="me-label">Response <span style="color:#e74c3c">*</span></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <label class="me-resp-btn"><input type="radio" name="me-resp" value="Yes"> ✅ Yes</label>
+          <label class="me-resp-btn"><input type="radio" name="me-resp" value="No"> ❌ No</label>
+          <label class="me-resp-btn"><input type="radio" name="me-resp" value="Undecided"> ❓ Undecided</label>
+          <label class="me-resp-btn"><input type="radio" name="me-resp" value="Not Home"> 🏠 Not Home</label>
+          <label class="me-resp-btn"><input type="radio" name="me-resp" value="Not Visited"> ⚪ Not Visited</label>
+        </div>
+      </div>
+      <div style="grid-column:1/-1">
+        <div class="me-label">Notes</div>
+        <textarea id="me-notes" rows="2" placeholder="Optional notes…" class="me-input" style="resize:vertical"></textarea>
+      </div>
+    </div>
+    <div id="me-error" style="display:none;background:rgba(192,57,43,.15);border:1px solid rgba(192,57,43,.4);border-radius:6px;padding:8px 12px;color:#ff8a7a;font-size:.78rem;margin-bottom:10px"></div>
+    <div style="display:flex;gap:10px">
+      <button onclick="submitManualEntry()" style="flex:1;background:#1a5276;color:#aee2ff;border:1.5px solid rgba(46,134,193,.4);border-radius:8px;padding:11px;font-family:'Oswald',sans-serif;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer">💾 Save Entry</button>
+      <button onclick="closeManualEntry()" style="background:transparent;color:#8a9bb0;border:1px solid #21262d;border-radius:8px;padding:11px 18px;font-size:.78rem;cursor:pointer">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<style>
+.me-label{font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#556677;margin-bottom:4px}
+.me-input{width:100%;background:#0d1117;border:1px solid #30363d;border-radius:7px;padding:8px 10px;color:#f0f6fc;font-size:.85rem;outline:none;box-sizing:border-box;font-family:inherit;transition:border-color .15s}
+.me-input:focus{border-color:#2e86c1}
+.me-resp-btn{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:.78rem;color:#c0ccdd;transition:all .15s}
+.me-resp-btn:hover{background:rgba(255,255,255,.1)}
+.me-resp-btn input{accent-color:#2e86c1;margin:0}
+</style>
+
+<script>
+window.openManualEntry = function() {
+  ['me-name','me-address','me-street','me-prec','me-notes'].forEach(function(id) {
+    var el = document.getElementById(id); if (el) el.value = '';
+  });
+  var v = document.getElementById('me-voters'); if (v) v.value = '1';
+  var l = document.getElementById('me-like');   if (l) l.value = '';
+  document.querySelectorAll('input[name="me-resp"]').forEach(function(r) { r.checked = false; });
+  var err = document.getElementById('me-error'); if (err) err.style.display = 'none';
+  var ov = document.getElementById('manual-entry-overlay');
+  if (ov) { ov.style.display = 'flex'; }
+  setTimeout(function() { var el = document.getElementById('me-name'); if (el) el.focus(); }, 100);
+};
+
+window.closeManualEntry = function() {
+  var ov = document.getElementById('manual-entry-overlay');
+  if (ov) ov.style.display = 'none';
+};
+
+window.submitManualEntry = function() {
+  var errEl = document.getElementById('me-error');
+  function showErr(msg) { errEl.textContent = msg; errEl.style.display = 'block'; }
+
+  var address = (document.getElementById('me-address').value || '').trim();
+  if (!address) { showErr('Address is required.'); return; }
+
+  var respEl = document.querySelector('input[name="me-resp"]:checked');
+  if (!respEl) { showErr('Please select a Response.'); return; }
+
+  var name   = (document.getElementById('me-name').value   || '').trim() || address;
+  var street = (document.getElementById('me-street').value || '').trim() || address.replace(/^\d+\s*/, '').trim();
+  var prec   = (document.getElementById('me-prec').value   || '').trim();
+  var voters = parseInt(document.getElementById('me-voters').value) || 1;
+  var like   = document.getElementById('me-like').value || '';
+  var notes  = (document.getElementById('me-notes').value  || '').trim();
+  var resp   = respEl.value;
+
+  var newRow = { name:name, address:address, street:street, prec:prec, voters:voters, like:like, levy:0, resp:resp, notes:notes, manual:true };
+
+  var stored = [];
+  try { stored = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]'); } catch(e) {}
+  var key = address.toLowerCase().trim();
+  if (stored.some(function(r) { return (r.address||'').toLowerCase().trim() === key; })) {
+    showErr('An entry for "' + address + '" already exists. Use ↺ Reset to correct it instead.');
+    return;
+  }
+
+  stored.push(newRow);
+  try { localStorage.setItem('baughman_rows_v2', JSON.stringify(stored)); } catch(e) {}
+
+  var fileList = [];
+  try { fileList = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]'); } catch(e) {}
+  fileList.push({ filename: 'Manual: ' + name + ' (' + address + ')', uploaded: new Date().toLocaleString(), added: 1, updated: 0, source: 'manual' });
+  try { localStorage.setItem('baughman_files_v2', JSON.stringify(fileList)); } catch(e) {}
+
+  if (typeof window._restoreRows === 'function') {
+    window._restoreRows(stored, 'Combined Results (' + stored.length + ' households, ' + fileList.length + ' upload' + (fileList.length !== 1 ? 's' : '') + ')');
+  }
+  if (typeof window.jsonbinPush === 'function') window.jsonbinPush(stored, fileList);
+  if (typeof updateUploadStatus === 'function') updateUploadStatus();
+
+  closeManualEntry();
+
+  setTimeout(function() {
+    if (window._adminEditMode) {
+      var tbl = document.getElementById('detail-table');
+      if (tbl) tbl.classList.add('edit-active');
+    }
+    if (typeof window.renderDetail === 'function') window.renderDetail();
+  }, 80);
+};
 </script>
 </body>
 </html>
