@@ -2430,6 +2430,7 @@ window.adminRestoreData = function(input) {
   reader.readAsText(file);
 };
 
+window.adminDeleteResults = function() {
   if (!confirm('Delete ALL saved canvass results from all uploads? This cannot be undone.')) return;
   try {
     localStorage.removeItem('baughman_rows_v2');
