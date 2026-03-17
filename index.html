@@ -754,7 +754,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div style="font-family:'Oswald',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-light)">Upload New Results</div>
       <div id="upload-saved-hint" style="font-size:.72rem;color:#556677;margin-top:2px">Select .xlsx or .csv from the canvass app</div>
     </div>
-    <button onclick="document.getElementById('file-input').click()"
+    <button onclick="uploadWithAuth()"
       style="background:var(--gold);color:var(--navy);border:none;border-radius:8px;padding:9px 22px;font-family:'Oswald',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;white-space:nowrap;flex-shrink:0">
       Choose File
     </button>
@@ -932,7 +932,10 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     zone.style.borderColor = 'rgba(201,150,42,.4)';
     zone.style.background  = 'rgba(201,150,42,.04)';
     var f = e.dataTransfer.files[0];
-    if (f) window.handleFile(f);
+    if (f) {
+      if (!checkUploadAuth()) return;
+      window.handleFile(f);
+    }
   };
 
   window.handleFile = function(file) {
@@ -1333,7 +1336,6 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     };
     document.getElementById('detail-tbody').innerHTML = filtered.map(function(r){
       var rs = ROW_STYLE[r.resp] || ROW_STYLE['Not Visited'];
-      var addrJson = JSON.stringify(r.address || '');
       return '<tr style="border-bottom:1px solid rgba(255,255,255,.04);background:'+rs.bg+';border-left:'+rs.left+'">'+
         '<td style="padding:7px 12px;font-size:.82rem;font-weight:600;color:var(--cream)">'+esc(r.name||r.address)+likeTag(r.like||'')+'</td>'+
         '<td style="padding:7px 12px;font-size:.82rem;color:#8a9bb0">'+esc(r.address||'')+'</td>'+
@@ -1342,7 +1344,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
         '<td style="padding:7px 8px;text-align:right;font-family:monospace;font-size:.78rem;color:var(--gold-light)">'+(r.levy ? '$'+(parseFloat(r.levy)||0).toFixed(2) : '—')+'</td>'+
         '<td style="padding:7px 12px;text-align:center">'+respBadge(r.resp)+'</td>'+
         '<td style="padding:7px 12px;font-size:.78rem;font-style:'+(r.notes?'normal':'italic')+';color:'+(r.notes?'#c0ccdd':'#445566')+'">'+esc(r.notes||'—')+'</td>'+
-        '<td class="edit-col" style="padding:4px 8px;text-align:center"><button class="reset-btn" onclick="adminResetRow('+addrJson+')" title="Reset to Not Visited and clear notes">↺ Reset</button></td>'+
+        '<td class="edit-col" style="padding:4px 8px;text-align:center"><button class="reset-btn" data-addr="'+esc(r.address||'')+'" onclick="adminResetRow(this.getAttribute(\'data-addr\'))" title="Reset to Not Visited and clear notes">↺ Reset</button></td>'+
       '</tr>';
     }).join('');
   };
@@ -2481,6 +2483,26 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 <!-- ══ ADMIN EDIT MODE + BACKUP/RESTORE ══ -->
 <script>
+// ── Upload Password Gate ──────────────────────────────────────────────────
+window._uploadUnlocked = false;
+
+window.checkUploadAuth = function() {
+  if (window._uploadUnlocked) return true;
+  var pw = prompt('Enter the upload password to submit canvass results:');
+  if (pw === null) return false;
+  if (pw === 'Admin2026$') {
+    window._uploadUnlocked = true;
+    return true;
+  }
+  alert('Incorrect password. Ask your campaign coordinator for the upload password.');
+  return false;
+};
+
+window.uploadWithAuth = function() {
+  if (!window.checkUploadAuth()) return;
+  document.getElementById('file-input').click();
+};
+
 // ── Admin Edit Mode (Reset individual rows) ──────────────────────────────
 window._adminEditMode = false;
 
