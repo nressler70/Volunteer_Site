@@ -1310,7 +1310,26 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       b.classList.toggle('rf-active', b.dataset.f === f);
     });
     renderDashboard();
+
+    // Auto-expand the detail section if it's collapsed
+    var body    = document.getElementById('detail-body');
+    var chevron = document.getElementById('detail-chevron');
+    var hint    = document.querySelector('#detail-toggle span:nth-child(2)');
+    if (body && body.style.display === 'none') {
+      body.style.display = 'block';
+      if (chevron) chevron.style.transform = 'rotate(180deg)';
+      if (hint) hint.textContent = 'Click to collapse';
+    }
+
     renderDetail();
+
+    // Scroll the detail section into view smoothly
+    var detailToggle = document.getElementById('detail-toggle');
+    if (detailToggle) {
+      setTimeout(function() {
+        detailToggle.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 60);
+    }
   };
 
   window.renderDetail = function() {
@@ -1583,7 +1602,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Suzi Byall</div>
       <div class="vc-role">Canvasser · Signed In 3/15/2026</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304656433">330-465-6433</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:suzibyall@gmail.com">suzibyall@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#6013151a090219010c0c20070d01090c4e030f0d"><span class="__cf_email__" data-cfemail="582b2d22313a21393434183f35393134763b3735">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Burkhart Rd · 70 stops</span></div>
     </div>
 
@@ -1592,7 +1611,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-role">Canvasser &amp; Campaign Support · Signed In 3/15/2026</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304659001">330-465-9001</a></div>
       <div class="vc-info"><span class="icon">📟</span><span style="color:#8a9bb0">Campaign Cell: 330-465-8982</span></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:jrutter@hypercrawl.com">jrutter@hypercrawl.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#98f2eaedececfdead8f0e1e8fdeafbeaf9eff4b6fbf7f5"><span class="__cf_email__" data-cfemail="274d555253534255674f5e574255445546504b0944484a">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Burton City / Mt Eaton / N West Lebanon / Krug · 102 stops</span></div>
     </div>
 
@@ -1600,7 +1619,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Mike Raff</div>
       <div class="vc-role">Canvasser · Signed In 3/15/2026</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3303172059">330-317-2059</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:mikerett86@gmail.com">mikerett86@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#99f4f0f2fcebfcededa1afd9fef4f8f0f5b7faf6f4"><span class="__cf_email__" data-cfemail="b1dcd8dad4c3d4c5c58987f1d6dcd0d8dd9fd2dedc">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Church Rd / Good Rd / N Kohler / Wenger · 75 stops</span></div>
     </div>
 
@@ -1608,7 +1627,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Pat Turchiano</div>
       <div class="vc-role">Canvasser · Selected Streets (couldn't attend 3/15)</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304665110">330-466-5110</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:pdjtrchn1@zoominternet.net">pdjtrchn1@zoominternet.net</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#e797838d9395848f89d6a79d88888a8e89938295898293c9898293"><span class="__cf_email__" data-cfemail="621206081610010a0c5322180d0d0f0b0c1607100c07164c0c0716">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 York Rd / Emmitsburg / Hanover / Chambersburg / Market / Misere · 79 stops</span></div>
     </div>
 
@@ -1616,7 +1635,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Robin Coppola</div>
       <div class="vc-role">Canvasser · Signed In 3/15/2026</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3302013020">330-201-3020</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:robin.coppola2@gmail.com">robin.coppola2@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#20524f42494e0e434f50504f4c411260474d41494c0e434f4d"><span class="__cf_email__" data-cfemail="41332e23282f6f222e31312e2d207301262c20282d6f222e2c">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">🪧 Yard Signs</span><span class="vc-tag">📍 Tannerville / Wayne St / Paradise Ext · 64 stops</span></div>
     </div>
 
@@ -1624,7 +1643,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Joe Rubino</div>
       <div class="vc-role">Canvasser</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3306214717">330-621-4717</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:jjrubino@gmail.com">jjrubino@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#3c56564e495e5552537c5b515d5550125f5351"><span class="__cf_email__" data-cfemail="d5bfbfa7a0b7bcbbba95b2b8b4bcb9fbb6bab8">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📞 Phone</span><span class="vc-tag">🚗 Rides</span><span class="vc-tag">📬 Absentee</span><span class="vc-tag">📍 Coal Bank / Fosnight / Rehm / West St · 68 stops</span></div>
     </div>
 
@@ -1632,7 +1651,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">David Stoll</div>
       <div class="vc-role">Canvasser</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304662409">330-466-2409</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:dnhstoll@gmail.com">dnhstoll@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#50343e3823243f3c3c10373d31393c7e333f3d"><span class="__cf_email__" data-cfemail="6c0802041f180300002c0b010d0500420f0301">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">🪧 Yard Signs</span><span class="vc-tag">📍 Ault Rd / Huprick Rd · 25 stops</span></div>
     </div>
 
@@ -1640,7 +1659,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Diane Jarrett</div>
       <div class="vc-role">Canvasser</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304654110">330-465-4110</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:djarrett@gojarrett.com">djarrett@gojarrett.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#2c48464d5e5e4958586c4b43464d5e5e495858024f4341"><span class="__cf_email__" data-cfemail="4a2e202b38382f3e3e0a2d25202b38382f3e3e64292527">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Forrer Rd · 12 stops</span></div>
     </div>
 
@@ -1648,7 +1667,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Matt Slicker</div>
       <div class="vc-role">Canvasser · Signed In 3/15/2026</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3308542557">330-854-2557</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:matt@slickerfarms.com">matt@slickerfarms.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#224f43565662514e4b414947504443504f510c414d4f"><span class="__cf_email__" data-cfemail="bad7dbcecefac9d6d3d9d1dfc8dcdbc8d7c994d9d5d7">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">🪧 Yard Signs</span><span class="vc-tag">📍 Deerfield NW / Fulton / Lovers Lane / Shifferly / Black Diamond + shared · 124+ stops</span></div>
     </div>
 
@@ -1656,14 +1675,14 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Shelly Brenner</div>
       <div class="vc-role">Canvasser</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3306212421">330-621-2421</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:shellybrenner38@gmail.com">shellybrenner38@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#a5d6cdc0c9c9dcc7d7c0cbcbc0d7969de5c2c8c4ccc98bc6cac8"><span class="__cf_email__" data-cfemail="215249444d4d584353444f4f4453121961464c40484d0f424e4c">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📞 Phone</span><span class="vc-tag">🚗 Rides</span><span class="vc-tag">📬 Absentee</span><span class="vc-tag">📍 Back Massillon Rd (split w/ Matt)</span></div>
     </div>
 
     <div class="vc-card vc-green">
       <div class="vc-name">Noelle Ressler</div>
       <div class="vc-role">Canvasser &amp; Campaign Support · Signed In 3/15/2026</div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:noeller@rbrconsulting.biz">noeller@rbrconsulting.biz</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#543a3b313838312614263626373b3a272138203d3a337a363d2e"><span class="__cf_email__" data-cfemail="127c7d777e7e776052607060717d7c61677e667b7c753c707b68">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Dalton Fox Lake Rd (split w/ Matt)</span></div>
     </div>
 
@@ -1671,7 +1690,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Julie Finney</div>
       <div class="vc-role">Canvasser</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3302340141">330-234-0141</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:julie.finney77@gmail.com">julie.finney77@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#147e61787d713a727d7a7a716d2323547379757d783a777b79"><span class="__cf_email__" data-cfemail="a4ced1c8cdc18ac2cdcacac1dd9393e4c3c9c5cdc88ac7cbc9">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Fox Lake Rd (split w/ Matt) + Wadsworth Rd + Keck Rd · 64 stops</span></div>
     </div>
 
@@ -1683,9 +1702,9 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 
     <div class="vc-card">
       <div class="vc-name">Cathy Pamer</div>
-      <div class="vc-role">Volunteer</div>
+      <div class="vc-role">Supporter</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3307494073">330-749-4073</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:caparmer1983@gmail.com">caparmer1983@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#b1d2d0c1d0c3dcd4c380888982f1d6dcd0d8dd9fd2dedc"><span class="__cf_email__" data-cfemail="f291938293809f9780c3cbcac1b2959f939b9edc919d9f">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag tag-any">✋ Anything</span></div>
     </div>
 
@@ -1701,7 +1720,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Justin Haislip</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><span style="color:#8a9bb0">—</span></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:Justin@justinhaislipagency.com">Justin@justinhaislipagency.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#cd87b8beb9a4a38da7b8beb9a4a3a5aca4bea1a4bdacaaa8a3aeb4e3aea2a0"><span class="__cf_email__" data-cfemail="602a151314090e200a151314090e080109130c09100107050e03194e030f0d">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag tag-any">✋ Anything</span></div>
     </div>
 
@@ -1709,21 +1728,21 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Stephanie Geiser</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><span style="color:#8a9bb0">—</span></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:markstephanieg96@gmail.com">markstephanieg96@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#c5a8a4b7aeb6b1a0b5ada4abaca0a2fcf385a2a8a4aca9eba6aaa8"><span class="__cf_email__" data-cfemail="a9c4c8dbc2daddccd9c1c8c7c0ccce909fe9cec4c8c0c587cac6c4">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag tag-any">✋ Anything</span></div>
     </div>
 
     <div class="vc-card">
       <div class="vc-name">Tim Horst</div>
-      <div class="vc-role">Volunteer</div>
+      <div class="vc-role">Supporter</div>
       <div class="vc-info"><span class="icon">📞</span><span style="color:#8a9bb0">—</span></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:tkhorst3@gmail.com">tkhorst3@gmail.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#0276696a6d7071763142656f636b6e2c616d6f"><span class="__cf_email__" data-cfemail="e7938c8f88959493d4a7808a868e8bc984888a">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag tag-any">✋ Anything</span></div>
     </div>
 
     <div class="vc-card">
       <div class="vc-name">Doug Waikem</div>
-      <div class="vc-role">Volunteer</div>
+      <div class="vc-role">Supporter</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3303240009">330-324-0009</a></div>
       <div class="vc-info"><span class="icon">📧</span><span style="color:#8a9bb0">—</span></div>
       <div class="vc-tags"><span class="vc-tag tag-any">✋ Anything</span></div>
@@ -1731,7 +1750,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 
     <div class="vc-card">
       <div class="vc-name">Don Shoup</div>
-      <div class="vc-role">Volunteer</div>
+      <div class="vc-role">Supporter</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304661554">330-466-1554</a></div>
       <div class="vc-info"><span class="icon">📧</span><span style="color:#8a9bb0">—</span></div>
       <div class="vc-tags"><span class="vc-tag" style="color:#8a9bb0;border-color:rgba(138,155,176,.2);background:rgba(138,155,176,.08)">Contact for details</span></div>
@@ -1739,7 +1758,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 
     <div class="vc-card">
       <div class="vc-name">Jan Monheim</div>
-      <div class="vc-role">Volunteer · Yard Sign Request</div>
+      <div class="vc-role">Supporter · Yard Sign Request</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304658244">330-465-8244</a></div>
       <div class="vc-info"><span class="icon">📧</span><span style="color:#8a9bb0">—</span></div>
       <div class="vc-tags"><span class="vc-tag">🪧 Yard Sign Only</span></div>
@@ -1747,7 +1766,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 
     <div class="vc-card">
       <div class="vc-name">Carolyn Baer</div>
-      <div class="vc-role">Volunteer</div>
+      <div class="vc-role">Supporter</div>
       <div class="vc-info"><span class="icon">📞</span><span style="color:#8a9bb0">—</span></div>
       <div class="vc-info"><span class="icon">📧</span><span style="color:#8a9bb0">—</span></div>
       <div class="vc-tags"><span class="vc-tag tag-any">✋ Anything</span></div>
@@ -1763,7 +1782,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Bob Graber</div>
       <div class="vc-role">Trustee</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304661662">330-466-1662</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="mailto:BGraberAuctions@aol.com">BGraberAuctions@aol.com</a></div>
+      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#ffbdb88d9e9d9a8dbe8a9c8b9690918cbf9e9093d19c9092"><span class="__cf_email__" data-cfemail="5a181d283b383f281b2f392e333534291a3b353674393537">[email&#160;protected]</span></a></div>
       <div class="vc-tags"><span class="vc-tag" style="background:rgba(46,134,193,.15);color:#aee2ff;border-color:rgba(46,134,193,.3)">🏛️ Trustee</span></div>
     </div>
 
@@ -1824,12 +1843,12 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     <div class="contact-card">
       <h4>Noelle Ressler</h4><div class="role">Campaign Support</div>
       <div class="ci"><span class="icon">📞</span><a href="tel:2162948358">216-294-8358</a></div>
-      <div class="ci"><span class="icon">📧</span><a href="mailto:noeller@rbrconsulting.biz">noeller@rbrconsulting.biz</a></div>
+      <div class="ci"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#402e2f252c2c253200322232232f2e33352c34292e276e22293a"><span class="__cf_email__" data-cfemail="85ebeae0e9e9e0f7c5f7e7f7e6eaebf6f0e9f1ecebe2abe7ecff">[email&#160;protected]</span></a></div>
     </div>
     <div class="contact-card">
       <h4>John Rutter</h4><div class="role">Campaign Support</div>
       <div class="ci"><span class="icon">📞</span><a href="tel:3304659001">330-465-9001</a></div>
-      <div class="ci"><span class="icon">📧</span><a href="mailto:jrutter@hypercrawl.com">jrutter@hypercrawl.com</a></div>
+      <div class="ci"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#0e647c7b7a7a6b7c4e66777e6b7c6d7c6f7962206d6163"><span class="__cf_email__" data-cfemail="b8d2cacdccccddcaf8d0c1c8ddcadbcad9cfd496dbd7d5">[email&#160;protected]</span></a></div>
     </div>
     <div class="contact-card cc-blue">
       <h4>Wayne County Board of Elections</h4>
@@ -1868,7 +1887,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   <a class="pbtn pbtn-out" href="#teams">🗺 Canvasser Routes</a>
   <button class="pbtn pbtn-out" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Top</button>
 </div>
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 
 // ── LIVE EARLY VOTING COUNTER STRIP ──
 // This runs a separate live countdown specifically for the early voting strip
@@ -2700,109 +2719,4 @@ window.toggleAdminEdit = function() {
 
 window.adminResetRow = function(addr) {
   if (!window._adminEditMode) return;
-  if (!confirm('Reset "' + addr + '" to Not Visited and clear its notes?\n\nThis cannot be undone.')) return;
-  var stored = [];
-  try { stored = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]'); } catch(e) {}
-  var key = (addr || '').toLowerCase().trim();
-  var found = false;
-  stored.forEach(function(r) {
-    if ((r.address || '').toLowerCase().trim() === key) {
-      r.resp = 'Not Visited';
-      r.notes = '';
-      found = true;
-    }
-  });
-  if (!found) { alert('Could not find that address in saved data.'); return; }
-  try { localStorage.setItem('baughman_rows_v2', JSON.stringify(stored)); } catch(e) {}
-  var fileList = [];
-  try { fileList = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]'); } catch(e) {}
-  if (typeof window._restoreRows === 'function') {
-    var label = 'Combined Results (' + stored.length + ' households, ' + fileList.length + ' upload' + (fileList.length !== 1 ? 's' : '') + ')';
-    window._restoreRows(stored, label);
-  }
-  if (typeof window.jsonbinPush === 'function') window.jsonbinPush(stored, fileList);
-  setTimeout(function() {
-    var tbl = document.getElementById('detail-table');
-    var btn = document.getElementById('admin-edit-btn');
-    if (tbl) tbl.classList.add('edit-active');
-    if (btn) { btn.textContent = '🔓 Edit Mode ON'; btn.classList.add('active'); }
-    window._adminEditMode = true;
-    if (typeof window.renderDetail === 'function') window.renderDetail();
-  }, 80);
-};
-
-// ── Backup & Restore ──────────────────────────────────────────────────────
-window.adminBackupData = function() {
-  var rows = [], files = [];
-  try { rows  = JSON.parse(localStorage.getItem('baughman_rows_v2')  || '[]'); } catch(e) {}
-  try { files = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]'); } catch(e) {}
-  var s = document.getElementById('admin-backup-status');
-  if (!rows.length) {
-    if (s) { s.textContent = '⚠ No data to back up yet.'; s.style.color = '#f4c460'; }
-    return;
-  }
-  var backup = { version: 'baughman_backup_v1', exported: new Date().toISOString(), rows: rows, files: files };
-  var blob  = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
-  var fname = 'Baughman_Canvass_Backup_' + new Date().toLocaleDateString('en-US').replace(/\//g,'-') + '.json';
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = fname;
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  URL.revokeObjectURL(a.href);
-  if (s) { s.textContent = '✓ Backed up ' + rows.length + ' households to ' + fname; s.style.color = '#5ce08a'; }
-};
-
-window.adminRestoreData = function(input) {
-  var file = input.files && input.files[0];
-  if (!file) return;
-  var s = document.getElementById('admin-backup-status');
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      var backup = JSON.parse(e.target.result);
-      if (backup.version !== 'baughman_backup_v1' || !Array.isArray(backup.rows)) {
-        if (s) { s.textContent = '✗ Not a valid Baughman backup file.'; s.style.color = '#f87171'; }
-        input.value = ''; return;
-      }
-      if (!confirm('Restore ' + backup.rows.length + ' households from backup dated ' +
-          new Date(backup.exported).toLocaleString() + '?\n\nThis will MERGE with any existing data — existing responses will not be overwritten.')) {
-        input.value = ''; return;
-      }
-      var stored = [];
-      try { stored = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]'); } catch(ex) {}
-      var sidx = {};
-      stored.forEach(function(r, i) { sidx[(r.address||'').toLowerCase().trim()] = i; });
-      var nAdded = 0, nKept = 0;
-      backup.rows.forEach(function(r) {
-        var k = (r.address||'').toLowerCase().trim();
-        if (k in sidx) {
-          var ex = stored[sidx[k]];
-          if ((!ex.resp || ex.resp === 'Not Visited') && r.resp && r.resp !== 'Not Visited') { ex.resp = r.resp; }
-          if (r.notes && !ex.notes) { ex.notes = r.notes; }
-          nKept++;
-        } else {
-          stored.push(r); sidx[k] = stored.length - 1; nAdded++;
-        }
-      });
-      var existingFiles = [];
-      try { existingFiles = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]'); } catch(ex) {}
-      var existingFnames = existingFiles.map(function(f) { return f.filename; });
-      (backup.files || []).forEach(function(f) { if (existingFnames.indexOf(f.filename) === -1) existingFiles.push(f); });
-      existingFiles.push({ filename: file.name, uploaded: new Date().toLocaleString(), added: nAdded, updated: nKept, source: 'backup-restore' });
-      try { localStorage.setItem('baughman_rows_v2',  JSON.stringify(stored));        } catch(ex) {}
-      try { localStorage.setItem('baughman_files_v2', JSON.stringify(existingFiles)); } catch(ex) {}
-      if (typeof window._restoreRows === 'function') { window._restoreRows(stored, 'Restored Results (' + stored.length + ' households)'); }
-      if (typeof window.jsonbinPush === 'function') window.jsonbinPush(stored, existingFiles);
-      if (typeof updateUploadStatus === 'function') updateUploadStatus();
-      if (typeof refreshAdminStatus === 'function') refreshAdminStatus();
-      if (s) { s.textContent = '✓ Restored! ' + nAdded + ' added, ' + nKept + ' already present.'; s.style.color = '#5ce08a'; }
-    } catch(ex) {
-      if (s) { s.textContent = '✗ Error reading file: ' + ex.message; s.style.color = '#f87171'; }
-    }
-    input.value = '';
-  };
-  reader.readAsText(file);
-};
-</script>
-</body>
-</html>
+  if (!confirm('Reset "' + addr + 
