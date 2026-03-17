@@ -1405,7 +1405,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 
       // Sign toggle button
       var signBtn = e.target.closest('.sign-btn');
-      if (signBtn) { window.toggleSign(signBtn.getAttribute('data-addr')); return; }
+      if (signBtn) { window.toggleSign(signBtn.getAttribute('data-addr'), signBtn); return; }
 
       // Notes save button
       var saveBtn = e.target.closest('.notes-save-btn');
@@ -1537,8 +1537,27 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   }
 
   // ── RESTORE SAVED RESULTS ─────────────────────────────────────────────────
+  // Load sign map from its own storage key — never overwritten by cloud sync
+  function loadSignMap() {
+    try { return JSON.parse(localStorage.getItem('baughman_signs_v1') || '{}'); } catch(e) { return {}; }
+  }
+  function saveSignMap(map) {
+    try { localStorage.setItem('baughman_signs_v1', JSON.stringify(map)); } catch(e) {}
+  }
+  // Apply sign flags from the separate sign map onto rows
+  function applySignsToRows(r) {
+    var map = loadSignMap();
+    r.forEach(function(row) {
+      var k = (row.address||'').toLowerCase().trim();
+      if (map[k]) row.sign = true;
+      // also preserve if already true from CSV
+    });
+    return r;
+  }
+  window._applySignsToRows = applySignsToRows;
+
   window._restoreRows = function(savedRows, label) {
-    rows = savedRows;
+    rows = applySignsToRows(savedRows);
     renderReport(label, '');
   };
 
@@ -1547,7 +1566,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       var saved  = JSON.parse(localStorage.getItem('baughman_rows_v2')  || '[]');
       var files  = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]');
       if (!saved.length) return;
-      rows = saved;
+      rows = applySignsToRows(saved);
       var label  = 'Saved Results (' + saved.length + ' household'
         + (saved.length !== 1 ? 's' : '') + ', '
         + files.length + ' upload' + (files.length !== 1 ? 's' : '') + ')';
@@ -1586,6 +1605,41 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 
   // Expose renderDetail globally for the search input's oninput
   window.renderDetail = window.renderDetail;
+
+  // Expose a helper to update a row's fields without resetting the filter
+  window._updateRow = function(addr, fields) {
+    var key = addr.toLowerCase().trim();
+    rows.forEach(function(r) {
+      if ((r.address||'').toLowerCase().trim() === key) {
+        Object.keys(fields).forEach(function(k) { r[k] = fields[k]; });
+      }
+    });
+    // Save scroll position so rebuilding tbody doesn't jump the page
+    var scrollY = window.pageYOffset || document.documentElement.scrollTop;
+    renderDashboard();
+    window.renderDetail();
+    // Restore scroll position immediately after re-render
+    window.scrollTo(0, scrollY);
+    if (window._adminEditMode) {
+      var tbl = document.getElementById('detail-table');
+      if (tbl) tbl.classList.add('edit-active');
+    }
+  };
+
+  // Update row data only — no re-render
+  window._updateRowData = function(addr, fields) {
+    var key = addr.toLowerCase().trim();
+    rows.forEach(function(r) {
+      if ((r.address||'').toLowerCase().trim() === key) {
+        Object.keys(fields).forEach(function(k) { r[k] = fields[k]; });
+      }
+    });
+  };
+
+  // Refresh dashboard tiles only — no detail table re-render
+  window._refreshDashboard = function() {
+    renderDashboard();
+  };
   window.parseSheet = parseSheet;
 })();
 </script>
@@ -2447,7 +2501,8 @@ window.adminBackupData = function() {
     version: 'baughman_backup_v1',
     exported: new Date().toISOString(),
     rows: rows,
-    files: files
+    files: files,
+    signs: (function(){ try { return JSON.parse(localStorage.getItem('baughman_signs_v1')||'{}'); } catch(e){ return {}; } })()
   };
 
   var blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
@@ -2524,6 +2579,9 @@ window.adminRestoreData = function(input) {
 
       try { localStorage.setItem('baughman_rows_v2',  JSON.stringify(stored));       } catch(ex) {}
       try { localStorage.setItem('baughman_files_v2', JSON.stringify(existingFiles)); } catch(ex) {}
+      if (backup.signs && Object.keys(backup.signs).length) {
+        try { localStorage.setItem('baughman_signs_v1', JSON.stringify(backup.signs)); } catch(ex) {}
+      }
 
       // Re-render
       if (typeof window._restoreRows === 'function') {
@@ -2553,6 +2611,7 @@ window.adminDeleteResults = function() {
     localStorage.removeItem('baughman_files_v2');
     localStorage.removeItem('baughman_canvass_results_v1');
     localStorage.removeItem('baughman_canvass_meta_v1');
+    localStorage.removeItem('baughman_signs_v1');
   } catch(e) {}
   // Hide the report
   var rw = document.getElementById('report-wrap');
@@ -2862,58 +2921,59 @@ document.addEventListener('DOMContentLoaded', function() {
 </style>
 
 <script data-cfasync="false">
-window.toggleSign = function(addr) {
-  var stored = [];
-  try { stored = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]'); } catch(e) {}
-  var key = addr.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').toLowerCase().trim();
-  stored.forEach(function(r) {
-    if ((r.address||'').toLowerCase().trim() === key) {
-      r.sign = !r.sign;
+window.toggleSign = function(addr, btn) {
+  var rawAddr = addr.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>');
+  var key = rawAddr.toLowerCase().trim();
+
+  // Read/update the sign map (separate key, never touched by cloud sync)
+  var map = {};
+  try { map = JSON.parse(localStorage.getItem('baughman_signs_v1') || '{}'); } catch(e) {}
+  var newSign = !map[key];
+  if (newSign) { map[key] = true; } else { delete map[key]; }
+  try { localStorage.setItem('baughman_signs_v1', JSON.stringify(map)); } catch(e) {}
+
+  // Update in-memory rows (inside closure) without re-render
+  if (typeof window._updateRowData === 'function') window._updateRowData(key, { sign: newSign });
+
+  // Update just the button — NO table rebuild, NO scroll jump
+  if (btn) {
+    if (newSign) {
+      btn.style.background = 'rgba(244,164,96,.25)';
+      btn.style.border     = '1.5px solid rgba(244,164,96,.6)';
+      btn.style.color      = 'var(--gold-light)';
+      btn.textContent      = '🪧 Yes';
+    } else {
+      btn.style.background = 'rgba(255,255,255,.05)';
+      btn.style.border     = '1.5px solid rgba(255,255,255,.12)';
+      btn.style.color      = '#445566';
+      btn.textContent      = '🪧 —';
     }
-  });
-  try { localStorage.setItem('baughman_rows_v2', JSON.stringify(stored)); } catch(e) {}
-  var fileList = [];
-  try { fileList = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]'); } catch(e) {}
-  if (typeof window._restoreRows === 'function') {
-    window._restoreRows(stored, 'Combined Results (' + stored.length + ' households)');
   }
-  if (typeof window.jsonbinPush === 'function') window.jsonbinPush(stored, fileList);
-  setTimeout(function() {
-    if (window._adminEditMode) {
-      var tbl = document.getElementById('detail-table');
-      if (tbl) tbl.classList.add('edit-active');
-    }
-    if (typeof window.renderDetail === 'function') window.renderDetail();
-  }, 60);
+
+  // Refresh just the dashboard tile count
+  if (typeof window._refreshDashboard === 'function') window._refreshDashboard();
 };
 
 window.saveNotes = function(addr, newNotes) {
+  var key = addr.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').toLowerCase().trim();
+
+  // Persist to localStorage
   var stored = [];
   try { stored = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]'); } catch(e) {}
-  var key = addr.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').toLowerCase().trim();
   var found = false;
   stored.forEach(function(r) {
-    if ((r.address||'').toLowerCase().trim() === key) {
-      r.notes = newNotes;
-      found = true;
-    }
+    if ((r.address||'').toLowerCase().trim() === key) { r.notes = newNotes; found = true; }
   });
-  if (!found) { window.renderDetail(); return; }
+  if (!found) { if (typeof window.renderDetail === 'function') window.renderDetail(); return; }
   try { localStorage.setItem('baughman_rows_v2', JSON.stringify(stored)); } catch(e) {}
+
+  // Update live rows + re-render without resetting filter
+  if (typeof window._updateRow === 'function') window._updateRow(key, { notes: newNotes });
+
+  // Push to cloud
   var fileList = [];
   try { fileList = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]'); } catch(e) {}
-  if (typeof window._restoreRows === 'function') {
-    var label = 'Combined Results (' + stored.length + ' households)';
-    window._restoreRows(stored, label);
-  }
   if (typeof window.jsonbinPush === 'function') window.jsonbinPush(stored, fileList);
-  setTimeout(function() {
-    if (window._adminEditMode) {
-      var tbl = document.getElementById('detail-table');
-      if (tbl) tbl.classList.add('edit-active');
-    }
-    if (typeof window.renderDetail === 'function') window.renderDetail();
-  }, 60);
 };
 
 window.openManualEntry = function() {
