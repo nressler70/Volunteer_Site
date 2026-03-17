@@ -2167,20 +2167,37 @@ function jsonbinFetch() {
 
     if (!cloudRows.length) { restoreFromLocal(); updateCloudStatus('offline'); return; }
 
-    // Cache locally for this browser
+    // Merge cloud rows with any local data — local sign/notes win over cloud if set
+    var localRows = [];
+    try { localRows = JSON.parse(localStorage.getItem(ROWS_KEY) || '[]'); } catch(e) {}
+    var localIdx = {};
+    localRows.forEach(function(r) { localIdx[(r.address||'').toLowerCase().trim()] = r; });
+
+    var merged = cloudRows.map(function(cr) {
+      var key = (cr.address||'').toLowerCase().trim();
+      var local = localIdx[key];
+      if (local) {
+        // Prefer local sign and notes if set — cloud may not have latest toggle
+        if (local.sign)  cr.sign  = local.sign;
+        if (local.notes && !cr.notes) cr.notes = local.notes;
+      }
+      return cr;
+    });
+
+    // Cache merged result locally
     try {
-      localStorage.setItem(ROWS_KEY,  JSON.stringify(cloudRows));
+      localStorage.setItem(ROWS_KEY,  JSON.stringify(merged));
       localStorage.setItem(FILES_KEY, JSON.stringify(cloudFiles));
     } catch(e) {}
 
     // Render the report
     if (typeof window._restoreRows === 'function') {
-      var label = 'Canvass Results (' + cloudRows.length + ' household'
-        + (cloudRows.length !== 1 ? 's' : '') + ', '
+      var label = 'Canvass Results (' + merged.length + ' household'
+        + (merged.length !== 1 ? 's' : '') + ', '
         + cloudFiles.length + ' upload' + (cloudFiles.length !== 1 ? 's' : '') + ')';
-      window._restoreRows(cloudRows, label);
+      window._restoreRows(merged, label);
     }
-    updateUploadStatus(cloudRows, cloudFiles);
+    updateUploadStatus(merged, cloudFiles);
     updateCloudStatus('synced');
     if (typeof window._updateDebug === 'function') window._updateDebug();
   }).catch(function(e) {
