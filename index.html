@@ -1174,15 +1174,17 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       var active = currentFilter === t.f;
       var div = document.createElement('div');
       div.setAttribute('data-filter', t.f);
-      div.style.cssText = 'background:' + t.bg + ';border:2px solid ' + (active ? t.col : t.bdr) + ';border-radius:10px;padding:13px 10px;text-align:center;cursor:pointer';
-      div.title = 'Click to filter';
+      div.setAttribute('onclick', "window.setFilter('" + t.f + "')");
+      div.style.cssText = 'background:' + t.bg + ';border:2px solid ' + (active ? t.col : t.bdr) + ';border-radius:10px;padding:13px 10px;text-align:center;cursor:pointer;transition:transform .15s,box-shadow .15s';
+      div.title = 'Click to view ' + t.label + ' households';
       div.innerHTML = '<div style="font-size:1.65rem;font-weight:700;color:' + t.col + ';line-height:1;font-family:monospace">' + t.val + '</div>' +
-        '<div style="font-family:Oswald,sans-serif;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:#778899;margin-top:4px">' + t.label + '</div>';
+        '<div style="font-family:Oswald,sans-serif;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:#778899;margin-top:4px">' + t.label + '</div>' +
+        '<div style="font-size:.52rem;color:' + t.col + ';opacity:.6;margin-top:3px;letter-spacing:.05em">▼ view list</div>';
       return div.outerHTML;
     }).join('');
     tilesEl.onclick = function(e) {
       var tile = e.target.closest('[data-filter]');
-      if (tile) setFilter(tile.getAttribute('data-filter'));
+      if (tile) window.setFilter(tile.getAttribute('data-filter'));
     };
 
     var SEG = [
@@ -1315,7 +1317,8 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     var body    = document.getElementById('detail-body');
     var chevron = document.getElementById('detail-chevron');
     var hint    = document.querySelector('#detail-toggle span:nth-child(2)');
-    if (body && body.style.display === 'none') {
+    var wasCollapsed = body && body.style.display === 'none';
+    if (wasCollapsed) {
       body.style.display = 'block';
       if (chevron) chevron.style.transform = 'rotate(180deg)';
       if (hint) hint.textContent = 'Click to collapse';
@@ -1323,12 +1326,12 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 
     renderDetail();
 
-    // Scroll the detail section into view smoothly
-    var detailToggle = document.getElementById('detail-toggle');
-    if (detailToggle) {
+    // Scroll to the table when triggered by a tile click (not initial page load)
+    if (wasCollapsed || f !== 'all') {
       setTimeout(function() {
-        detailToggle.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 60);
+        var target = document.getElementById('detail-body') || document.getElementById('detail-toggle');
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 80);
     }
   };
 
