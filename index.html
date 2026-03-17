@@ -1342,7 +1342,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
         '<td style="padding:7px 8px;text-align:right;font-family:monospace;font-size:.78rem;color:var(--gold-light)">'+(r.levy ? '$'+(parseFloat(r.levy)||0).toFixed(2) : '—')+'</td>'+
         '<td style="padding:7px 12px;text-align:center">'+respBadge(r.resp)+'</td>'+
         '<td style="padding:7px 12px;font-size:.78rem;font-style:'+(r.notes?'normal':'italic')+';color:'+(r.notes?'#c0ccdd':'#445566')+'">'+esc(r.notes||'—')+'</td>'+
-        '<td class="edit-col" style="padding:4px 8px;text-align:center"><button class="reset-btn" onclick="adminResetRow('+addrJson+')" title="Reset this address to Not Visited and clear notes">↺ Reset</button></td>'+
+        '<td class="edit-col" style="padding:4px 8px;text-align:center"><button class="reset-btn" onclick="adminResetRow('+addrJson+')" title="Reset to Not Visited and clear notes">↺ Reset</button></td>'+
       '</tr>';
     }).join('');
   };
@@ -2315,121 +2315,6 @@ window.adminSaveCloudConfig = function() {
 };
 
 
-window.adminBackupData = function() {
-  var rows  = [];
-  var files = [];
-  try { rows  = JSON.parse(localStorage.getItem('baughman_rows_v2')  || '[]'); } catch(e) {}
-  try { files = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]'); } catch(e) {}
-
-  if (!rows.length) {
-    var s = document.getElementById('admin-backup-status');
-    if (s) { s.textContent = '⚠ No data to back up yet.'; s.style.color = '#f4c460'; }
-    return;
-  }
-
-  var backup = {
-    version: 'baughman_backup_v1',
-    exported: new Date().toISOString(),
-    rows: rows,
-    files: files
-  };
-
-  var blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
-  var fname = 'Baughman_Canvass_Backup_' + new Date().toLocaleDateString('en-US').replace(/\//g, '-') + '.json';
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = fname;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(a.href);
-
-  var s = document.getElementById('admin-backup-status');
-  if (s) {
-    s.textContent = '✓ Backed up ' + rows.length + ' households to ' + fname;
-    s.style.color = '#5ce08a';
-  }
-};
-
-window.adminRestoreData = function(input) {
-  var file = input.files && input.files[0];
-  if (!file) return;
-  var s = document.getElementById('admin-backup-status');
-
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      var backup = JSON.parse(e.target.result);
-      if (backup.version !== 'baughman_backup_v1' || !Array.isArray(backup.rows)) {
-        if (s) { s.textContent = '✗ Not a valid Baughman backup file.'; s.style.color = '#f87171'; }
-        return;
-      }
-
-      if (!confirm('Restore ' + backup.rows.length + ' households from backup dated ' +
-          new Date(backup.exported).toLocaleString() + '?\n\nThis will MERGE with any existing data (new backup entries won\'t overwrite existing responses).')) {
-        input.value = '';
-        return;
-      }
-
-      // Merge backup into existing stored data — same logic as CSV upload
-      var stored = [];
-      try { stored = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]'); } catch(ex) {}
-      var sidx = {};
-      stored.forEach(function(r, i) {
-        sidx[(r.address || '').toLowerCase().trim()] = i;
-      });
-
-      var nAdded = 0, nKept = 0;
-      backup.rows.forEach(function(r) {
-        var k = (r.address || '').toLowerCase().trim();
-        if (k in sidx) {
-          // Already exists — only fill in if currently Not Visited
-          var ex = stored[sidx[k]];
-          if ((!ex.resp || ex.resp === 'Not Visited') && r.resp && r.resp !== 'Not Visited') {
-            ex.resp = r.resp;
-          }
-          if (r.notes && !ex.notes) ex.notes = r.notes;
-          nKept++;
-        } else {
-          stored.push(r);
-          sidx[k] = stored.length - 1;
-          nAdded++;
-        }
-      });
-
-      // Restore files list — add any from backup not already recorded
-      var existingFiles = [];
-      try { existingFiles = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]'); } catch(ex) {}
-      var existingFnames = existingFiles.map(function(f) { return f.filename; });
-      (backup.files || []).forEach(function(f) {
-        if (existingFnames.indexOf(f.filename) === -1) existingFiles.push(f);
-      });
-      existingFiles.push({ filename: file.name, uploaded: new Date().toLocaleString(), added: nAdded, updated: nKept, source: 'backup-restore' });
-
-      try { localStorage.setItem('baughman_rows_v2',  JSON.stringify(stored));       } catch(ex) {}
-      try { localStorage.setItem('baughman_files_v2', JSON.stringify(existingFiles)); } catch(ex) {}
-
-      // Re-render
-      if (typeof window._restoreRows === 'function') {
-        var label = 'Restored Results (' + stored.length + ' households)';
-        window._restoreRows(stored, label);
-      }
-      if (typeof window.jsonbinPush === 'function') window.jsonbinPush(stored, existingFiles);
-      if (typeof updateUploadStatus === 'function') updateUploadStatus();
-      refreshAdminStatus();
-
-      if (s) {
-        s.textContent = '✓ Restored! ' + nAdded + ' added, ' + nKept + ' already present.';
-        s.style.color = '#5ce08a';
-      }
-    } catch(ex) {
-      if (s) { s.textContent = '✗ Error reading file: ' + ex.message; s.style.color = '#f87171'; }
-    }
-    input.value = '';
-  };
-  reader.readAsText(file);
-};
-
 window.adminDeleteResults = function() {
   if (!confirm('Delete ALL saved canvass results from all uploads? This cannot be undone.')) return;
   try {
@@ -2569,6 +2454,11 @@ document.addEventListener('DOMContentLoaded', function() {
         <div id="admin-jb-status" style="font-size:.72rem;margin-top:6px;min-height:16px;color:#556677"></div>
       </div>
 
+      <button onclick="adminDeleteResults()" style="width:100%;background:#3d1a1a;color:#f87171;border:1.5px solid #6b1a1a;border-radius:10px;padding:14px;font-family:'Oswald',sans-serif;font-size:.82rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;margin-bottom:8px">
+        &#x1F5D1; Delete All Saved Results
+      </button>
+      <div id="admin-delete-confirm" style="display:none;text-align:center;color:#5ce08a;font-size:.82rem;font-weight:700;margin-bottom:8px">&#10003; Results cleared successfully</div>
+
       <!-- Backup & Restore -->
       <div style="background:#0d1117;border:1px solid rgba(39,174,96,.2);border-radius:8px;padding:12px 14px;margin-bottom:14px">
         <div style="font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#74c69d;margin-bottom:6px">💾 Data Backup &amp; Restore</div>
@@ -2585,16 +2475,13 @@ document.addEventListener('DOMContentLoaded', function() {
         <div id="admin-backup-status" style="font-size:.72rem;margin-top:6px;min-height:16px;color:#556677"></div>
       </div>
 
-      <button onclick="adminDeleteResults()" style="width:100%;background:#3d1a1a;color:#f87171;border:1.5px solid #6b1a1a;border-radius:10px;padding:14px;font-family:'Oswald',sans-serif;font-size:.82rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;margin-bottom:8px">
-        &#x1F5D1; Delete All Saved Results
-      </button>
-      <div id="admin-delete-confirm" style="display:none;text-align:center;color:#5ce08a;font-size:.82rem;font-weight:700;margin-bottom:8px">&#10003; Results cleared successfully</div>
       <button onclick="closeAdminPanel()" style="width:100%;background:transparent;color:#8a9bb0;border:1px solid #21262d;border-radius:10px;padding:10px;font-size:.78rem;cursor:pointer">Close</button>
     </div>
   </div>
 </div>
-<!-- ══ ADMIN EDIT MODE — Reset individual rows ══ -->
+<!-- ══ ADMIN EDIT MODE + BACKUP/RESTORE ══ -->
 <script>
+// ── Admin Edit Mode (Reset individual rows) ──────────────────────────────
 window._adminEditMode = false;
 
 window.toggleAdminEdit = function() {
@@ -2621,37 +2508,26 @@ window.toggleAdminEdit = function() {
 window.adminResetRow = function(addr) {
   if (!window._adminEditMode) return;
   if (!confirm('Reset "' + addr + '" to Not Visited and clear its notes?\n\nThis cannot be undone.')) return;
-
-  // Update in localStorage
   var stored = [];
   try { stored = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]'); } catch(e) {}
   var key = (addr || '').toLowerCase().trim();
   var found = false;
   stored.forEach(function(r) {
     if ((r.address || '').toLowerCase().trim() === key) {
-      r.resp  = 'Not Visited';
+      r.resp = 'Not Visited';
       r.notes = '';
       found = true;
     }
   });
   if (!found) { alert('Could not find that address in saved data.'); return; }
   try { localStorage.setItem('baughman_rows_v2', JSON.stringify(stored)); } catch(e) {}
-
-  // Re-render from the updated stored data
-  if (typeof window._restoreRows === 'function') {
-    var files = [];
-    try { files = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]'); } catch(e) {}
-    var label = 'Combined Results (' + stored.length + ' households, '
-      + files.length + ' upload' + (files.length !== 1 ? 's' : '') + ')';
-    window._restoreRows(stored, label);
-  }
-
-  // Push updated data to JSONBin cloud
   var fileList = [];
   try { fileList = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]'); } catch(e) {}
+  if (typeof window._restoreRows === 'function') {
+    var label = 'Combined Results (' + stored.length + ' households, ' + fileList.length + ' upload' + (fileList.length !== 1 ? 's' : '') + ')';
+    window._restoreRows(stored, label);
+  }
   if (typeof window.jsonbinPush === 'function') window.jsonbinPush(stored, fileList);
-
-  // Restore edit mode state after re-render (re-render resets the table class)
   setTimeout(function() {
     var tbl = document.getElementById('detail-table');
     var btn = document.getElementById('admin-edit-btn');
@@ -2660,6 +2536,79 @@ window.adminResetRow = function(addr) {
     window._adminEditMode = true;
     if (typeof window.renderDetail === 'function') window.renderDetail();
   }, 80);
+};
+
+// ── Backup & Restore ──────────────────────────────────────────────────────
+window.adminBackupData = function() {
+  var rows = [], files = [];
+  try { rows  = JSON.parse(localStorage.getItem('baughman_rows_v2')  || '[]'); } catch(e) {}
+  try { files = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]'); } catch(e) {}
+  var s = document.getElementById('admin-backup-status');
+  if (!rows.length) {
+    if (s) { s.textContent = '⚠ No data to back up yet.'; s.style.color = '#f4c460'; }
+    return;
+  }
+  var backup = { version: 'baughman_backup_v1', exported: new Date().toISOString(), rows: rows, files: files };
+  var blob  = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+  var fname = 'Baughman_Canvass_Backup_' + new Date().toLocaleDateString('en-US').replace(/\//g,'-') + '.json';
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = fname;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+  if (s) { s.textContent = '✓ Backed up ' + rows.length + ' households to ' + fname; s.style.color = '#5ce08a'; }
+};
+
+window.adminRestoreData = function(input) {
+  var file = input.files && input.files[0];
+  if (!file) return;
+  var s = document.getElementById('admin-backup-status');
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var backup = JSON.parse(e.target.result);
+      if (backup.version !== 'baughman_backup_v1' || !Array.isArray(backup.rows)) {
+        if (s) { s.textContent = '✗ Not a valid Baughman backup file.'; s.style.color = '#f87171'; }
+        input.value = ''; return;
+      }
+      if (!confirm('Restore ' + backup.rows.length + ' households from backup dated ' +
+          new Date(backup.exported).toLocaleString() + '?\n\nThis will MERGE with any existing data — existing responses will not be overwritten.')) {
+        input.value = ''; return;
+      }
+      var stored = [];
+      try { stored = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]'); } catch(ex) {}
+      var sidx = {};
+      stored.forEach(function(r, i) { sidx[(r.address||'').toLowerCase().trim()] = i; });
+      var nAdded = 0, nKept = 0;
+      backup.rows.forEach(function(r) {
+        var k = (r.address||'').toLowerCase().trim();
+        if (k in sidx) {
+          var ex = stored[sidx[k]];
+          if ((!ex.resp || ex.resp === 'Not Visited') && r.resp && r.resp !== 'Not Visited') { ex.resp = r.resp; }
+          if (r.notes && !ex.notes) { ex.notes = r.notes; }
+          nKept++;
+        } else {
+          stored.push(r); sidx[k] = stored.length - 1; nAdded++;
+        }
+      });
+      var existingFiles = [];
+      try { existingFiles = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]'); } catch(ex) {}
+      var existingFnames = existingFiles.map(function(f) { return f.filename; });
+      (backup.files || []).forEach(function(f) { if (existingFnames.indexOf(f.filename) === -1) existingFiles.push(f); });
+      existingFiles.push({ filename: file.name, uploaded: new Date().toLocaleString(), added: nAdded, updated: nKept, source: 'backup-restore' });
+      try { localStorage.setItem('baughman_rows_v2',  JSON.stringify(stored));        } catch(ex) {}
+      try { localStorage.setItem('baughman_files_v2', JSON.stringify(existingFiles)); } catch(ex) {}
+      if (typeof window._restoreRows === 'function') { window._restoreRows(stored, 'Restored Results (' + stored.length + ' households)'); }
+      if (typeof window.jsonbinPush === 'function') window.jsonbinPush(stored, existingFiles);
+      if (typeof updateUploadStatus === 'function') updateUploadStatus();
+      if (typeof refreshAdminStatus === 'function') refreshAdminStatus();
+      if (s) { s.textContent = '✓ Restored! ' + nAdded + ' added, ' + nKept + ' already present.'; s.style.color = '#5ce08a'; }
+    } catch(ex) {
+      if (s) { s.textContent = '✗ Error reading file: ' + ex.message; s.style.color = '#f87171'; }
+    }
+    input.value = '';
+  };
+  reader.readAsText(file);
 };
 </script>
 </body>
