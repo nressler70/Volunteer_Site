@@ -303,7 +303,8 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     var overlay = document.getElementById('pg-overlay');
     if (overlay) overlay.style.display = 'none';
     document.body.style.overflow = '';
-    // Restore data AFTER all scripts have loaded
+    // Scroll to top before restoring data
+    window.scrollTo(0, 0);
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', runRestore);
     } else {
@@ -860,14 +861,14 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div id="detail-body" style="display:none;margin-top:12px">
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px">
           <div style="display:flex;gap:6px;flex-wrap:wrap" id="filter-btns">
-            <button class="rf-btn rf-active" data-f="all"         onclick="setFilter('all')">All</button>
-            <button class="rf-btn rf-yes"    data-f="Yes"         onclick="setFilter('Yes')">✅ Yes</button>
-            <button class="rf-btn"           data-f="sign"        onclick="setFilter('sign')" style="border-color:rgba(244,164,96,.35);color:var(--gold-light)">🪧 Sign Needed</button>
-            <button class="rf-btn rf-no"     data-f="No"          onclick="setFilter('No')">❌ No</button>
-            <button class="rf-btn rf-und"    data-f="Undecided"   onclick="setFilter('Undecided')">❓ Undecided</button>
-            <button class="rf-btn rf-nh"     data-f="Not Home"    onclick="setFilter('Not Home')">🏠 Not Home</button>
-            <button class="rf-btn rf-nv"     data-f="Not Visited" onclick="setFilter('Not Visited')">⚪ Not Visited</button>
-            <button class="rf-btn rf-fu"     data-f="followup"    onclick="setFilter('followup')">🔁 Follow-Up List</button>
+            <button class="rf-btn rf-active" data-f="all"         onclick="setFilterAndShow('all')">All</button>
+            <button class="rf-btn rf-yes"    data-f="Yes"         onclick="setFilterAndShow('Yes')">✅ Yes</button>
+            <button class="rf-btn"           data-f="sign"        onclick="setFilterAndShow('sign')" style="border-color:rgba(244,164,96,.35);color:var(--gold-light)">🪧 Sign Needed</button>
+            <button class="rf-btn rf-no"     data-f="No"          onclick="setFilterAndShow('No')">❌ No</button>
+            <button class="rf-btn rf-und"    data-f="Undecided"   onclick="setFilterAndShow('Undecided')">❓ Undecided</button>
+            <button class="rf-btn rf-nh"     data-f="Not Home"    onclick="setFilterAndShow('Not Home')">🏠 Not Home</button>
+            <button class="rf-btn rf-nv"     data-f="Not Visited" onclick="setFilterAndShow('Not Visited')">⚪ Not Visited</button>
+            <button class="rf-btn rf-fu"     data-f="followup"    onclick="setFilterAndShow('followup')">🔁 Follow-Up List</button>
           </div>
           <input id="det-search" type="text" placeholder="🔍 Search name or address…" oninput="renderDetail()"
             style="flex:1;min-width:180px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:7px 11px;color:var(--cream);font-size:.82rem;outline:none">
@@ -1203,7 +1204,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     // Delegated click — works regardless of Cloudflare Rocket Loader
     tilesEl.onclick = function(e) {
       var tile = e.target.closest('[data-filter]');
-      if (tile) window.setFilter(tile.getAttribute('data-filter'));
+      if (tile) window.setFilterAndShow(tile.getAttribute('data-filter'));
     };
 
     var SEG = [
@@ -1316,7 +1317,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     tbody.onclick = function(e) {
       var tr = e.target.closest('tr[data-street]');
       if (!tr) return;
-      setFilter('all');
+      window.setFilterAndShow('all');
       var el = document.getElementById('det-search');
       el.value = tr.getAttribute('data-street');
       window.renderDetail();
@@ -1337,8 +1338,23 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       b.classList.toggle('rf-active', b.dataset.f === f);
     });
     renderDashboard();
+    renderDetail();
+  };
 
-    // Always expand if collapsed
+  // Separate function used by tile/button clicks — expands AND scrolls
+  window.setFilterAndShow = function(f) {
+    var body    = document.getElementById('detail-body');
+    var chevron = document.getElementById('detail-chevron');
+    var hint    = document.querySelector('#detail-toggle span:nth-child(2)');
+    var isOpen  = body && body.style.display !== 'none';
+
+    currentFilter = f;
+    document.querySelectorAll('.rf-btn').forEach(function(b){
+      b.classList.toggle('rf-active', b.dataset.f === f);
+    });
+    renderDashboard();
+
+    // Expand if collapsed
     if (!isOpen) {
       body.style.display = 'block';
       if (chevron) chevron.style.transform = 'rotate(180deg)';
