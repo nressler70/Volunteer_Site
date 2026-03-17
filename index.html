@@ -862,10 +862,11 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
             style="flex:1;min-width:180px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:7px 11px;color:var(--cream);font-size:.82rem;outline:none">
           <button onclick="exportCSV()"
             style="background:var(--gold);color:var(--navy);border:none;border-radius:6px;padding:7px 16px;font-family:'Oswald',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;white-space:nowrap">⬇ Export CSV</button>
+          <button id="admin-edit-btn" onclick="toggleAdminEdit()" class="admin-edit-btn">🔒 Admin Edit</button>
         </div>
         <div id="det-count" style="font-size:.75rem;color:var(--gray);margin-bottom:8px"></div>
         <div style="overflow-x:auto;border-radius:10px;border:1px solid rgba(255,255,255,.08)">
-          <table style="width:100%;border-collapse:collapse;min-width:640px">
+          <table id="detail-table" style="width:100%;border-collapse:collapse;min-width:640px">
             <thead><tr style="background:var(--navy-light)">
               <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 12px;text-align:left">Name</th>
               <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 12px;text-align:left">Address</th>
@@ -874,6 +875,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
               <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 8px;text-align:right">Levy/Yr</th>
               <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 12px;text-align:center">Response</th>
               <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 12px;text-align:left">Notes</th>
+              <th class="edit-col" style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#ff8a7a;padding:9px 8px;text-align:center">Reset</th>
             </tr></thead>
             <tbody id="detail-tbody"></tbody>
           </table>
@@ -896,6 +898,12 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 .rf-btn.rf-nh{border-color:rgba(138,155,176,.3);color:#8a9bb0}
 .rf-btn.rf-nv{border-color:rgba(255,255,255,.1);color:#445566}
 .rf-btn.rf-fu{border-color:rgba(46,134,193,.35);color:#aee2ff}
+.admin-edit-btn{background:rgba(201,150,42,.1);border:1px solid rgba(201,150,42,.3);color:var(--gold-light);border-radius:6px;padding:7px 14px;font-family:'Oswald',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;white-space:nowrap;transition:all .15s}
+.admin-edit-btn.active{background:rgba(192,57,43,.2);border-color:rgba(192,57,43,.5);color:#ff8a7a}
+.reset-btn{background:rgba(192,57,43,.18);border:1px solid rgba(192,57,43,.4);color:#ff8a7a;border-radius:5px;padding:3px 9px;font-size:.68rem;font-weight:700;cursor:pointer;font-family:'Oswald',sans-serif;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;transition:all .15s}
+.reset-btn:hover{background:rgba(192,57,43,.45);color:#fff;border-color:#ff8a7a}
+#detail-table .edit-col{display:none}
+#detail-table.edit-active .edit-col{display:table-cell}
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -1325,6 +1333,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     };
     document.getElementById('detail-tbody').innerHTML = filtered.map(function(r){
       var rs = ROW_STYLE[r.resp] || ROW_STYLE['Not Visited'];
+      var addrJson = JSON.stringify(r.address || '');
       return '<tr style="border-bottom:1px solid rgba(255,255,255,.04);background:'+rs.bg+';border-left:'+rs.left+'">'+
         '<td style="padding:7px 12px;font-size:.82rem;font-weight:600;color:var(--cream)">'+esc(r.name||r.address)+likeTag(r.like||'')+'</td>'+
         '<td style="padding:7px 12px;font-size:.82rem;color:#8a9bb0">'+esc(r.address||'')+'</td>'+
@@ -1333,6 +1342,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
         '<td style="padding:7px 8px;text-align:right;font-family:monospace;font-size:.78rem;color:var(--gold-light)">'+(r.levy ? '$'+(parseFloat(r.levy)||0).toFixed(2) : '—')+'</td>'+
         '<td style="padding:7px 12px;text-align:center">'+respBadge(r.resp)+'</td>'+
         '<td style="padding:7px 12px;font-size:.78rem;font-style:'+(r.notes?'normal':'italic')+';color:'+(r.notes?'#c0ccdd':'#445566')+'">'+esc(r.notes||'—')+'</td>'+
+        '<td class="edit-col" style="padding:4px 8px;text-align:center"><button class="reset-btn" onclick="adminResetRow('+addrJson+')" title="Reset this address to Not Visited and clear notes">↺ Reset</button></td>'+
       '</tr>';
     }).join('');
   };
@@ -2305,7 +2315,121 @@ window.adminSaveCloudConfig = function() {
 };
 
 
-window.adminDeleteResults = function() {
+window.adminBackupData = function() {
+  var rows  = [];
+  var files = [];
+  try { rows  = JSON.parse(localStorage.getItem('baughman_rows_v2')  || '[]'); } catch(e) {}
+  try { files = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]'); } catch(e) {}
+
+  if (!rows.length) {
+    var s = document.getElementById('admin-backup-status');
+    if (s) { s.textContent = '⚠ No data to back up yet.'; s.style.color = '#f4c460'; }
+    return;
+  }
+
+  var backup = {
+    version: 'baughman_backup_v1',
+    exported: new Date().toISOString(),
+    rows: rows,
+    files: files
+  };
+
+  var blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+  var fname = 'Baughman_Canvass_Backup_' + new Date().toLocaleDateString('en-US').replace(/\//g, '-') + '.json';
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = fname;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+
+  var s = document.getElementById('admin-backup-status');
+  if (s) {
+    s.textContent = '✓ Backed up ' + rows.length + ' households to ' + fname;
+    s.style.color = '#5ce08a';
+  }
+};
+
+window.adminRestoreData = function(input) {
+  var file = input.files && input.files[0];
+  if (!file) return;
+  var s = document.getElementById('admin-backup-status');
+
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var backup = JSON.parse(e.target.result);
+      if (backup.version !== 'baughman_backup_v1' || !Array.isArray(backup.rows)) {
+        if (s) { s.textContent = '✗ Not a valid Baughman backup file.'; s.style.color = '#f87171'; }
+        return;
+      }
+
+      if (!confirm('Restore ' + backup.rows.length + ' households from backup dated ' +
+          new Date(backup.exported).toLocaleString() + '?\n\nThis will MERGE with any existing data (new backup entries won\'t overwrite existing responses).')) {
+        input.value = '';
+        return;
+      }
+
+      // Merge backup into existing stored data — same logic as CSV upload
+      var stored = [];
+      try { stored = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]'); } catch(ex) {}
+      var sidx = {};
+      stored.forEach(function(r, i) {
+        sidx[(r.address || '').toLowerCase().trim()] = i;
+      });
+
+      var nAdded = 0, nKept = 0;
+      backup.rows.forEach(function(r) {
+        var k = (r.address || '').toLowerCase().trim();
+        if (k in sidx) {
+          // Already exists — only fill in if currently Not Visited
+          var ex = stored[sidx[k]];
+          if ((!ex.resp || ex.resp === 'Not Visited') && r.resp && r.resp !== 'Not Visited') {
+            ex.resp = r.resp;
+          }
+          if (r.notes && !ex.notes) ex.notes = r.notes;
+          nKept++;
+        } else {
+          stored.push(r);
+          sidx[k] = stored.length - 1;
+          nAdded++;
+        }
+      });
+
+      // Restore files list — add any from backup not already recorded
+      var existingFiles = [];
+      try { existingFiles = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]'); } catch(ex) {}
+      var existingFnames = existingFiles.map(function(f) { return f.filename; });
+      (backup.files || []).forEach(function(f) {
+        if (existingFnames.indexOf(f.filename) === -1) existingFiles.push(f);
+      });
+      existingFiles.push({ filename: file.name, uploaded: new Date().toLocaleString(), added: nAdded, updated: nKept, source: 'backup-restore' });
+
+      try { localStorage.setItem('baughman_rows_v2',  JSON.stringify(stored));       } catch(ex) {}
+      try { localStorage.setItem('baughman_files_v2', JSON.stringify(existingFiles)); } catch(ex) {}
+
+      // Re-render
+      if (typeof window._restoreRows === 'function') {
+        var label = 'Restored Results (' + stored.length + ' households)';
+        window._restoreRows(stored, label);
+      }
+      if (typeof window.jsonbinPush === 'function') window.jsonbinPush(stored, existingFiles);
+      if (typeof updateUploadStatus === 'function') updateUploadStatus();
+      refreshAdminStatus();
+
+      if (s) {
+        s.textContent = '✓ Restored! ' + nAdded + ' added, ' + nKept + ' already present.';
+        s.style.color = '#5ce08a';
+      }
+    } catch(ex) {
+      if (s) { s.textContent = '✗ Error reading file: ' + ex.message; s.style.color = '#f87171'; }
+    }
+    input.value = '';
+  };
+  reader.readAsText(file);
+};
+
   if (!confirm('Delete ALL saved canvass results from all uploads? This cannot be undone.')) return;
   try {
     localStorage.removeItem('baughman_rows_v2');
@@ -2444,6 +2568,22 @@ document.addEventListener('DOMContentLoaded', function() {
         <div id="admin-jb-status" style="font-size:.72rem;margin-top:6px;min-height:16px;color:#556677"></div>
       </div>
 
+      <!-- Backup & Restore -->
+      <div style="background:#0d1117;border:1px solid rgba(39,174,96,.2);border-radius:8px;padding:12px 14px;margin-bottom:14px">
+        <div style="font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#74c69d;margin-bottom:6px">💾 Data Backup &amp; Restore</div>
+        <div style="font-size:.75rem;color:#556677;margin-bottom:10px;line-height:1.5">Download a backup before any site update. Restore it if data is ever lost.</div>
+        <button onclick="adminBackupData()" style="width:100%;background:#1a3d20;color:#74c69d;border:1.5px solid rgba(39,174,96,.35);border-radius:8px;padding:10px;font-family:'Oswald',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;margin-bottom:8px">
+          📥 Download Data Backup (.json)
+        </button>
+        <label style="width:100%;display:block">
+          <div style="width:100%;background:#1a2a3a;color:#aee2ff;border:1.5px solid rgba(46,134,193,.35);border-radius:8px;padding:10px;font-family:'Oswald',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;text-align:center;box-sizing:border-box">
+            📤 Restore from Backup (.json)
+          </div>
+          <input type="file" accept=".json" onchange="adminRestoreData(this)" style="display:none">
+        </label>
+        <div id="admin-backup-status" style="font-size:.72rem;margin-top:6px;min-height:16px;color:#556677"></div>
+      </div>
+
       <button onclick="adminDeleteResults()" style="width:100%;background:#3d1a1a;color:#f87171;border:1.5px solid #6b1a1a;border-radius:10px;padding:14px;font-family:'Oswald',sans-serif;font-size:.82rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;margin-bottom:8px">
         &#x1F5D1; Delete All Saved Results
       </button>
@@ -2452,5 +2592,74 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
   </div>
 </div>
+<!-- ══ ADMIN EDIT MODE — Reset individual rows ══ -->
+<script>
+window._adminEditMode = false;
+
+window.toggleAdminEdit = function() {
+  if (!window._adminEditMode) {
+    var pw = prompt('Enter admin password to enable row editing:');
+    if (pw !== 'Admin2026$') {
+      if (pw !== null) alert('Incorrect password.');
+      return;
+    }
+    window._adminEditMode = true;
+    var btn = document.getElementById('admin-edit-btn');
+    var tbl = document.getElementById('detail-table');
+    if (btn) { btn.textContent = '🔓 Edit Mode ON'; btn.classList.add('active'); }
+    if (tbl) tbl.classList.add('edit-active');
+  } else {
+    window._adminEditMode = false;
+    var btn = document.getElementById('admin-edit-btn');
+    var tbl = document.getElementById('detail-table');
+    if (btn) { btn.textContent = '🔒 Admin Edit'; btn.classList.remove('active'); }
+    if (tbl) tbl.classList.remove('edit-active');
+  }
+};
+
+window.adminResetRow = function(addr) {
+  if (!window._adminEditMode) return;
+  if (!confirm('Reset "' + addr + '" to Not Visited and clear its notes?\n\nThis cannot be undone.')) return;
+
+  // Update in localStorage
+  var stored = [];
+  try { stored = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]'); } catch(e) {}
+  var key = (addr || '').toLowerCase().trim();
+  var found = false;
+  stored.forEach(function(r) {
+    if ((r.address || '').toLowerCase().trim() === key) {
+      r.resp  = 'Not Visited';
+      r.notes = '';
+      found = true;
+    }
+  });
+  if (!found) { alert('Could not find that address in saved data.'); return; }
+  try { localStorage.setItem('baughman_rows_v2', JSON.stringify(stored)); } catch(e) {}
+
+  // Re-render from the updated stored data
+  if (typeof window._restoreRows === 'function') {
+    var files = [];
+    try { files = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]'); } catch(e) {}
+    var label = 'Combined Results (' + stored.length + ' households, '
+      + files.length + ' upload' + (files.length !== 1 ? 's' : '') + ')';
+    window._restoreRows(stored, label);
+  }
+
+  // Push updated data to JSONBin cloud
+  var fileList = [];
+  try { fileList = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]'); } catch(e) {}
+  if (typeof window.jsonbinPush === 'function') window.jsonbinPush(stored, fileList);
+
+  // Restore edit mode state after re-render (re-render resets the table class)
+  setTimeout(function() {
+    var tbl = document.getElementById('detail-table');
+    var btn = document.getElementById('admin-edit-btn');
+    if (tbl) tbl.classList.add('edit-active');
+    if (btn) { btn.textContent = '🔓 Edit Mode ON'; btn.classList.add('active'); }
+    window._adminEditMode = true;
+    if (typeof window.renderDetail === 'function') window.renderDetail();
+  }, 80);
+};
+</script>
 </body>
 </html>
