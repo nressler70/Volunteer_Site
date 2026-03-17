@@ -1172,20 +1172,14 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     var tilesEl = document.getElementById('dash-tiles');
     tilesEl.innerHTML = TILES.map(function(t) {
       var active = currentFilter === t.f;
-      var div = document.createElement('div');
-      div.setAttribute('data-filter', t.f);
-      div.setAttribute('onclick', "window.setFilter('" + t.f + "')");
-      div.style.cssText = 'background:' + t.bg + ';border:2px solid ' + (active ? t.col : t.bdr) + ';border-radius:10px;padding:13px 10px;text-align:center;cursor:pointer;transition:transform .15s,box-shadow .15s';
-      div.title = 'Click to view ' + t.label + ' households';
-      div.innerHTML = '<div style="font-size:1.65rem;font-weight:700;color:' + t.col + ';line-height:1;font-family:monospace">' + t.val + '</div>' +
+      var border = active ? t.col : t.bdr;
+      return '<div data-filter="' + t.f + '" onclick="window.setFilter(\'' + t.f + '\')" title="Click to view ' + t.label + ' households"' +
+        ' style="background:' + t.bg + ';border:2px solid ' + border + ';border-radius:10px;padding:13px 10px;text-align:center;cursor:pointer;transition:border-color .15s">' +
+        '<div style="font-size:1.65rem;font-weight:700;color:' + t.col + ';line-height:1;font-family:monospace">' + t.val + '</div>' +
         '<div style="font-family:Oswald,sans-serif;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:#778899;margin-top:4px">' + t.label + '</div>' +
-        '<div style="font-size:.52rem;color:' + t.col + ';opacity:.6;margin-top:3px;letter-spacing:.05em">▼ view list</div>';
-      return div.outerHTML;
+        '<div style="font-size:.52rem;color:' + t.col + ';opacity:.6;margin-top:3px">▼ view list</div>' +
+        '</div>';
     }).join('');
-    tilesEl.onclick = function(e) {
-      var tile = e.target.closest('[data-filter]');
-      if (tile) window.setFilter(tile.getAttribute('data-filter'));
-    };
 
     var SEG = [
       {val:yes, col:'#5ce08a'}, {val:no, col:'#ff8a7a'},
@@ -1262,6 +1256,8 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     rows.forEach(function(r) {
       // street field may be missing in slim cloud rows — derive from address
       var st = r.street || (r.address ? r.address.replace(/^[0-9]+\s*/, '').trim() : '') || r.address || '';
+      // Skip rows where street resolves to a bare number or is blank
+      if (!st || /^\d+$/.test(st.trim())) st = '(No Street)';
       if (!r._st) r._st = st;
       if (!streets[st]) streets[st] = {total:0, Yes:0, No:0, Undecided:0, 'Not Home':0, 'Not Visited':0};
       streets[st].total++;
@@ -1307,18 +1303,27 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 
   // ── Detail table   // ── Detail table ─────────────────────────────────────────────────────────
   window.setFilter = function(f) {
+    var body    = document.getElementById('detail-body');
+    var chevron = document.getElementById('detail-chevron');
+    var hint    = document.querySelector('#detail-toggle span:nth-child(2)');
+    var isOpen  = body && body.style.display !== 'none';
+
+    // Clicking the same active filter while open → collapse
+    if (f === currentFilter && isOpen) {
+      body.style.display = 'none';
+      if (chevron) chevron.style.transform = '';
+      if (hint) hint.textContent = 'Click to expand';
+      return;
+    }
+
     currentFilter = f;
     document.querySelectorAll('.rf-btn').forEach(function(b){
       b.classList.toggle('rf-active', b.dataset.f === f);
     });
     renderDashboard();
 
-    // Auto-expand the detail section if it's collapsed
-    var body    = document.getElementById('detail-body');
-    var chevron = document.getElementById('detail-chevron');
-    var hint    = document.querySelector('#detail-toggle span:nth-child(2)');
-    var wasCollapsed = body && body.style.display === 'none';
-    if (wasCollapsed) {
+    // Expand if collapsed
+    if (!isOpen) {
       body.style.display = 'block';
       if (chevron) chevron.style.transform = 'rotate(180deg)';
       if (hint) hint.textContent = 'Click to collapse';
@@ -1326,13 +1331,11 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 
     renderDetail();
 
-    // Scroll to the table when triggered by a tile click (not initial page load)
-    if (wasCollapsed || f !== 'all') {
-      setTimeout(function() {
-        var target = document.getElementById('detail-body') || document.getElementById('detail-toggle');
-        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 80);
-    }
+    // Scroll to table
+    setTimeout(function() {
+      var target = document.getElementById('detail-body') || document.getElementById('detail-toggle');
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 80);
   };
 
   window.renderDetail = function() {
