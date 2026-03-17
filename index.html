@@ -1337,7 +1337,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     };
     document.getElementById('detail-tbody').innerHTML = filtered.map(function(r){
       var rs = ROW_STYLE[r.resp] || ROW_STYLE['Not Visited'];
-      var addrJson = JSON.stringify(r.address || '');
+      var addrEsc = esc(r.address || '');
       return '<tr style="border-bottom:1px solid rgba(255,255,255,.04);background:'+rs.bg+';border-left:'+rs.left+'">'+
         '<td style="padding:7px 12px;font-size:.82rem;font-weight:600;color:var(--cream)">'+esc(r.name||r.address)+likeTag(r.like||'')+'</td>'+
         '<td style="padding:7px 12px;font-size:.82rem;color:#8a9bb0">'+esc(r.address||'')+'</td>'+
@@ -1345,10 +1345,60 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
         '<td style="padding:7px 8px;text-align:center;font-family:monospace;font-size:.78rem;color:#aee2ff">'+(r.voters||'')+'</td>'+
         '<td style="padding:7px 8px;text-align:right;font-family:monospace;font-size:.78rem;color:var(--gold-light)">'+(r.levy ? '$'+(parseFloat(r.levy)||0).toFixed(2) : '—')+'</td>'+
         '<td style="padding:7px 12px;text-align:center">'+respBadge(r.resp)+'</td>'+
-        '<td style="padding:7px 12px;font-size:.78rem;font-style:'+(r.notes?'normal':'italic')+';color:'+(r.notes?'#c0ccdd':'#445566')+'">'+esc(r.notes||'—')+'</td>'+
-        '<td class="edit-col" style="padding:4px 8px;text-align:center"><button class="reset-btn" onclick="adminResetRow('+addrJson+')" title="Reset this address to Not Visited and clear notes">↺ Reset</button></td>'+
+        '<td class="notes-cell" data-addr="'+addrEsc+'" style="padding:4px 8px;min-width:160px;cursor:pointer" title="Click to edit notes">'+
+          '<div class="notes-display" style="font-size:.78rem;font-style:'+(r.notes?'normal':'italic')+';color:'+(r.notes?'#c0ccdd':'#556677')+';padding:3px 6px;border-radius:4px;border:1px dashed rgba(255,255,255,.08)">'+
+            esc(r.notes||'✏ add note')+
+          '</div>'+
+        '</td>'+
+        '<td class="edit-col" style="padding:4px 8px;text-align:center"><button class="reset-btn" data-addr="'+addrEsc+'" title="Reset to Not Visited and clear notes">↺ Reset</button></td>'+
       '</tr>';
     }).join('');
+
+    // Delegated handlers on tbody
+    var tbody = document.getElementById('detail-tbody');
+
+    tbody.onclick = function(e) {
+      // Reset button
+      var resetBtn = e.target.closest('.reset-btn');
+      if (resetBtn) { window.adminResetRow(resetBtn.getAttribute('data-addr')); return; }
+
+      // Notes save button
+      var saveBtn = e.target.closest('.notes-save-btn');
+      if (saveBtn) {
+        e.stopPropagation();
+        var ta = saveBtn.closest('.notes-cell').querySelector('textarea');
+        window.saveNotes(saveBtn.getAttribute('data-addr'), ta ? ta.value.trim() : '');
+        return;
+      }
+
+      // Notes cancel button
+      var cancelBtn = e.target.closest('.notes-cancel-btn');
+      if (cancelBtn) { e.stopPropagation(); window.renderDetail(); return; }
+
+      // Notes cell - open editor
+      var cell = e.target.closest('.notes-cell');
+      if (cell && !cell.querySelector('textarea')) {
+        var addr = cell.getAttribute('data-addr');
+        var row  = rows.find(function(r) { return esc(r.address||'') === addr; });
+        var current = row ? (row.notes || '') : '';
+        cell.innerHTML =
+          '<textarea class="notes-ta-inline" style="width:100%;min-height:52px;background:#0d1117;border:1.5px solid #2e86c1;border-radius:6px;padding:5px 7px;color:#f0f6fc;font-size:.78rem;resize:vertical;font-family:inherit;outline:none;box-sizing:border-box">' + esc(current) + '</textarea>'+
+          '<div style="display:flex;gap:5px;margin-top:4px">'+
+            '<button class="notes-save-btn" data-addr="'+addr+'" style="flex:1;background:#1a5276;color:#aee2ff;border:none;border-radius:4px;padding:4px 0;font-size:.68rem;font-weight:700;cursor:pointer;font-family:\'Oswald\',sans-serif;letter-spacing:.05em;text-transform:uppercase">💾 Save</button>'+
+            '<button class="notes-cancel-btn" style="background:rgba(255,255,255,.07);color:#8a9bb0;border:none;border-radius:4px;padding:4px 8px;font-size:.68rem;cursor:pointer">✕</button>'+
+          '</div>';
+        var ta = cell.querySelector('textarea');
+        ta.focus();
+        ta.setSelectionRange(ta.value.length, ta.value.length);
+        ta.onkeydown = function(ev) {
+          if (ev.key === 'Enter' && (ev.ctrlKey || ev.metaKey)) {
+            ev.preventDefault();
+            window.saveNotes(addr, ta.value.trim());
+          }
+          if (ev.key === 'Escape') { ev.preventDefault(); window.renderDetail(); }
+        };
+      }
+    };
   };
 
   // ── Export CSV ────────────────────────────────────────────────────────────
@@ -2750,6 +2800,35 @@ document.addEventListener('DOMContentLoaded', function() {
 </style>
 
 <script>
+window.saveNotes = function(addr, newNotes) {
+  var stored = [];
+  try { stored = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]'); } catch(e) {}
+  var key = addr.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').toLowerCase().trim();
+  var found = false;
+  stored.forEach(function(r) {
+    if ((r.address||'').toLowerCase().trim() === key) {
+      r.notes = newNotes;
+      found = true;
+    }
+  });
+  if (!found) { window.renderDetail(); return; }
+  try { localStorage.setItem('baughman_rows_v2', JSON.stringify(stored)); } catch(e) {}
+  var fileList = [];
+  try { fileList = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]'); } catch(e) {}
+  if (typeof window._restoreRows === 'function') {
+    var label = 'Combined Results (' + stored.length + ' households)';
+    window._restoreRows(stored, label);
+  }
+  if (typeof window.jsonbinPush === 'function') window.jsonbinPush(stored, fileList);
+  setTimeout(function() {
+    if (window._adminEditMode) {
+      var tbl = document.getElementById('detail-table');
+      if (tbl) tbl.classList.add('edit-active');
+    }
+    if (typeof window.renderDetail === 'function') window.renderDetail();
+  }, 60);
+};
+
 window.openManualEntry = function() {
   ['me-name','me-address','me-street','me-prec','me-notes'].forEach(function(id) {
     var el = document.getElementById(id); if (el) el.value = '';
