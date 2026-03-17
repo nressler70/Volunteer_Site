@@ -861,6 +861,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
             <button class="rf-btn rf-nh"     data-f="Not Home"    onclick="setFilter('Not Home')">🏠 Not Home</button>
             <button class="rf-btn rf-nv"     data-f="Not Visited" onclick="setFilter('Not Visited')">⚪ Not Visited</button>
             <button class="rf-btn rf-fu"     data-f="followup"    onclick="setFilter('followup')">🔁 Follow-Up List</button>
+            <button class="rf-btn"           data-f="sign"        onclick="setFilter('sign')" style="border-color:rgba(244,164,96,.35);color:var(--gold-light)">🪧 Sign Needed</button>
           </div>
           <input id="det-search" type="text" placeholder="🔍 Search name or address…" oninput="renderDetail()"
             style="flex:1;min-width:180px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:7px 11px;color:var(--cream);font-size:.82rem;outline:none">
@@ -879,6 +880,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
               <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 8px;text-align:right">Levy/Yr</th>
               <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 12px;text-align:center">Response</th>
               <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 12px;text-align:left">Notes</th>
+              <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-light);padding:9px 8px;text-align:center">🪧 Sign</th>
               <th class="edit-col" style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#ff8a7a;padding:9px 8px;text-align:center">Reset</th>
             </tr></thead>
             <tbody id="detail-tbody"></tbody>
@@ -1314,6 +1316,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     var filtered = rows.filter(function(r){
       var matchF = currentFilter === 'all'      ? true
                  : currentFilter === 'followup' ? (r.resp==='Undecided'||r.resp==='Not Home')
+                 : currentFilter === 'sign'     ? r.sign === true
                  : r.resp === currentFilter;
       var matchQ = !q || (r.name||'').toLowerCase().indexOf(q)>=0 || (r.address||'').toLowerCase().indexOf(q)>=0;
       return matchF && matchQ;
@@ -1350,6 +1353,13 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
             esc(r.notes||'✏ add note')+
           '</div>'+
         '</td>'+
+        '<td style="padding:4px 8px;text-align:center">'+
+          '<button class="sign-btn" data-addr="'+addrEsc+'" title="Toggle yard sign request" style="'+
+            (r.sign ? 'background:rgba(244,164,96,.25);border:1.5px solid rgba(244,164,96,.6);color:var(--gold-light);' : 'background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.12);color:#445566;')+
+            'border-radius:5px;padding:3px 8px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:\'Oswald\',sans-serif;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap">'+
+            (r.sign ? '🪧 Yes' : '🪧 —')+
+          '</button>'+
+        '</td>'+
         '<td class="edit-col" style="padding:4px 8px;text-align:center"><button class="reset-btn" data-addr="'+addrEsc+'" title="Reset to Not Visited and clear notes">↺ Reset</button></td>'+
       '</tr>';
     }).join('');
@@ -1361,6 +1371,10 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       // Reset button
       var resetBtn = e.target.closest('.reset-btn');
       if (resetBtn) { window.adminResetRow(resetBtn.getAttribute('data-addr')); return; }
+
+      // Sign toggle button
+      var signBtn = e.target.closest('.sign-btn');
+      if (signBtn) { window.toggleSign(signBtn.getAttribute('data-addr')); return; }
 
       // Notes save button
       var saveBtn = e.target.closest('.notes-save-btn');
@@ -1411,9 +1425,9 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       var matchQ = !q || r.name.toLowerCase().indexOf(q)>=0 || r.address.toLowerCase().indexOf(q)>=0;
       return matchF && matchQ;
     });
-    var lines = [['Name','Address','Street','Precinct','Voters','Levy/Yr','Likelihood','Response','Notes']];
+    var lines = [['Name','Address','Street','Precinct','Voters','Levy/Yr','Likelihood','Response','Sign Needed','Notes']];
     filtered.forEach(function(r){
-      lines.push([r.name,r.address,r.street,r.prec,r.voters,r.levy,r.like,r.resp,r.notes]);
+      lines.push([r.name,r.address,r.street,r.prec,r.voters,r.levy,r.like,r.resp,r.sign?'YES':'',r.notes]);
     });
     var csv = lines.map(function(l){
       return l.map(function(v){ return '"'+String(v).replace(/"/g,'\"')+'"'; }).join(',');
@@ -2800,6 +2814,31 @@ document.addEventListener('DOMContentLoaded', function() {
 </style>
 
 <script>
+window.toggleSign = function(addr) {
+  var stored = [];
+  try { stored = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]'); } catch(e) {}
+  var key = addr.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').toLowerCase().trim();
+  stored.forEach(function(r) {
+    if ((r.address||'').toLowerCase().trim() === key) {
+      r.sign = !r.sign;
+    }
+  });
+  try { localStorage.setItem('baughman_rows_v2', JSON.stringify(stored)); } catch(e) {}
+  var fileList = [];
+  try { fileList = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]'); } catch(e) {}
+  if (typeof window._restoreRows === 'function') {
+    window._restoreRows(stored, 'Combined Results (' + stored.length + ' households)');
+  }
+  if (typeof window.jsonbinPush === 'function') window.jsonbinPush(stored, fileList);
+  setTimeout(function() {
+    if (window._adminEditMode) {
+      var tbl = document.getElementById('detail-table');
+      if (tbl) tbl.classList.add('edit-active');
+    }
+    if (typeof window.renderDetail === 'function') window.renderDetail();
+  }, 60);
+};
+
 window.saveNotes = function(addr, newNotes) {
   var stored = [];
   try { stored = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]'); } catch(e) {}
