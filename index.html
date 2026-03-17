@@ -1156,7 +1156,12 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 
     renderDashboard();
     renderStreets();
-    setFilter('all');
+    // Reset filter state silently — do NOT open detail section
+    currentFilter = 'all';
+    document.querySelectorAll('.rf-btn').forEach(function(b){
+      b.classList.toggle('rf-active', b.dataset.f === 'all');
+    });
+    renderDetail();
   }
 
   function count(resp) {
