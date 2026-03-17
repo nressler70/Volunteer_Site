@@ -2097,7 +2097,7 @@ window.jsonbinPush = function(rows, fileList) {
   // If no bin yet, create one first then push
   if (!bin) {
     var slim = rows.map(function(r) {
-      return { address: r.address, street: r.street || '', resp: r.resp, notes: r.notes || '' };
+      return { address: r.address, street: r.street || '', resp: r.resp, notes: r.notes || '', sign: r.sign || false };
     });
     fetch('https://api.jsonbin.io/v3/b', {
       method: 'POST',
@@ -2126,7 +2126,7 @@ window.jsonbinPush = function(rows, fileList) {
   // Store address+street+resp+notes — stays under 100KB free limit (77KB)
   // Full row data (names, levy etc) stays in localStorage on the uploader device
   var slim = rows.map(function(r) {
-    return { address: r.address, street: r.street || '', resp: r.resp, notes: r.notes || '' };
+    return { address: r.address, street: r.street || '', resp: r.resp, notes: r.notes || '', sign: r.sign || false };
   });
 
   fetch('https://api.jsonbin.io/v3/b/' + bin, {
