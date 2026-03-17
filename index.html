@@ -754,13 +754,9 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div style="font-family:'Oswald',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-light)">Upload New Results</div>
       <div id="upload-saved-hint" style="font-size:.72rem;color:#556677;margin-top:2px">Select .xlsx or .csv from the canvass app</div>
     </div>
-    <button onclick="uploadWithAuth()"
+    <button onclick="document.getElementById('file-input').click()"
       style="background:var(--gold);color:var(--navy);border:none;border-radius:8px;padding:9px 22px;font-family:'Oswald',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;white-space:nowrap;flex-shrink:0">
       Choose File
-    </button>
-    <button onclick="openManualEntry()"
-      style="background:rgba(46,134,193,.15);color:#aee2ff;border:1.5px solid rgba(46,134,193,.35);border-radius:8px;padding:9px 18px;font-family:'Oswald',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;white-space:nowrap;flex-shrink:0">
-      ＋ Manual Entry
     </button>
     <input id="file-input" type="file" accept=".xlsx,.csv,.xls" style="display:none" onchange="window.handleFile(this.files[0])">
   </div>
@@ -867,7 +863,6 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
           <button onclick="exportCSV()"
             style="background:var(--gold);color:var(--navy);border:none;border-radius:6px;padding:7px 16px;font-family:'Oswald',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;white-space:nowrap">⬇ Export CSV</button>
           <button id="admin-edit-btn" onclick="toggleAdminEdit()" class="admin-edit-btn">🔒 Admin Edit</button>
-          <button onclick="openManualEntry()" class="admin-edit-btn" style="background:rgba(46,134,193,.1);border-color:rgba(46,134,193,.3);color:#aee2ff">＋ Add Entry</button>
         </div>
         <div id="det-count" style="font-size:.75rem;color:var(--gray);margin-bottom:8px"></div>
         <div style="overflow-x:auto;border-radius:10px;border:1px solid rgba(255,255,255,.08)">
@@ -937,10 +932,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     zone.style.borderColor = 'rgba(201,150,42,.4)';
     zone.style.background  = 'rgba(201,150,42,.04)';
     var f = e.dataTransfer.files[0];
-    if (f) {
-      if (!checkUploadAuth()) return;
-      window.handleFile(f);
-    }
+    if (f) window.handleFile(f);
   };
 
   window.handleFile = function(file) {
@@ -1172,14 +1164,18 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     var tilesEl = document.getElementById('dash-tiles');
     tilesEl.innerHTML = TILES.map(function(t) {
       var active = currentFilter === t.f;
-      var border = active ? t.col : t.bdr;
-      return '<div data-filter="' + t.f + '" onclick="window.setFilter(\'' + t.f + '\')" title="Click to view ' + t.label + ' households"' +
-        ' style="background:' + t.bg + ';border:2px solid ' + border + ';border-radius:10px;padding:13px 10px;text-align:center;cursor:pointer;transition:border-color .15s">' +
-        '<div style="font-size:1.65rem;font-weight:700;color:' + t.col + ';line-height:1;font-family:monospace">' + t.val + '</div>' +
-        '<div style="font-family:Oswald,sans-serif;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:#778899;margin-top:4px">' + t.label + '</div>' +
-        '<div style="font-size:.52rem;color:' + t.col + ';opacity:.6;margin-top:3px">▼ view list</div>' +
-        '</div>';
+      var div = document.createElement('div');
+      div.setAttribute('data-filter', t.f);
+      div.style.cssText = 'background:' + t.bg + ';border:2px solid ' + (active ? t.col : t.bdr) + ';border-radius:10px;padding:13px 10px;text-align:center;cursor:pointer';
+      div.title = 'Click to filter';
+      div.innerHTML = '<div style="font-size:1.65rem;font-weight:700;color:' + t.col + ';line-height:1;font-family:monospace">' + t.val + '</div>' +
+        '<div style="font-family:Oswald,sans-serif;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:#778899;margin-top:4px">' + t.label + '</div>';
+      return div.outerHTML;
     }).join('');
+    tilesEl.onclick = function(e) {
+      var tile = e.target.closest('[data-filter]');
+      if (tile) setFilter(tile.getAttribute('data-filter'));
+    };
 
     var SEG = [
       {val:yes, col:'#5ce08a'}, {val:no, col:'#ff8a7a'},
@@ -1256,8 +1252,6 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     rows.forEach(function(r) {
       // street field may be missing in slim cloud rows — derive from address
       var st = r.street || (r.address ? r.address.replace(/^[0-9]+\s*/, '').trim() : '') || r.address || '';
-      // Skip rows where street is blank, a bare number, or the old placeholder
-      if (!st || /^\d+$/.test(st.trim()) || st === '(No Street)') return;
       if (!r._st) r._st = st;
       if (!streets[st]) streets[st] = {total:0, Yes:0, No:0, Undecided:0, 'Not Home':0, 'Not Visited':0};
       streets[st].total++;
@@ -1303,39 +1297,12 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 
   // ── Detail table   // ── Detail table ─────────────────────────────────────────────────────────
   window.setFilter = function(f) {
-    var body    = document.getElementById('detail-body');
-    var chevron = document.getElementById('detail-chevron');
-    var hint    = document.querySelector('#detail-toggle span:nth-child(2)');
-    var isOpen  = body && body.style.display !== 'none';
-
-    // Clicking the same active filter while open → collapse
-    if (f === currentFilter && isOpen) {
-      body.style.display = 'none';
-      if (chevron) chevron.style.transform = '';
-      if (hint) hint.textContent = 'Click to expand';
-      return;
-    }
-
     currentFilter = f;
     document.querySelectorAll('.rf-btn').forEach(function(b){
       b.classList.toggle('rf-active', b.dataset.f === f);
     });
     renderDashboard();
-
-    // Expand if collapsed
-    if (!isOpen) {
-      body.style.display = 'block';
-      if (chevron) chevron.style.transform = 'rotate(180deg)';
-      if (hint) hint.textContent = 'Click to collapse';
-    }
-
     renderDetail();
-
-    // Scroll to table
-    setTimeout(function() {
-      var target = document.getElementById('detail-body') || document.getElementById('detail-toggle');
-      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 80);
   };
 
   window.renderDetail = function() {
@@ -1366,6 +1333,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     };
     document.getElementById('detail-tbody').innerHTML = filtered.map(function(r){
       var rs = ROW_STYLE[r.resp] || ROW_STYLE['Not Visited'];
+      var addrJson = JSON.stringify(r.address || '');
       return '<tr style="border-bottom:1px solid rgba(255,255,255,.04);background:'+rs.bg+';border-left:'+rs.left+'">'+
         '<td style="padding:7px 12px;font-size:.82rem;font-weight:600;color:var(--cream)">'+esc(r.name||r.address)+likeTag(r.like||'')+'</td>'+
         '<td style="padding:7px 12px;font-size:.82rem;color:#8a9bb0">'+esc(r.address||'')+'</td>'+
@@ -1374,16 +1342,9 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
         '<td style="padding:7px 8px;text-align:right;font-family:monospace;font-size:.78rem;color:var(--gold-light)">'+(r.levy ? '$'+(parseFloat(r.levy)||0).toFixed(2) : '—')+'</td>'+
         '<td style="padding:7px 12px;text-align:center">'+respBadge(r.resp)+'</td>'+
         '<td style="padding:7px 12px;font-size:.78rem;font-style:'+(r.notes?'normal':'italic')+';color:'+(r.notes?'#c0ccdd':'#445566')+'">'+esc(r.notes||'—')+'</td>'+
-        '<td class="edit-col" style="padding:4px 8px;text-align:center"><button class="reset-btn" data-addr="'+esc(r.address||'')+'" title="Reset to Not Visited and clear notes">↺ Reset</button></td>'+
+        '<td class="edit-col" style="padding:4px 8px;text-align:center"><button class="reset-btn" onclick="adminResetRow('+addrJson+')" title="Reset this address to Not Visited and clear notes">↺ Reset</button></td>'+
       '</tr>';
     }).join('');
-
-    // Delegated click handler for reset buttons — avoids inline onclick quoting issues
-    var tbody = document.getElementById('detail-tbody');
-    tbody.onclick = function(e) {
-      var btn = e.target.closest('.reset-btn');
-      if (btn) window.adminResetRow(btn.getAttribute('data-addr'));
-    };
   };
 
   // ── Export CSV ────────────────────────────────────────────────────────────
@@ -1478,12 +1439,6 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 
   // ── RESTORE SAVED RESULTS ─────────────────────────────────────────────────
   window._restoreRows = function(savedRows, label) {
-    // Clean up bad street values left by an earlier bug
-    savedRows.forEach(function(r) {
-      if (r.street === '(No Street)' || /^\d+$/.test((r.street||'').trim())) {
-        r.street = r.address ? r.address.replace(/^\d+\s*/, '').trim() : '';
-      }
-    });
     rows = savedRows;
     renderReport(label, '');
   };
@@ -1614,7 +1569,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Suzi Byall</div>
       <div class="vc-role">Canvasser · Signed In 3/15/2026</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304656433">330-465-6433</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#6013151a090219010c0c20070d01090c4e030f0d"><span class="__cf_email__" data-cfemail="582b2d22313a21393434183f35393134763b3735">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a class="cf-email" data-u="suzibyall" data-d="gmail.com" href="#">suzibyall&#64;gmail.com</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Burkhart Rd · 70 stops</span></div>
     </div>
 
@@ -1623,7 +1578,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-role">Canvasser &amp; Campaign Support · Signed In 3/15/2026</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304659001">330-465-9001</a></div>
       <div class="vc-info"><span class="icon">📟</span><span style="color:#8a9bb0">Campaign Cell: 330-465-8982</span></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#98f2eaedececfdead8f0e1e8fdeafbeaf9eff4b6fbf7f5"><span class="__cf_email__" data-cfemail="274d555253534255674f5e574255445546504b0944484a">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a class="cf-email" data-u="jrutter" data-d="hypercrawl.com" href="#">jrutter&#64;hypercrawl.com</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Burton City / Mt Eaton / N West Lebanon / Krug · 102 stops</span></div>
     </div>
 
@@ -1631,7 +1586,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Mike Raff</div>
       <div class="vc-role">Canvasser · Signed In 3/15/2026</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3303172059">330-317-2059</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#99f4f0f2fcebfcededa1afd9fef4f8f0f5b7faf6f4"><span class="__cf_email__" data-cfemail="b1dcd8dad4c3d4c5c58987f1d6dcd0d8dd9fd2dedc">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a class="cf-email" data-u="mikerett86" data-d="gmail.com" href="#">mikerett86&#64;gmail.com</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Church Rd / Good Rd / N Kohler / Wenger · 75 stops</span></div>
     </div>
 
@@ -1639,7 +1594,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Pat Turchiano</div>
       <div class="vc-role">Canvasser · Selected Streets (couldn't attend 3/15)</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304665110">330-466-5110</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#e797838d9395848f89d6a79d88888a8e89938295898293c9898293"><span class="__cf_email__" data-cfemail="621206081610010a0c5322180d0d0f0b0c1607100c07164c0c0716">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a class="cf-email" data-u="pdjtrchn1" data-d="zoominternet.net" href="#">pdjtrchn1&#64;zoominternet.net</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 York Rd / Emmitsburg / Hanover / Chambersburg / Market / Misere · 79 stops</span></div>
     </div>
 
@@ -1647,7 +1602,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Robin Coppola</div>
       <div class="vc-role">Canvasser · Signed In 3/15/2026</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3302013020">330-201-3020</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#20524f42494e0e434f50504f4c411260474d41494c0e434f4d"><span class="__cf_email__" data-cfemail="41332e23282f6f222e31312e2d207301262c20282d6f222e2c">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a class="cf-email" data-u="robin.coppola2" data-d="gmail.com" href="#">robin.coppola2&#64;gmail.com</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">🪧 Yard Signs</span><span class="vc-tag">📍 Tannerville / Wayne St / Paradise Ext · 64 stops</span></div>
     </div>
 
@@ -1655,7 +1610,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Joe Rubino</div>
       <div class="vc-role">Canvasser</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3306214717">330-621-4717</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#3c56564e495e5552537c5b515d5550125f5351"><span class="__cf_email__" data-cfemail="d5bfbfa7a0b7bcbbba95b2b8b4bcb9fbb6bab8">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a class="cf-email" data-u="jjrubino" data-d="gmail.com" href="#">jjrubino&#64;gmail.com</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📞 Phone</span><span class="vc-tag">🚗 Rides</span><span class="vc-tag">📬 Absentee</span><span class="vc-tag">📍 Coal Bank / Fosnight / Rehm / West St · 68 stops</span></div>
     </div>
 
@@ -1663,7 +1618,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">David Stoll</div>
       <div class="vc-role">Canvasser</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304662409">330-466-2409</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#50343e3823243f3c3c10373d31393c7e333f3d"><span class="__cf_email__" data-cfemail="6c0802041f180300002c0b010d0500420f0301">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a class="cf-email" data-u="dnhstoll" data-d="gmail.com" href="#">dnhstoll&#64;gmail.com</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">🪧 Yard Signs</span><span class="vc-tag">📍 Ault Rd / Huprick Rd · 25 stops</span></div>
     </div>
 
@@ -1671,7 +1626,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Diane Jarrett</div>
       <div class="vc-role">Canvasser</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304654110">330-465-4110</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#2c48464d5e5e4958586c4b43464d5e5e495858024f4341"><span class="__cf_email__" data-cfemail="4a2e202b38382f3e3e0a2d25202b38382f3e3e64292527">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a class="cf-email" data-u="djarrett" data-d="gojarrett.com" href="#">djarrett&#64;gojarrett.com</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Forrer Rd · 12 stops</span></div>
     </div>
 
@@ -1679,7 +1634,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Matt Slicker</div>
       <div class="vc-role">Canvasser · Signed In 3/15/2026</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3308542557">330-854-2557</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#224f43565662514e4b414947504443504f510c414d4f"><span class="__cf_email__" data-cfemail="bad7dbcecefac9d6d3d9d1dfc8dcdbc8d7c994d9d5d7">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a class="cf-email" data-u="matt" data-d="slickerfarms.com" href="#">matt&#64;slickerfarms.com</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">🪧 Yard Signs</span><span class="vc-tag">📍 Deerfield NW / Fulton / Lovers Lane / Shifferly / Black Diamond + shared · 124+ stops</span></div>
     </div>
 
@@ -1687,14 +1642,14 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Shelly Brenner</div>
       <div class="vc-role">Canvasser</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3306212421">330-621-2421</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#a5d6cdc0c9c9dcc7d7c0cbcbc0d7969de5c2c8c4ccc98bc6cac8"><span class="__cf_email__" data-cfemail="215249444d4d584353444f4f4453121961464c40484d0f424e4c">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a class="cf-email" data-u="shellybrenner38" data-d="gmail.com" href="#">shellybrenner38&#64;gmail.com</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📞 Phone</span><span class="vc-tag">🚗 Rides</span><span class="vc-tag">📬 Absentee</span><span class="vc-tag">📍 Back Massillon Rd (split w/ Matt)</span></div>
     </div>
 
     <div class="vc-card vc-green">
       <div class="vc-name">Noelle Ressler</div>
       <div class="vc-role">Canvasser &amp; Campaign Support · Signed In 3/15/2026</div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#543a3b313838312614263626373b3a272138203d3a337a363d2e"><span class="__cf_email__" data-cfemail="127c7d777e7e776052607060717d7c61677e667b7c753c707b68">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a class="cf-email" data-u="noeller" data-d="rbrconsulting.biz" href="#">noeller&#64;rbrconsulting.biz</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Dalton Fox Lake Rd (split w/ Matt)</span></div>
     </div>
 
@@ -1702,7 +1657,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Julie Finney</div>
       <div class="vc-role">Canvasser</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3302340141">330-234-0141</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#147e61787d713a727d7a7a716d2323547379757d783a777b79"><span class="__cf_email__" data-cfemail="a4ced1c8cdc18ac2cdcacac1dd9393e4c3c9c5cdc88ac7cbc9">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a class="cf-email" data-u="julie.finney77" data-d="gmail.com" href="#">julie.finney77&#64;gmail.com</a></div>
       <div class="vc-tags"><span class="vc-tag">🚶 Canvass</span><span class="vc-tag">📍 Fox Lake Rd (split w/ Matt) + Wadsworth Rd + Keck Rd · 64 stops</span></div>
     </div>
 
@@ -1714,9 +1669,9 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 
     <div class="vc-card">
       <div class="vc-name">Cathy Pamer</div>
-      <div class="vc-role">Supporter</div>
+      <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3307494073">330-749-4073</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#b1d2d0c1d0c3dcd4c380888982f1d6dcd0d8dd9fd2dedc"><span class="__cf_email__" data-cfemail="f291938293809f9780c3cbcac1b2959f939b9edc919d9f">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a class="cf-email" data-u="caparmer1983" data-d="gmail.com" href="#">caparmer1983&#64;gmail.com</a></div>
       <div class="vc-tags"><span class="vc-tag tag-any">✋ Anything</span></div>
     </div>
 
@@ -1732,7 +1687,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Justin Haislip</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><span style="color:#8a9bb0">—</span></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#cd87b8beb9a4a38da7b8beb9a4a3a5aca4bea1a4bdacaaa8a3aeb4e3aea2a0"><span class="__cf_email__" data-cfemail="602a151314090e200a151314090e080109130c09100107050e03194e030f0d">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a class="cf-email" data-u="Justin" data-d="justinhaislipagency.com" href="#">Justin&#64;justinhaislipagency.com</a></div>
       <div class="vc-tags"><span class="vc-tag tag-any">✋ Anything</span></div>
     </div>
 
@@ -1740,21 +1695,21 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Stephanie Geiser</div>
       <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><span style="color:#8a9bb0">—</span></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#c5a8a4b7aeb6b1a0b5ada4abaca0a2fcf385a2a8a4aca9eba6aaa8"><span class="__cf_email__" data-cfemail="a9c4c8dbc2daddccd9c1c8c7c0ccce909fe9cec4c8c0c587cac6c4">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a class="cf-email" data-u="markstephanieg96" data-d="gmail.com" href="#">markstephanieg96&#64;gmail.com</a></div>
       <div class="vc-tags"><span class="vc-tag tag-any">✋ Anything</span></div>
     </div>
 
     <div class="vc-card">
       <div class="vc-name">Tim Horst</div>
-      <div class="vc-role">Supporter</div>
+      <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><span style="color:#8a9bb0">—</span></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#0276696a6d7071763142656f636b6e2c616d6f"><span class="__cf_email__" data-cfemail="e7938c8f88959493d4a7808a868e8bc984888a">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a class="cf-email" data-u="tkhorst3" data-d="gmail.com" href="#">tkhorst3&#64;gmail.com</a></div>
       <div class="vc-tags"><span class="vc-tag tag-any">✋ Anything</span></div>
     </div>
 
     <div class="vc-card">
       <div class="vc-name">Doug Waikem</div>
-      <div class="vc-role">Supporter</div>
+      <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3303240009">330-324-0009</a></div>
       <div class="vc-info"><span class="icon">📧</span><span style="color:#8a9bb0">—</span></div>
       <div class="vc-tags"><span class="vc-tag tag-any">✋ Anything</span></div>
@@ -1762,7 +1717,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 
     <div class="vc-card">
       <div class="vc-name">Don Shoup</div>
-      <div class="vc-role">Supporter</div>
+      <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304661554">330-466-1554</a></div>
       <div class="vc-info"><span class="icon">📧</span><span style="color:#8a9bb0">—</span></div>
       <div class="vc-tags"><span class="vc-tag" style="color:#8a9bb0;border-color:rgba(138,155,176,.2);background:rgba(138,155,176,.08)">Contact for details</span></div>
@@ -1770,7 +1725,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 
     <div class="vc-card">
       <div class="vc-name">Jan Monheim</div>
-      <div class="vc-role">Supporter · Yard Sign Request</div>
+      <div class="vc-role">Volunteer · Yard Sign Request</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304658244">330-465-8244</a></div>
       <div class="vc-info"><span class="icon">📧</span><span style="color:#8a9bb0">—</span></div>
       <div class="vc-tags"><span class="vc-tag">🪧 Yard Sign Only</span></div>
@@ -1778,7 +1733,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 
     <div class="vc-card">
       <div class="vc-name">Carolyn Baer</div>
-      <div class="vc-role">Supporter</div>
+      <div class="vc-role">Volunteer</div>
       <div class="vc-info"><span class="icon">📞</span><span style="color:#8a9bb0">—</span></div>
       <div class="vc-info"><span class="icon">📧</span><span style="color:#8a9bb0">—</span></div>
       <div class="vc-tags"><span class="vc-tag tag-any">✋ Anything</span></div>
@@ -1794,7 +1749,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <div class="vc-name">Bob Graber</div>
       <div class="vc-role">Trustee</div>
       <div class="vc-info"><span class="icon">📞</span><a href="tel:3304661662">330-466-1662</a></div>
-      <div class="vc-info"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#ffbdb88d9e9d9a8dbe8a9c8b9690918cbf9e9093d19c9092"><span class="__cf_email__" data-cfemail="5a181d283b383f281b2f392e333534291a3b353674393537">[email&#160;protected]</span></a></div>
+      <div class="vc-info"><span class="icon">📧</span><a class="cf-email" data-u="BGraberAuctions" data-d="aol.com" href="#">BGraberAuctions&#64;aol.com</a></div>
       <div class="vc-tags"><span class="vc-tag" style="background:rgba(46,134,193,.15);color:#aee2ff;border-color:rgba(46,134,193,.3)">🏛️ Trustee</span></div>
     </div>
 
@@ -1855,12 +1810,12 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     <div class="contact-card">
       <h4>Noelle Ressler</h4><div class="role">Campaign Support</div>
       <div class="ci"><span class="icon">📞</span><a href="tel:2162948358">216-294-8358</a></div>
-      <div class="ci"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#402e2f252c2c253200322232232f2e33352c34292e276e22293a"><span class="__cf_email__" data-cfemail="85ebeae0e9e9e0f7c5f7e7f7e6eaebf6f0e9f1ecebe2abe7ecff">[email&#160;protected]</span></a></div>
+      <div class="ci"><span class="icon">📧</span><a class="cf-email" data-u="noeller" data-d="rbrconsulting.biz" href="#">noeller&#64;rbrconsulting.biz</a></div>
     </div>
     <div class="contact-card">
       <h4>John Rutter</h4><div class="role">Campaign Support</div>
       <div class="ci"><span class="icon">📞</span><a href="tel:3304659001">330-465-9001</a></div>
-      <div class="ci"><span class="icon">📧</span><a href="/cdn-cgi/l/email-protection#0e647c7b7a7a6b7c4e66777e6b7c6d7c6f7962206d6163"><span class="__cf_email__" data-cfemail="b8d2cacdccccddcaf8d0c1c8ddcadbcad9cfd496dbd7d5">[email&#160;protected]</span></a></div>
+      <div class="ci"><span class="icon">📧</span><a class="cf-email" data-u="jrutter" data-d="hypercrawl.com" href="#">jrutter&#64;hypercrawl.com</a></div>
     </div>
     <div class="contact-card cc-blue">
       <h4>Wayne County Board of Elections</h4>
@@ -1899,7 +1854,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   <a class="pbtn pbtn-out" href="#teams">🗺 Canvasser Routes</a>
   <button class="pbtn pbtn-out" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Top</button>
 </div>
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 
 // ── LIVE EARLY VOTING COUNTER STRIP ──
 // This runs a separate live countdown specifically for the early voting strip
@@ -2360,6 +2315,121 @@ window.adminSaveCloudConfig = function() {
 };
 
 
+window.adminBackupData = function() {
+  var rows  = [];
+  var files = [];
+  try { rows  = JSON.parse(localStorage.getItem('baughman_rows_v2')  || '[]'); } catch(e) {}
+  try { files = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]'); } catch(e) {}
+
+  if (!rows.length) {
+    var s = document.getElementById('admin-backup-status');
+    if (s) { s.textContent = '⚠ No data to back up yet.'; s.style.color = '#f4c460'; }
+    return;
+  }
+
+  var backup = {
+    version: 'baughman_backup_v1',
+    exported: new Date().toISOString(),
+    rows: rows,
+    files: files
+  };
+
+  var blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+  var fname = 'Baughman_Canvass_Backup_' + new Date().toLocaleDateString('en-US').replace(/\//g, '-') + '.json';
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = fname;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+
+  var s = document.getElementById('admin-backup-status');
+  if (s) {
+    s.textContent = '✓ Backed up ' + rows.length + ' households to ' + fname;
+    s.style.color = '#5ce08a';
+  }
+};
+
+window.adminRestoreData = function(input) {
+  var file = input.files && input.files[0];
+  if (!file) return;
+  var s = document.getElementById('admin-backup-status');
+
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var backup = JSON.parse(e.target.result);
+      if (backup.version !== 'baughman_backup_v1' || !Array.isArray(backup.rows)) {
+        if (s) { s.textContent = '✗ Not a valid Baughman backup file.'; s.style.color = '#f87171'; }
+        return;
+      }
+
+      if (!confirm('Restore ' + backup.rows.length + ' households from backup dated ' +
+          new Date(backup.exported).toLocaleString() + '?\n\nThis will MERGE with any existing data (new backup entries won\'t overwrite existing responses).')) {
+        input.value = '';
+        return;
+      }
+
+      // Merge backup into existing stored data — same logic as CSV upload
+      var stored = [];
+      try { stored = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]'); } catch(ex) {}
+      var sidx = {};
+      stored.forEach(function(r, i) {
+        sidx[(r.address || '').toLowerCase().trim()] = i;
+      });
+
+      var nAdded = 0, nKept = 0;
+      backup.rows.forEach(function(r) {
+        var k = (r.address || '').toLowerCase().trim();
+        if (k in sidx) {
+          // Already exists — only fill in if currently Not Visited
+          var ex = stored[sidx[k]];
+          if ((!ex.resp || ex.resp === 'Not Visited') && r.resp && r.resp !== 'Not Visited') {
+            ex.resp = r.resp;
+          }
+          if (r.notes && !ex.notes) ex.notes = r.notes;
+          nKept++;
+        } else {
+          stored.push(r);
+          sidx[k] = stored.length - 1;
+          nAdded++;
+        }
+      });
+
+      // Restore files list — add any from backup not already recorded
+      var existingFiles = [];
+      try { existingFiles = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]'); } catch(ex) {}
+      var existingFnames = existingFiles.map(function(f) { return f.filename; });
+      (backup.files || []).forEach(function(f) {
+        if (existingFnames.indexOf(f.filename) === -1) existingFiles.push(f);
+      });
+      existingFiles.push({ filename: file.name, uploaded: new Date().toLocaleString(), added: nAdded, updated: nKept, source: 'backup-restore' });
+
+      try { localStorage.setItem('baughman_rows_v2',  JSON.stringify(stored));       } catch(ex) {}
+      try { localStorage.setItem('baughman_files_v2', JSON.stringify(existingFiles)); } catch(ex) {}
+
+      // Re-render
+      if (typeof window._restoreRows === 'function') {
+        var label = 'Restored Results (' + stored.length + ' households)';
+        window._restoreRows(stored, label);
+      }
+      if (typeof window.jsonbinPush === 'function') window.jsonbinPush(stored, existingFiles);
+      if (typeof updateUploadStatus === 'function') updateUploadStatus();
+      refreshAdminStatus();
+
+      if (s) {
+        s.textContent = '✓ Restored! ' + nAdded + ' added, ' + nKept + ' already present.';
+        s.style.color = '#5ce08a';
+      }
+    } catch(ex) {
+      if (s) { s.textContent = '✗ Error reading file: ' + ex.message; s.style.color = '#f87171'; }
+    }
+    input.value = '';
+  };
+  reader.readAsText(file);
+};
+
 window.adminDeleteResults = function() {
   if (!confirm('Delete ALL saved canvass results from all uploads? This cannot be undone.')) return;
   try {
@@ -2499,11 +2569,6 @@ document.addEventListener('DOMContentLoaded', function() {
         <div id="admin-jb-status" style="font-size:.72rem;margin-top:6px;min-height:16px;color:#556677"></div>
       </div>
 
-      <button onclick="adminDeleteResults()" style="width:100%;background:#3d1a1a;color:#f87171;border:1.5px solid #6b1a1a;border-radius:10px;padding:14px;font-family:'Oswald',sans-serif;font-size:.82rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;margin-bottom:8px">
-        &#x1F5D1; Delete All Saved Results
-      </button>
-      <div id="admin-delete-confirm" style="display:none;text-align:center;color:#5ce08a;font-size:.82rem;font-weight:700;margin-bottom:8px">&#10003; Results cleared successfully</div>
-
       <!-- Backup & Restore -->
       <div style="background:#0d1117;border:1px solid rgba(39,174,96,.2);border-radius:8px;padding:12px 14px;margin-bottom:14px">
         <div style="font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#74c69d;margin-bottom:6px">💾 Data Backup &amp; Restore</div>
@@ -2520,192 +2585,16 @@ document.addEventListener('DOMContentLoaded', function() {
         <div id="admin-backup-status" style="font-size:.72rem;margin-top:6px;min-height:16px;color:#556677"></div>
       </div>
 
+      <button onclick="adminDeleteResults()" style="width:100%;background:#3d1a1a;color:#f87171;border:1.5px solid #6b1a1a;border-radius:10px;padding:14px;font-family:'Oswald',sans-serif;font-size:.82rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;margin-bottom:8px">
+        &#x1F5D1; Delete All Saved Results
+      </button>
+      <div id="admin-delete-confirm" style="display:none;text-align:center;color:#5ce08a;font-size:.82rem;font-weight:700;margin-bottom:8px">&#10003; Results cleared successfully</div>
       <button onclick="closeAdminPanel()" style="width:100%;background:transparent;color:#8a9bb0;border:1px solid #21262d;border-radius:10px;padding:10px;font-size:.78rem;cursor:pointer">Close</button>
     </div>
   </div>
 </div>
-<!-- ══ MANUAL ENTRY MODAL ══ -->
-<div id="manual-entry-overlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.82);z-index:99999;align-items:center;justify-content:center">
-  <div style="background:#161b22;border:2px solid #2e86c1;border-radius:16px;padding:24px 26px;width:92%;max-width:440px;max-height:92vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.8)">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
-      <div style="font-family:'Oswald',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#2e86c1">➕ Add Manual Entry</div>
-      <button onclick="closeManualEntry()" style="background:none;border:none;color:#8a9bb0;font-size:20px;cursor:pointer;line-height:1">&#x2715;</button>
-    </div>
-    <div style="font-size:.75rem;color:#556677;margin-bottom:16px;line-height:1.55">Use this to record a household that was visited but not on the original canvass list.</div>
-
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-      <div style="grid-column:1/-1">
-        <div class="me-label">Voter / Household Name</div>
-        <input id="me-name" type="text" placeholder="e.g. Smith Family" class="me-input">
-      </div>
-      <div style="grid-column:1/-1">
-        <div class="me-label">Full Address <span style="color:#e74c3c">*</span></div>
-        <input id="me-address" type="text" placeholder="e.g. 1234 Ault Rd" class="me-input">
-      </div>
-      <div>
-        <div class="me-label">Street Name</div>
-        <input id="me-street" type="text" placeholder="e.g. Ault Rd" class="me-input">
-      </div>
-      <div>
-        <div class="me-label">Precinct</div>
-        <input id="me-prec" type="text" placeholder="e.g. P1" class="me-input">
-      </div>
-      <div>
-        <div class="me-label"># Voters at Address</div>
-        <input id="me-voters" type="number" min="1" placeholder="1" class="me-input">
-      </div>
-      <div>
-        <div class="me-label">Likelihood</div>
-        <select id="me-like" class="me-input">
-          <option value="">— Unknown —</option>
-          <option value="LIKELY">★ Likely</option>
-          <option value="POSSIBLE">◐ Possible</option>
-          <option value="NOTLIKELY">Not Likely</option>
-        </select>
-      </div>
-      <div style="grid-column:1/-1">
-        <div class="me-label">Response <span style="color:#e74c3c">*</span></div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <label class="me-resp-btn"><input type="radio" name="me-resp" value="Yes"> ✅ Yes</label>
-          <label class="me-resp-btn"><input type="radio" name="me-resp" value="No"> ❌ No</label>
-          <label class="me-resp-btn"><input type="radio" name="me-resp" value="Undecided"> ❓ Undecided</label>
-          <label class="me-resp-btn"><input type="radio" name="me-resp" value="Not Home"> 🏠 Not Home</label>
-          <label class="me-resp-btn"><input type="radio" name="me-resp" value="Not Visited"> ⚪ Not Visited</label>
-        </div>
-      </div>
-      <div style="grid-column:1/-1">
-        <div class="me-label">Notes</div>
-        <textarea id="me-notes" rows="2" placeholder="Optional notes…" class="me-input" style="resize:vertical"></textarea>
-      </div>
-    </div>
-
-    <div id="me-error" style="display:none;background:rgba(192,57,43,.15);border:1px solid rgba(192,57,43,.4);border-radius:6px;padding:8px 12px;color:#ff8a7a;font-size:.78rem;margin-bottom:10px"></div>
-
-    <div style="display:flex;gap:10px">
-      <button onclick="submitManualEntry()" style="flex:1;background:#1a5276;color:#aee2ff;border:1.5px solid rgba(46,134,193,.4);border-radius:8px;padding:11px;font-family:'Oswald',sans-serif;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer">💾 Save Entry</button>
-      <button onclick="closeManualEntry()" style="background:transparent;color:#8a9bb0;border:1px solid #21262d;border-radius:8px;padding:11px 18px;font-size:.78rem;cursor:pointer">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<style>
-.me-label{font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#556677;margin-bottom:4px}
-.me-input{width:100%;background:#0d1117;border:1px solid #30363d;border-radius:7px;padding:8px 10px;color:#f0f6fc;font-size:.85rem;outline:none;box-sizing:border-box;font-family:inherit;transition:border-color .15s}
-.me-input:focus{border-color:#2e86c1}
-.me-resp-btn{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:.78rem;color:#c0ccdd;transition:all .15s}
-.me-resp-btn:hover{background:rgba(255,255,255,.1)}
-.me-resp-btn input{accent-color:#2e86c1;margin:0}
-</style>
-
-<!-- ══ ADMIN EDIT MODE + BACKUP/RESTORE ══ -->
+<!-- ══ ADMIN EDIT MODE — Reset individual rows ══ -->
 <script>
-// ── Manual Entry ─────────────────────────────────────────────────────────
-window.openManualEntry = function() {
-  if (!window.checkUploadAuth()) return;
-  // Clear form
-  ['me-name','me-address','me-street','me-prec','me-notes'].forEach(function(id) {
-    var el = document.getElementById(id); if (el) el.value = '';
-  });
-  var votersEl = document.getElementById('me-voters'); if (votersEl) votersEl.value = '1';
-  var likeEl   = document.getElementById('me-like');   if (likeEl)   likeEl.value   = '';
-  document.querySelectorAll('input[name="me-resp"]').forEach(function(r) { r.checked = false; });
-  var errEl = document.getElementById('me-error'); if (errEl) errEl.style.display = 'none';
-  var ov = document.getElementById('manual-entry-overlay');
-  if (ov) { ov.style.display = 'flex'; }
-  setTimeout(function() { var el = document.getElementById('me-name'); if (el) el.focus(); }, 100);
-};
-
-window.closeManualEntry = function() {
-  var ov = document.getElementById('manual-entry-overlay');
-  if (ov) ov.style.display = 'none';
-};
-
-window.submitManualEntry = function() {
-  var errEl = document.getElementById('me-error');
-  function showErr(msg) { errEl.textContent = msg; errEl.style.display = 'block'; }
-
-  var address = (document.getElementById('me-address').value || '').trim();
-  if (!address) { showErr('Address is required.'); return; }
-
-  var respEl = document.querySelector('input[name="me-resp"]:checked');
-  if (!respEl) { showErr('Please select a Response.'); return; }
-
-  var name   = (document.getElementById('me-name').value   || '').trim() || address;
-  var street = (document.getElementById('me-street').value || '').trim() ||
-               address.replace(/^\d+\s*/, '').trim();
-  var prec   = (document.getElementById('me-prec').value   || '').trim();
-  var voters = parseInt(document.getElementById('me-voters').value) || 1;
-  var like   = document.getElementById('me-like').value || '';
-  var notes  = (document.getElementById('me-notes').value  || '').trim();
-  var resp   = respEl.value;
-
-  var newRow = {
-    name: name, address: address, street: street,
-    prec: prec, voters: voters, like: like,
-    levy: 0, resp: resp, notes: notes,
-    manual: true
-  };
-
-  // Load stored, check for duplicate, push, save
-  var stored = [];
-  try { stored = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]'); } catch(e) {}
-  var key = address.toLowerCase().trim();
-  var exists = stored.some(function(r) { return (r.address||'').toLowerCase().trim() === key; });
-  if (exists) {
-    showErr('An entry for "' + address + '" already exists. Use ↺ Reset to correct it instead.');
-    return;
-  }
-
-  stored.push(newRow);
-  try { localStorage.setItem('baughman_rows_v2', JSON.stringify(stored)); } catch(e) {}
-
-  // Record in file list
-  var fileList = [];
-  try { fileList = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]'); } catch(e) {}
-  fileList.push({ filename: 'Manual: ' + name + ' (' + address + ')', uploaded: new Date().toLocaleString(), added: 1, updated: 0, source: 'manual' });
-  try { localStorage.setItem('baughman_files_v2', JSON.stringify(fileList)); } catch(e) {}
-
-  // Re-render
-  if (typeof window._restoreRows === 'function') {
-    var label = 'Combined Results (' + stored.length + ' households, ' + fileList.length + ' upload' + (fileList.length !== 1 ? 's' : '') + ')';
-    window._restoreRows(stored, label);
-  }
-  if (typeof window.jsonbinPush === 'function') window.jsonbinPush(stored, fileList);
-  if (typeof updateUploadStatus === 'function') updateUploadStatus();
-
-  closeManualEntry();
-
-  // Re-apply edit mode if it was on
-  setTimeout(function() {
-    if (window._adminEditMode) {
-      var tbl = document.getElementById('detail-table');
-      if (tbl) tbl.classList.add('edit-active');
-    }
-    if (typeof window.renderDetail === 'function') window.renderDetail();
-  }, 80);
-};
-
-// ── Upload Password Gate ──────────────────────────────────────────────────
-window._uploadUnlocked = false;
-
-window.checkUploadAuth = function() {
-  if (window._uploadUnlocked) return true;
-  var pw = prompt('Enter the upload password to submit canvass results:');
-  if (pw === null) return false;
-  if (pw === 'Admin2026$') {
-    window._uploadUnlocked = true;
-    return true;
-  }
-  alert('Incorrect password. Ask your campaign coordinator for the upload password.');
-  return false;
-};
-
-window.uploadWithAuth = function() {
-  if (!window.checkUploadAuth()) return;
-  document.getElementById('file-input').click();
-};
-
-// ── Admin Edit Mode (Reset individual rows) ──────────────────────────────
 window._adminEditMode = false;
 
 window.toggleAdminEdit = function() {
@@ -2731,4 +2620,55 @@ window.toggleAdminEdit = function() {
 
 window.adminResetRow = function(addr) {
   if (!window._adminEditMode) return;
-  if (!confirm('Reset "' + addr + 
+  if (!confirm('Reset "' + addr + '" to Not Visited and clear its notes?\n\nThis cannot be undone.')) return;
+
+  // Update in localStorage
+  var stored = [];
+  try { stored = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]'); } catch(e) {}
+  var key = (addr || '').toLowerCase().trim();
+  var found = false;
+  stored.forEach(function(r) {
+    if ((r.address || '').toLowerCase().trim() === key) {
+      r.resp  = 'Not Visited';
+      r.notes = '';
+      found = true;
+    }
+  });
+  if (!found) { alert('Could not find that address in saved data.'); return; }
+  try { localStorage.setItem('baughman_rows_v2', JSON.stringify(stored)); } catch(e) {}
+
+  // Re-render from the updated stored data
+  if (typeof window._restoreRows === 'function') {
+    var files = [];
+    try { files = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]'); } catch(e) {}
+    var label = 'Combined Results (' + stored.length + ' households, '
+      + files.length + ' upload' + (files.length !== 1 ? 's' : '') + ')';
+    window._restoreRows(stored, label);
+  }
+
+  // Push updated data to JSONBin cloud
+  var fileList = [];
+  try { fileList = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]'); } catch(e) {}
+  if (typeof window.jsonbinPush === 'function') window.jsonbinPush(stored, fileList);
+
+  // Restore edit mode state after re-render (re-render resets the table class)
+  setTimeout(function() {
+    var tbl = document.getElementById('detail-table');
+    var btn = document.getElementById('admin-edit-btn');
+    if (tbl) tbl.classList.add('edit-active');
+    if (btn) { btn.textContent = '🔓 Edit Mode ON'; btn.classList.add('active'); }
+    window._adminEditMode = true;
+    if (typeof window.renderDetail === 'function') window.renderDetail();
+  }, 80);
+};
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('a.cf-email').forEach(function(a) {
+    a.href = 'mailto:' + a.dataset.u + '@' + a.dataset.d;
+    a.textContent = a.dataset.u + '@' + a.dataset.d;
+  });
+});
+</script>
+</body>
+</html>
