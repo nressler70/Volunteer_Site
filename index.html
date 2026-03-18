@@ -1435,7 +1435,26 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
         '<td style="padding:7px 8px;text-align:center;font-family:monospace;font-size:.7rem;color:#667788">'+esc(r.prec||'')+'</td>'+
         '<td style="padding:7px 8px;text-align:center;font-family:monospace;font-size:.78rem;color:#aee2ff">'+(r.voters||'')+'</td>'+
         '<td style="padding:7px 8px;text-align:right;font-family:monospace;font-size:.78rem;color:var(--gold-light)">'+(r.levy ? '$'+(parseFloat(r.levy)||0).toFixed(2) : '—')+'</td>'+
-        '<td style="padding:7px 12px;text-align:center">'+respBadge(r.resp)+'</td>'+
+        '<td style="padding:4px 8px;text-align:center">'+
+        '<div class="resp-selector" style="display:flex;gap:3px;justify-content:center;flex-wrap:wrap">'+
+          ['Yes','No','Undecided','Not Home'].map(function(opt) {
+            var active = r.resp === opt;
+            var colors = {
+              'Yes':       active ? 'background:rgba(39,174,96,.35);color:#5ce08a;border-color:rgba(39,174,96,.6)'   : 'background:rgba(39,174,96,.07);color:#3a6650;border-color:rgba(39,174,96,.2)',
+              'No':        active ? 'background:rgba(192,57,43,.35);color:#ff8a7a;border-color:rgba(192,57,43,.6)'   : 'background:rgba(192,57,43,.07);color:#664444;border-color:rgba(192,57,43,.2)',
+              'Undecided': active ? 'background:rgba(201,150,42,.35);color:#f4c460;border-color:rgba(201,150,42,.6)' : 'background:rgba(201,150,42,.07);color:#665533;border-color:rgba(201,150,42,.2)',
+              'Not Home':  active ? 'background:rgba(46,134,193,.35);color:#aee2ff;border-color:rgba(46,134,193,.6)' : 'background:rgba(46,134,193,.07);color:#334455;border-color:rgba(46,134,193,.2)'
+            };
+            var labels = {'Yes':'✅','No':'❌','Undecided':'❓','Not Home':'🏠'};
+            var locked = !window._adminEditMode;
+            return '<button class="resp-btn" data-addr="'+addrEsc+'" data-resp="'+opt+'\" '+
+              'title="'+(locked && !active ? '🔒 Admin login required' : 'Mark as '+opt)+'" '+
+              'style="'+colors[opt]+';border:1px solid;border-radius:4px;padding:3px 6px;font-size:.7rem;cursor:pointer;font-weight:700;transition:all .15s;opacity:'+(locked && !active ? '0.4' : '1')+';">'+
+              labels[opt]+
+            '</button>';
+          }).join('')+
+        '</div>'+
+      '</td>'+
         '<td class="notes-cell" data-addr="'+addrEsc+'" style="padding:4px 8px;min-width:160px;cursor:pointer" title="Click to edit notes">'+
           '<div class="notes-display" style="font-size:.78rem;font-style:'+(r.notes?'normal':'italic')+';color:'+(r.notes?'#c0ccdd':'#556677')+';padding:3px 6px;border-radius:4px;border:1px dashed rgba(255,255,255,.08)">'+
             esc(r.notes||'✏ add note')+
@@ -1456,6 +1475,30 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     var tbody = document.getElementById('detail-tbody');
 
     tbody.onclick = function(e) {
+      // Response button — change Yes/No/Undecided/Not Home (admin only)
+      var respBtn = e.target.closest('.resp-btn');
+      if (respBtn) {
+        if (!window._adminEditMode) {
+          // Prompt for admin password inline
+          var pw = prompt('Admin login required to change responses:\n\nEnter admin password:');
+          if (pw === null) return;
+          if (pw !== 'Admin2026$') {
+            alert('Incorrect password. Response not changed.');
+            return;
+          }
+          // Unlock admin mode so subsequent clicks don't re-prompt
+          window._adminEditMode = true;
+          var btn = document.getElementById('admin-edit-btn');
+          var tbl = document.getElementById('detail-table');
+          if (btn) { btn.textContent = '🔓 Edit Mode ON'; btn.classList.add('active'); }
+          if (tbl) tbl.classList.add('edit-active');
+        }
+        var addr = respBtn.getAttribute('data-addr');
+        var resp = respBtn.getAttribute('data-resp');
+        window.saveResponse(addr, resp);
+        return;
+      }
+
       // Reset button
       var resetBtn = e.target.closest('.reset-btn');
       if (resetBtn) { window.adminResetRow(resetBtn.getAttribute('data-addr')); return; }
@@ -3058,6 +3101,29 @@ window.toggleSign = function(addr, btn) {
 
   // Refresh just the dashboard tile count
   if (typeof window._refreshDashboard === 'function') window._refreshDashboard();
+};
+
+
+window.saveResponse = function(addr, newResp) {
+  var key = addr.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').toLowerCase().trim();
+
+  // Persist to localStorage
+  var stored = [];
+  try { stored = enrichRows(JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]')); } catch(e) {}
+  var found = false;
+  stored.forEach(function(r) {
+    if ((r.address||'').toLowerCase().trim() === key) { r.resp = newResp; found = true; }
+  });
+  if (!found) { return; }
+  try { localStorage.setItem('baughman_rows_v2', JSON.stringify(stored)); } catch(e) {}
+
+  // Update live rows in memory
+  if (typeof window._updateRow === 'function') window._updateRow(key, { resp: newResp });
+
+  // Push to cloud
+  var fileList = [];
+  try { fileList = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]'); } catch(e) {}
+  if (typeof window.jsonbinPush === 'function') window.jsonbinPush(stored, fileList);
 };
 
 window.saveNotes = function(addr, newNotes) {
