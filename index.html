@@ -1031,15 +1031,28 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 
     var cStreet = col('street');
     var cHouse  = col('house');
-    var cVoter  = col('voter');
+    var cAddr   = col('address');
+    // cName: only match a standalone "Name" column — NOT "Voter Names" or "Last Name"
+    var cName = -1;
+    for (var _k = 0; _k < headers.length; _k++) {
+      if (headers[_k] === 'name') { cName = _k; break; }
+    }
+    var cVoter  = col('voter');   // matches "Voter Names" and "Voter Name(s)"
     var cLast   = col('last name');
     var cPrec   = col('precinct');
-    var cVoters = col('# voter');
+    var cVoters = col('# voters');
+    if (cVoters < 0) cVoters = col('# v');
+    if (cVoters < 0) cVoters = col('voters');
     var cLike   = col('likelihood');
+    // cLevy: match levy/yr first, then fire/ems cost — avoid "Levy Sheet?" column
     var cLevy   = col('levy/yr');
+    if (cLevy < 0) cLevy = col('levy cost');
+    if (cLevy < 0) cLevy = col('fire/ems');
     var cResp   = col('response');
     var cNotes  = col('notes');
     var cSign   = col('wants sign');
+    if (cSign < 0) cSign = col('sign needed');
+    if (cSign < 0) cSign = col('sign');
 
     if (cStreet < 0 || cResp < 0) {
       showError('Missing required columns. Headers found: ' + headers.slice(0, 8).join(', '));
@@ -1073,15 +1086,20 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       if (street.toLowerCase() === 'summary') continue;
 
       var house  = cHouse  >= 0 ? String(r[cHouse]  || '').replace(/\.0$/, '').trim() : '';
-      var vname  = cVoter  >= 0 ? String(r[cVoter]  || '').trim() : '';
-      var lname  = cLast   >= 0 ? String(r[cLast]   || '').trim() : '';
-      var parsedName = (vname + (lname ? ' ' + lname : '')).trim();
-      var fullAddr = ((house ? house + ' ' : '') + String(r[cStreet] || '').trim());
+      // Full address: use dedicated Address column if available, else build from house + street
+      var fullAddr = cAddr >= 0 && r[cAddr] ? String(r[cAddr]).trim()
+                   : (house ? house + ' ' : '') + String(r[cStreet] || '').trim();
+      // Name: standalone Name col wins; else combine Voter Names + Last Name; else look up by address
+      var exportName = cName  >= 0 ? String(r[cName]  || '').trim() : '';
+      var vname      = cVoter >= 0 ? String(r[cVoter] || '').trim() : '';
+      var lname      = cLast  >= 0 ? String(r[cLast]  || '').trim() : '';
+      var combinedName = (vname + (lname ? ' ' + lname : '')).trim();
+      var parsedName = exportName || combinedName;
       var name   = parsedName || lookupName(fullAddr) || '';
       var prec   = cPrec   >= 0 ? String(r[cPrec]   || '').replace('BAUGHMAN TWP ', 'P').trim() : '';
       var voters = cVoters >= 0 ? (parseInt(r[cVoters]) || 0) : 0;
       var like   = cLike   >= 0 ? String(r[cLike]   || '').trim() : '';
-      var levy   = cLevy   >= 0 ? (parseFloat(r[cLevy]) || 0) : 0;
+      var levy   = cLevy   >= 0 ? (parseFloat(String(r[cLevy]||'').replace(/[$,]/g,'')) || 0) : 0;
       var resp   = normalizeResp(cResp >= 0 ? r[cResp] : '');
       var notes  = cNotes  >= 0 ? String(r[cNotes]  || '').trim() : '';
       // Detect sign request: from Wants Sign column OR notes containing "sign needed"
@@ -1092,7 +1110,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 
       rows.push({
         name: name,
-        address: (house ? house + ' ' : '') + street,
+        address: fullAddr,
         street: street, prec: prec, voters: voters,
         like: like, levy: levy, resp: resp, notes: notes, sign: sign
       });
@@ -1124,6 +1142,12 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       var k = mKey(r);
       if (k in sidx) {
         var ex = stored[sidx[k]];
+        // Always refresh static fields from latest upload
+        if (r.name)   ex.name   = r.name;
+        if (r.prec)   ex.prec   = r.prec;
+        if (r.voters) ex.voters = r.voters;
+        if (r.levy)   ex.levy   = r.levy;
+        if (r.like)   ex.like   = r.like;
         if (r.resp && r.resp !== 'Not Visited') { ex.resp = r.resp; nUpdated++; }
         if (r.notes && r.notes !== ex.notes) {
           ex.notes = ex.notes ? ex.notes + ' | ' + r.notes : r.notes;
