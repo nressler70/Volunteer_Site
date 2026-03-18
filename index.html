@@ -1003,6 +1003,22 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     return VOTER_DATA[key] || null;
   }
 
+  // Enrich any row (from localStorage or anywhere) with latest VOTER_DATA
+  function enrichRow(r) {
+    var vd = getVoterData(r.address || '');
+    if (vd) {
+      if (!r.name   || r.name   === r.address) r.name   = vd.name;
+      if (!r.prec)   r.prec   = vd.prec;
+      if (!r.voters) r.voters = vd.voters;
+      if (!r.levy)   r.levy   = vd.levy;
+    }
+    return r;
+  }
+
+  function enrichRows(arr) {
+    return (arr || []).map(enrichRow);
+  }
+
   function parseSheet(raw, filename) {
     if (!raw || raw.length === 0) { showError('The file appears to be empty.'); return; }
 
@@ -1160,7 +1176,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     try { localStorage.setItem(FILES_KEY2, JSON.stringify(fileList)); } catch(e2) {}
 
     // Render with merged rows
-    rows = stored;
+    rows = enrichRows(stored);
     var mergedLabel = 'Combined Results (' + stored.length + ' households, '
       + fileList.length + ' upload' + (fileList.length > 1 ? 's' : '') + ')';
     renderReport(mergedLabel, exportedAt);
@@ -1673,10 +1689,10 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 
   function doRestore() {
     try {
-      var saved  = JSON.parse(localStorage.getItem('baughman_rows_v2')  || '[]');
+      var saved  = enrichRows(JSON.parse(localStorage.getItem('baughman_rows_v2')  || '[]'));
       var files  = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]');
       if (!saved.length) return;
-      rows = applySignsToRows(saved);
+      rows = enrichRows(applySignsToRows(saved));
       var label  = 'Saved Results (' + saved.length + ' household'
         + (saved.length !== 1 ? 's' : '') + ', '
         + files.length + ' upload' + (files.length !== 1 ? 's' : '') + ')';
@@ -1698,7 +1714,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   // Debug helper — shows localStorage state on the page
   window._updateDebug = function() {
     try {
-      var rows  = JSON.parse(localStorage.getItem('baughman_rows_v2')  || '[]');
+      var rows  = enrichRows(JSON.parse(localStorage.getItem('baughman_rows_v2')  || '[]'));
       var files = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]');
       var jbKey = localStorage.getItem('baughman_jb_key') || '';
       var jbBin = localStorage.getItem('baughman_jb_bin') || '';
@@ -2514,7 +2530,7 @@ function refreshAdminStatus() {
   var el = document.getElementById('admin-data-status');
   if (!el) return;
   try {
-    var rows  = JSON.parse(localStorage.getItem('baughman_rows_v2')  || '[]');
+    var rows  = enrichRows(JSON.parse(localStorage.getItem('baughman_rows_v2')  || '[]'));
     var files = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]');
     if (rows.length) {
       var fileLines = files.map(function(f) {
@@ -2559,7 +2575,7 @@ window.adminSaveCloudConfig = function() {
   // Verify key works and create bin if needed
   var rows  = [];
   var files = [];
-  try { rows  = JSON.parse(localStorage.getItem('baughman_rows_v2')  || '[]'); } catch(e2) {}
+  try { rows  = enrichRows(JSON.parse(localStorage.getItem('baughman_rows_v2')  || '[]')); } catch(e2) {}
   try { files = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]'); } catch(e2) {}
 
   fetch('https://api.jsonbin.io/v3/b', {
@@ -2603,7 +2619,7 @@ window.adminSaveCloudConfig = function() {
 window.adminBackupData = function() {
   var rows  = [];
   var files = [];
-  try { rows  = JSON.parse(localStorage.getItem('baughman_rows_v2')  || '[]'); } catch(e) {}
+  try { rows  = enrichRows(JSON.parse(localStorage.getItem('baughman_rows_v2')  || '[]')); } catch(e) {}
   try { files = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]'); } catch(e) {}
 
   if (!rows.length) {
@@ -2659,7 +2675,7 @@ window.adminRestoreData = function(input) {
 
       // Merge backup into existing stored data — same logic as CSV upload
       var stored = [];
-      try { stored = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]'); } catch(ex) {}
+      try { stored = enrichRows(JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]')); } catch(ex) {}
       var sidx = {};
       stored.forEach(function(r, i) {
         sidx[(r.address || '').toLowerCase().trim()] = i;
@@ -2914,7 +2930,7 @@ window.adminResetRow = function(addr) {
 
   // Update in localStorage
   var stored = [];
-  try { stored = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]'); } catch(e) {}
+  try { stored = enrichRows(JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]')); } catch(e) {}
   var key = (addr || '').toLowerCase().trim();
   var found = false;
   stored.forEach(function(r) {
@@ -3074,7 +3090,7 @@ window.saveNotes = function(addr, newNotes) {
 
   // Persist to localStorage
   var stored = [];
-  try { stored = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]'); } catch(e) {}
+  try { stored = enrichRows(JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]')); } catch(e) {}
   var found = false;
   stored.forEach(function(r) {
     if ((r.address||'').toLowerCase().trim() === key) { r.notes = newNotes; found = true; }
@@ -3130,7 +3146,7 @@ window.submitManualEntry = function() {
   var newRow = { name:name, address:address, street:street, prec:prec, voters:voters, like:like, levy:0, resp:resp, notes:notes, manual:true };
 
   var stored = [];
-  try { stored = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]'); } catch(e) {}
+  try { stored = enrichRows(JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]')); } catch(e) {}
   var key = address.toLowerCase().trim();
   if (stored.some(function(r) { return (r.address||'').toLowerCase().trim() === key; })) {
     showErr('An entry for "' + address + '" already exists. Use ↺ Reset to correct it instead.');
