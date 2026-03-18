@@ -212,6 +212,35 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 .pbtn-gold{background:var(--gold);color:var(--navy);font-weight:700}.pbtn-out{background:transparent;color:var(--gold);border:2px solid var(--gold)}
 @media(max-width:900px){.teams-grid,.prec-grid,.ev-grid,.strat-grid,.talk-grid,.pc-grid{grid-template-columns:1fr}.tips-grid{grid-template-columns:1fr 1fr}.timeline{grid-template-columns:1fr 1fr}.nav-links{display:none}.hdivider{display:none}}
 @media(max-width:600px){.form-grid,.cb-group,.tips-grid,.strat-grid{grid-template-columns:1fr}}
+
+/* ── MOBILE TABLE FIXES ── */
+@media(max-width:640px){
+  /* Cost comparison tables - compact padding */
+  .cost-table th,.cost-table td{padding:8px 10px;font-size:.78rem}
+  .cost-table th{font-size:.65rem;letter-spacing:.06em}
+  /* Force table to be scrollable with a visible hint */
+  .cost-wrap{-webkit-overflow-scrolling:touch;overflow-x:auto}
+  .cost-wrap::after{content:'← swipe →';display:block;text-align:center;font-size:.68rem;color:#999;padding:4px 0 6px;font-style:italic}
+
+  /* Emergency type table: convert to stacked cards on tiny screens */
+  .cost-table.stack-mobile{display:block}
+  .cost-table.stack-mobile thead{display:none}
+  .cost-table.stack-mobile tbody,.cost-table.stack-mobile tr{display:block}
+  .cost-table.stack-mobile tr{border:1px solid var(--border);border-radius:8px;margin-bottom:10px;overflow:hidden}
+  .cost-table.stack-mobile td{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border-bottom:1px solid #ede8df;font-size:.84rem;gap:8px}
+  .cost-table.stack-mobile td:first-child{background:#f0ecf3;font-weight:700;color:var(--navy);font-size:.82rem;flex-direction:column;align-items:flex-start}
+  .cost-table.stack-mobile td:first-child::before{content:'Emergency Type';font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#888;margin-bottom:2px}
+  .cost-table.stack-mobile td.lvy::before{content:'✓ With Levy';font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--green);margin-right:auto;flex-shrink:0}
+  .cost-table.stack-mobile td.no::before{content:'✗ Without Levy';font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--red);margin-right:auto;flex-shrink:0}
+  .cost-table.stack-mobile td.lvy,.cost-table.stack-mobile td.no{justify-content:flex-start;gap:10px;flex-wrap:wrap}
+  .cost-table.stack-mobile td:last-child{border-bottom:none}
+
+  /* Reduce section padding on mobile */
+  .sec{padding-left:16px;padding-right:16px}
+  .pc-head{padding:14px 16px}
+  .pc-list{padding:14px 16px 18px}
+  .pc-list li{font-size:.84rem}
+}
 @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
 .hero-inner>*{animation:fadeUp .7s ease both}
 .hero-eyebrow{animation-delay:.1s}.hero h1{animation-delay:.22s}.hero-sub{animation-delay:.34s}.hero-stats{animation-delay:.44s}.hero-early{animation-delay:.54s}.hero-cd{animation-delay:.64s}
@@ -508,7 +537,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       <tr><td>$300,000</td><td class="lvy">$183 / year</td><td class="no">$1,500 – $3,500</td><td class="no">$10,000 – $20,000+</td></tr>
     </tbody>
   </table></div>
-  <div class="cost-wrap"><table class="cost-table">
+  <div class="cost-wrap"><table class="cost-table stack-mobile">
     <thead><tr><th>Emergency Type</th><th class="lvy">✓ With Levy</th><th class="no">✗ Without Levy (per-call est.)</th></tr></thead>
     <tbody>
       <tr><td>BLS Ambulance Transport</td><td class="lvy">No direct charge to resident</td><td class="no">$500 – $2,000+</td></tr>
