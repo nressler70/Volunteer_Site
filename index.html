@@ -3117,8 +3117,10 @@ window.saveResponse = function(addr, newResp) {
   if (!found) { return; }
   try { localStorage.setItem('baughman_rows_v2', JSON.stringify(stored)); } catch(e) {}
 
-  // Update live rows in memory
-  if (typeof window._updateRow === 'function') window._updateRow(key, { resp: newResp });
+  // Update live rows in memory without resetting the filter
+  if (typeof window._updateRowData    === 'function') window._updateRowData(key, { resp: newResp });
+  if (typeof window._refreshDashboard === 'function') window._refreshDashboard();
+  if (typeof window.renderDetail      === 'function') window.renderDetail();
 
   // Push to cloud
   var fileList = [];
