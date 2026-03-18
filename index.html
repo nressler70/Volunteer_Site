@@ -1614,7 +1614,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   window._applySignsToRows = applySignsToRows;
 
   window._restoreRows = function(savedRows, label) {
-    rows = applySignsToRows(savedRows);
+    rows = enrichRows(applySignsToRows(savedRows));
     renderReport(label, '');
     updateStopCounts(rows);
   };
