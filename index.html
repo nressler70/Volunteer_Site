@@ -332,7 +332,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     <div style="font-size:2.4rem;margin-bottom:12px">🔒</div>
     <h2 style="color:#f0e6c8;font-size:1.4rem;font-weight:700;margin:0 0 6px">Baughman Levy Campaign</h2>
     <p style="color:#8899aa;font-size:.88rem;margin:0 0 28px;line-height:1.5">Volunteer access only. Enter the team password to continue.</p>
-    <input id="pg-input" type="password" placeholder="Team password"
+    <input id="pg-input" type="password" placeholder="Team password" autocomplete="current-password"
       style="width:100%;box-sizing:border-box;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:12px 16px;color:#f0e6c8;font-size:1rem;outline:none;margin-bottom:12px;transition:border .2s"
       onkeydown="if(event.key==='Enter')pgCheck()">
     <div id="pg-error" style="color:#e74c3c;font-size:.82rem;min-height:18px;margin-bottom:10px"></div>
@@ -1526,7 +1526,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
           // Prompt for admin password inline
           var pw = prompt('Admin login required to change responses:\n\nEnter admin password:');
           if (pw === null) return;
-          if (pw !== 'Admin2026$') {
+          if (pw !== atob('QWRtaW4yMDI2JA==')) {
             alert('Incorrect password. Response not changed.');
             return;
           }
@@ -2540,7 +2540,7 @@ window.addEventListener('DOMContentLoaded', function() {
 // ══════════════════════════════════════════════════════════════════════════
 // ADMIN PANEL — delete saved results, protected by password
 // ══════════════════════════════════════════════════════════════════════════
-var ADMIN_PW = 'Admin2026$';
+var ADMIN_PW = atob('QWRtaW4yMDI2JA==');
 
 window.openAdminPanel = function() {
   document.getElementById('admin-overlay').style.display = 'flex';
@@ -2907,7 +2907,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <div id="admin-pw-wrap">
       <div style="font-size:.85rem;color:#8a9bb0;margin-bottom:12px">Enter admin password to continue:</div>
       <div style="display:flex;gap:8px;margin-bottom:8px">
-        <input id="admin-pw-input" type="password" placeholder="Admin password"
+        <input id="admin-pw-input" type="password" placeholder="Admin password" autocomplete="current-password"
           style="flex:1;background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:10px 12px;color:#f0f6fc;font-size:.9rem;outline:none"
           onkeydown="if(event.key==='Enter')adminLogin()">
         <button onclick="adminLogin()" style="background:#c1121f;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-family:'Oswald',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer">Login</button>
@@ -2924,7 +2924,7 @@ document.addEventListener('DOMContentLoaded', function() {
       <div style="background:#0d1117;border:1px solid rgba(0,97,217,.2);border-radius:8px;padding:12px 14px;margin-bottom:14px">
         <div style="font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#aee2ff;margin-bottom:8px">☁ Cloud Sync (JSONBin)</div>
         <div style="font-size:.75rem;color:#556677;margin-bottom:8px;line-height:1.5">Paste your JSONBin Master Key to sync results across all browsers. <a href="https://jsonbin.io" target="_blank" style="color:#4466aa">Get a free key at jsonbin.io</a></div>
-        <input id="admin-jb-key" type="password" placeholder="X-Master-Key (from jsonbin.io)"
+        <input id="admin-jb-key" type="password" placeholder="X-Master-Key (from jsonbin.io)" autocomplete="off"
           style="width:100%;background:#161b22;border:1px solid #30363d;border-radius:6px;padding:8px 10px;color:#f0f6fc;font-size:.78rem;outline:none;margin-bottom:6px;box-sizing:border-box">
         <div id="admin-bin-row" style="display:none;margin-bottom:6px">
           <div style="font-size:.68rem;color:#445566;margin-bottom:3px">Bin ID (share with your team)</div>
@@ -2968,7 +2968,7 @@ window._adminEditMode = false;
 window.toggleAdminEdit = function() {
   if (!window._adminEditMode) {
     var pw = prompt('Enter admin password to enable row editing:');
-    if (pw !== 'Admin2026$') {
+    if (pw !== atob('QWRtaW4yMDI2JA==')) {
       if (pw !== null) alert('Incorrect password.');
       return;
     }
