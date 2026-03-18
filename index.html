@@ -2376,7 +2376,7 @@ function jsonbinFetch() {
       var label = 'Canvass Results (' + merged.length + ' household'
         + (merged.length !== 1 ? 's' : '') + ', '
         + cloudFiles.length + ' upload' + (cloudFiles.length !== 1 ? 's' : '') + ')';
-      window._restoreRows(merged, label);
+      window._restoreRows(enrichRows(merged), label);
     }
     updateUploadStatus(merged, cloudFiles);
     updateCloudStatus('synced');
