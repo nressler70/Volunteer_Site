@@ -1229,7 +1229,9 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   }
 
   // ── Render full report ───────────────────────────────────────────────────
-  function renderReport(filename, exportedAt) {
+  // preserveFilter=true keeps the active filter (cloud sync/restore).
+  // preserveFilter=false (default) resets to 'all' — only on fresh uploads.
+  function renderReport(filename, exportedAt, preserveFilter) {
     // Hide empty state, show meta bar
     var emptyEl = document.getElementById('report-empty');
     var metaEl  = document.getElementById('file-meta');
@@ -1240,18 +1242,24 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     var total = rows.length;
     var visited = rows.filter(function(r){ return r.resp !== 'Not Visited'; }).length;
     document.getElementById('file-meta').innerHTML =
-      '<span style="color:var(--gold-light);font-weight:700">📄 '+esc(filename)+'</span>' +
-      (exportedAt ? ' &nbsp;·&nbsp; <span>'+esc(exportedAt)+'</span>' : '') +
-      ' &nbsp;·&nbsp; <span><strong style="color:var(--cream)">'+total+'</strong> households</span>' +
-      ' &nbsp;·&nbsp; <span><strong style="color:var(--cream)">'+visited+'</strong> visited</span>';
+      '<span style="color:var(--gold-light);font-weight:700">&#128196; '+esc(filename)+'</span>' +
+      (exportedAt ? ' &nbsp;&middot;&nbsp; <span>'+esc(exportedAt)+'</span>' : '') +
+      ' &nbsp;&middot;&nbsp; <span><strong style="color:var(--cream)">'+total+'</strong> households</span>' +
+      ' &nbsp;&middot;&nbsp; <span><strong style="color:var(--cream)">'+visited+'</strong> visited</span>';
 
     renderDashboard();
     renderStreets();
-    // Reset filter state silently — do NOT open detail section
-    currentFilter = 'all';
-    document.querySelectorAll('.rf-btn').forEach(function(b){
-      b.classList.toggle('rf-active', b.dataset.f === 'all');
-    });
+    // Only reset filter on a fresh upload — preserve it on cloud sync/restore
+    if (!preserveFilter) {
+      currentFilter = 'all';
+      document.querySelectorAll('.rf-btn').forEach(function(b){
+        b.classList.toggle('rf-active', b.dataset.f === 'all');
+      });
+    } else {
+      document.querySelectorAll('.rf-btn').forEach(function(b){
+        b.classList.toggle('rf-active', b.dataset.f === currentFilter);
+      });
+    }
     renderDetail();
   }
 
@@ -1719,7 +1727,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 
   window._restoreRows = function(savedRows, label) {
     rows = enrichRows(applySignsToRows(savedRows));
-    renderReport(label, '');
+    renderReport(label, '', true);  // preserve active filter on sync
     updateStopCounts(rows);
   };
 
@@ -1775,7 +1783,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       var label  = 'Saved Results (' + saved.length + ' household'
         + (saved.length !== 1 ? 's' : '') + ', '
         + files.length + ' upload' + (files.length !== 1 ? 's' : '') + ')';
-      renderReport(label, '');
+      renderReport(label, '', true);  // preserve active filter on restore
       var hint = document.getElementById('upload-saved-hint');
       if (hint && files.length) {
         var last = files[files.length - 1];
