@@ -367,16 +367,6 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     if (typeof window._doRestore    === 'function') window._doRestore();
     if (typeof window._doJSONBinFetch === 'function') {
       setTimeout(window._doJSONBinFetch, 400);
-      // Start the 60-second auto-poll so results stay live after unlock.
-      // Guard against starting multiple intervals if runRestore is called twice.
-      if (!window._pollStarted) {
-        window._pollStarted = true;
-        setInterval(function() {
-          if (typeof window._doJSONBinFetch === 'function') {
-            window._doJSONBinFetch();
-          }
-        }, 60000);
-      }
     }
   }
 
@@ -802,6 +792,23 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     <span id="dbg-ls-files">checking…</span> &nbsp;|&nbsp;
     <span id="dbg-session">checking…</span> &nbsp;|&nbsp;
     <span id="dbg-jb">checking…</span>
+  </div>
+
+  <!-- CLOUD SYNC STATUS BAR — visible to all devices -->
+  <div id="cloud-status-bar" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;background:rgba(46,134,193,.07);border:1px solid rgba(46,134,193,.2);border-radius:10px;padding:10px 18px;margin-bottom:14px">
+    <div style="display:flex;align-items:center;gap:10px">
+      <span id="cloud-status-icon" style="font-size:1.1rem">☁️</span>
+      <div>
+        <div style="font-family:'Oswald',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#aee2ff">Cloud Sync</div>
+        <div id="cloud-status-main" style="font-size:.75rem;color:#556677">Checking cloud for latest results…</div>
+      </div>
+    </div>
+    <button onclick="window._doJSONBinFetch && window._doJSONBinFetch()"
+      style="background:rgba(46,134,193,.2);color:#aee2ff;border:1.5px solid rgba(46,134,193,.4);border-radius:7px;padding:7px 18px;font-family:'Oswald',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;white-space:nowrap;transition:background .15s"
+      onmouseover="this.style.background='rgba(46,134,193,.35)'"
+      onmouseout="this.style.background='rgba(46,134,193,.2)'">
+      🔄 Refresh Now
+    </button>
   </div>
 
   <!-- UPLOAD BAR — compact, always visible at top of results -->
@@ -2520,35 +2527,56 @@ function updateUploadStatus(rows, files) {
 }
 
 function updateCloudStatus(state) {
+  // Update admin panel status (existing)
   var el = document.getElementById('cloud-status');
-  if (!el) return;
-  if (state === 'synced')  { el.textContent = '☁ Synced to cloud'; el.style.color = '#2da44e'; }
-  if (state === 'loading') { el.textContent = '☁ Loading from cloud…'; el.style.color = '#aee2ff'; }
-  if (state === 'offline') { el.textContent = '☁ Offline — showing local data'; el.style.color = '#f4c460'; }
-  if (state === 'none')    { el.textContent = ''; }
+  if (el) {
+    if (state === 'synced')  { el.textContent = '☁ Synced to cloud'; el.style.color = '#2da44e'; }
+    if (state === 'loading') { el.textContent = '☁ Loading from cloud…'; el.style.color = '#aee2ff'; }
+    if (state === 'offline') { el.textContent = '☁ Offline — showing local data'; el.style.color = '#f4c460'; }
+    if (state === 'none')    { el.textContent = ''; }
+  }
+  // Update main visible status bar (new fix)
+  var mainEl = document.getElementById('cloud-status-main');
+  var iconEl = document.getElementById('cloud-status-icon');
+  var barEl  = document.getElementById('cloud-status-bar');
+  if (!mainEl) return;
+  if (state === 'synced') {
+    mainEl.textContent = '✅ Results synced — any device will see the latest data';
+    mainEl.style.color = '#5ce08a';
+    if (iconEl) iconEl.textContent = '✅';
+    if (barEl)  { barEl.style.borderColor = 'rgba(39,174,96,.3)'; barEl.style.background = 'rgba(39,174,96,.06)'; }
+  }
+  if (state === 'loading') {
+    mainEl.textContent = '⏳ Loading latest results from cloud…';
+    mainEl.style.color = '#aee2ff';
+    if (iconEl) iconEl.textContent = '⏳';
+    if (barEl)  { barEl.style.borderColor = 'rgba(46,134,193,.3)'; barEl.style.background = 'rgba(46,134,193,.07)'; }
+  }
+  if (state === 'offline') {
+    mainEl.textContent = '⚠️ Cloud unreachable — showing local results. Upload a new CSV to refresh.';
+    mainEl.style.color = '#f4c460';
+    if (iconEl) iconEl.textContent = '⚠️';
+    if (barEl)  { barEl.style.borderColor = 'rgba(201,150,42,.3)'; barEl.style.background = 'rgba(201,150,42,.07)'; }
+  }
+  if (state === 'none') {
+    mainEl.textContent = 'No cloud data yet — upload a CSV to start syncing across devices.';
+    mainEl.style.color = '#556677';
+    if (iconEl) iconEl.textContent = '☁️';
+  }
 }
 
 window._doJSONBinFetch = jsonbinFetch;
 
-// Helper: check either storage type for the unlock flag.
-// The password gate writes to sessionStorage, but some older devices may have
-// it in localStorage — check both so neither breaks.
-function isUnlocked() {
-  try {
-    return sessionStorage.getItem('pg_unlocked') === '1'
-        || localStorage.getItem('pg_unlocked') === '1';
-  } catch(e) { return false; }
-}
-
 window.addEventListener('DOMContentLoaded', function() {
   updateUploadStatus();
   if (typeof window._updateDebug === 'function') window._updateDebug();
-  if (isUnlocked()) {
+  // BUG FIX: password gate uses sessionStorage, not localStorage
+  if (sessionStorage.getItem('pg_unlocked') === '1') {
     if (typeof window._doRestore === 'function') window._doRestore();
     setTimeout(jsonbinFetch, 300);
     // Auto-poll every 60 seconds so team site updates as canvassers work live
     setInterval(function() {
-      if (isUnlocked()) {
+      if (sessionStorage.getItem('pg_unlocked') === '1') {
         jsonbinFetch();
       }
     }, 60000);
