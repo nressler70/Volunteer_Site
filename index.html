@@ -367,6 +367,16 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     if (typeof window._doRestore    === 'function') window._doRestore();
     if (typeof window._doJSONBinFetch === 'function') {
       setTimeout(window._doJSONBinFetch, 400);
+      // Start the 60-second auto-poll so results stay live after unlock.
+      // Guard against starting multiple intervals if runRestore is called twice.
+      if (!window._pollStarted) {
+        window._pollStarted = true;
+        setInterval(function() {
+          if (typeof window._doJSONBinFetch === 'function') {
+            window._doJSONBinFetch();
+          }
+        }, 60000);
+      }
     }
   }
 
@@ -2520,15 +2530,25 @@ function updateCloudStatus(state) {
 
 window._doJSONBinFetch = jsonbinFetch;
 
+// Helper: check either storage type for the unlock flag.
+// The password gate writes to sessionStorage, but some older devices may have
+// it in localStorage — check both so neither breaks.
+function isUnlocked() {
+  try {
+    return sessionStorage.getItem('pg_unlocked') === '1'
+        || localStorage.getItem('pg_unlocked') === '1';
+  } catch(e) { return false; }
+}
+
 window.addEventListener('DOMContentLoaded', function() {
   updateUploadStatus();
   if (typeof window._updateDebug === 'function') window._updateDebug();
-  if (localStorage.getItem('pg_unlocked') === '1') {
+  if (isUnlocked()) {
     if (typeof window._doRestore === 'function') window._doRestore();
     setTimeout(jsonbinFetch, 300);
     // Auto-poll every 60 seconds so team site updates as canvassers work live
     setInterval(function() {
-      if (localStorage.getItem('pg_unlocked') === '1') {
+      if (isUnlocked()) {
         jsonbinFetch();
       }
     }, 60000);
