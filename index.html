@@ -433,8 +433,9 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 
   function runRestore() {
     if (typeof window._updateDebug === 'function') window._updateDebug();
-    if (typeof window._doRestore   === 'function') window._doRestore();
-    // Cloud fetch disabled — data loads from file upload only
+    // Pull fresh data from cloud; falls back to local if offline
+    if (typeof window._doJSONBinFetch === 'function') window._doJSONBinFetch();
+    else if (typeof window._doRestore === 'function') window._doRestore();
   }
 
   window.pgCheck = function() {
@@ -2505,16 +2506,60 @@ function jbBin() {
   try { return localStorage.getItem('baughman_jb_bin') || ''; } catch(e) { return ''; }
 }
 
-// ── Cloud push disabled — data is file-upload only ───────────────────────
-// jsonbinPush is kept as a no-op so existing call sites don't throw errors.
+// ── Cloud push — sends data to JSONBin after every CSV upload ────────────
 window.jsonbinPush = function(rows, fileList) {
-  // Remote sync disabled. Data enters only via coordinator file upload.
+  var bin = jbBin();
+  var key = jbWriteKey();
+  if (!bin || !key) return;
+  updateCloudStatus('loading');
+  fetch('https://api.jsonbin.io/v3/b/' + bin, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'X-Master-Key': key },
+    body: JSON.stringify({ rows: rows, files: fileList })
+  })
+  .then(function(r) {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    updateCloudStatus('synced');
+  })
+  .catch(function() {
+    updateCloudStatus('offline');
+  });
 };
 
-// ── Cloud fetch disabled — always load from local storage only ───────────
+// ── Cloud fetch — pulls latest data from JSONBin, falls back to local ────
 function jsonbinFetch() {
-  // Remote sync disabled. Always restore from local data.
-  restoreFromLocal();
+  var bin = jbBin();
+  var key = jbWriteKey();
+  if (!bin || !key) { restoreFromLocal(); return; }
+  updateCloudStatus('loading');
+  fetch('https://api.jsonbin.io/v3/b/' + bin + '/latest', {
+    headers: { 'X-Master-Key': key }
+  })
+  .then(function(r) {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  })
+  .then(function(data) {
+    var record = data.record || {};
+    var rows  = Array.isArray(record.rows)  ? enrichRows(record.rows)  : [];
+    var files = Array.isArray(record.files) ? record.files : [];
+    // Cache to localStorage so offline visits still work
+    try { localStorage.setItem(ROWS_KEY,  JSON.stringify(rows));  } catch(e) {}
+    try { localStorage.setItem(FILES_KEY, JSON.stringify(files)); } catch(e) {}
+    if (rows.length && typeof window._restoreRows === 'function') {
+      var label = 'Cloud Results (' + rows.length + ' household'
+        + (rows.length !== 1 ? 's' : '') + ', '
+        + files.length + ' upload' + (files.length !== 1 ? 's' : '') + ')';
+      window._restoreRows(rows, label);
+    }
+    updateUploadStatus(rows, files);
+    updateCloudStatus(rows.length ? 'synced' : 'none');
+  })
+  .catch(function() {
+    // Network error — fall back to whatever is saved locally
+    updateCloudStatus('offline');
+    restoreFromLocal();
+  });
 }
 
 function restoreFromLocal() {
@@ -2597,9 +2642,9 @@ window._doJSONBinFetch = jsonbinFetch;
 window.addEventListener('DOMContentLoaded', function() {
   updateUploadStatus();
   if (typeof window._updateDebug === 'function') window._updateDebug();
-  // Data loads from localStorage only — no remote fetch or polling
+  // On page load, fetch latest data from cloud (falls back to local if offline)
   if (sessionStorage.getItem('pg_unlocked') === '1') {
-    if (typeof window._doRestore === 'function') window._doRestore();
+    jsonbinFetch();
   }
 });
 </script>
