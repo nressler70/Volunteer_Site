@@ -2581,28 +2581,56 @@ function jsonbinFetch() {
 
     if (!cloudRows.length) { restoreFromLocal(); updateCloudStatus('offline'); return; }
 
-    // Merge cloud rows with any local data — local sign/notes win over cloud if set
+    // ── Normalize + dedup cloud rows before doing anything else ──────────────
+    // The cloud may contain old dirty data (e.g. "Coal Bank Road" vs "Coal Bank Rd").
+    // Clean it here so it never re-introduces duplicates into the local data.
+    var cleanCloud = (function(arr) {
+      var seen = {}, out = [];
+      arr.forEach(function(r) {
+        r.address = normalizeAddress(r.address || '');
+        r.street  = normalizeStreet(r.street   || '');
+        var k = r.address.toLowerCase().trim();
+        if (!k) return;
+        if (k in seen) {
+          var ex = out[seen[k]];
+          if (r.resp && r.resp !== 'Not Visited' && (!ex.resp || ex.resp === 'Not Visited')) ex.resp = r.resp;
+          if (r.notes) { if (!ex.notes) ex.notes = r.notes; else if (ex.notes.indexOf(r.notes) < 0) ex.notes = ex.notes + ' | ' + r.notes; }
+          if (r.sign) ex.sign = true;
+        } else { seen[k] = out.length; out.push(r); }
+      });
+      return out;
+    })(cloudRows);
+
+    // Merge clean cloud rows with local data — local sign/notes win over cloud if set
     var localRows = [];
     try { localRows = JSON.parse(localStorage.getItem(ROWS_KEY) || '[]'); } catch(e) {}
     var localIdx = {};
-    localRows.forEach(function(r) { localIdx[(r.address||'').toLowerCase().trim()] = r; });
+    // Build local index using normalized key so variants match
+    localRows.forEach(function(r) {
+      var k = normalizeAddress(r.address || '').toLowerCase().trim();
+      if (k) localIdx[k] = r;
+    });
 
-    var merged = cloudRows.map(function(cr) {
-      var key = (cr.address||'').toLowerCase().trim();
+    var merged = cleanCloud.map(function(cr) {
+      var key = (cr.address || '').toLowerCase().trim();
       var local = localIdx[key];
       if (local) {
-        // Prefer local sign and notes if set — cloud may not have latest toggle
         if (local.sign)  cr.sign  = local.sign;
         if (local.notes && !cr.notes) cr.notes = local.notes;
       }
       return cr;
     });
 
-    // Cache merged result locally
+    // Cache merged (clean) result locally
     try {
       localStorage.setItem(ROWS_KEY,  JSON.stringify(merged));
       localStorage.setItem(FILES_KEY, JSON.stringify(cloudFiles));
     } catch(e) {}
+
+    // Push the now-clean data back to cloud so future fetches are also clean
+    if (typeof window.jsonbinPush === 'function') {
+      setTimeout(function() { window.jsonbinPush(merged, cloudFiles); }, 1000);
+    }
 
     // Render the report
     if (typeof window._restoreRows === 'function') {
@@ -2623,9 +2651,11 @@ function jsonbinFetch() {
 
 function restoreFromLocal() {
   try {
-    var rows  = JSON.parse(localStorage.getItem(ROWS_KEY)  || '[]');
+    var raw   = JSON.parse(localStorage.getItem(ROWS_KEY)  || '[]');
     var files = JSON.parse(localStorage.getItem(FILES_KEY) || '[]');
-    if (!rows.length) { updateUploadStatus([], []); return; }
+    if (!raw.length) { updateUploadStatus([], []); return; }
+    // Normalize on the way out so stale localStorage data is always clean
+    var rows = enrichRows(raw);
     if (typeof window._restoreRows === 'function') {
       var label = 'Saved Results (' + rows.length + ' household'
         + (rows.length !== 1 ? 's' : '') + ', '
