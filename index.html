@@ -1621,6 +1621,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     var filtered = rows.filter(function(r){
       var matchF = currentFilter === 'all'      ? true
                  : currentFilter === 'followup' ? (r.resp==='Undecided'||r.resp==='Not Home')
+                 : currentFilter === 'sign'     ? r.sign === true
                  : r.resp === currentFilter;
       var matchQ = !q || r.name.toLowerCase().indexOf(q)>=0 || r.address.toLowerCase().indexOf(q)>=0;
       return matchF && matchQ;
@@ -1630,14 +1631,17 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       lines.push([r.name,r.address,r.street,r.prec,r.voters,r.levy,r.like,r.resp,r.sign?'YES':'',r.notes]);
     });
     var csv = lines.map(function(l){
-      return l.map(function(v){ return '"'+String(v).replace(/"/g,'\"')+'"'; }).join(',');
+      return l.map(function(v){ return '"'+String(v).replace(/"/g,'""')+'"'; }).join(',');
     }).join('\n');
     var blob = new Blob([csv],{type:'text/csv'});
     var a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     var fname = 'canvass_' + (currentFilter==='all'?'all':currentFilter.replace(/ /g,'_')) + '_' + new Date().toISOString().slice(0,10) + '.csv';
     a.download = fname;
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
   };
 
   // ── Helpers ───────────────────────────────────────────────────────────────
