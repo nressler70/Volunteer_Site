@@ -3160,14 +3160,15 @@ document.addEventListener('DOMContentLoaded', function() {
         <div id="admin-backup-status" style="font-size:.72rem;margin-top:6px;min-height:16px;color:#556677"></div>
       </div>
 
-      <!-- Consolidate Duplicates -->
+      <!-- Manual Duplicate Manager -->
       <div style="background:#0d1117;border:1px solid rgba(201,150,42,.2);border-radius:8px;padding:12px 14px;margin-bottom:14px">
-        <div style="font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-light);margin-bottom:6px">🔗 Consolidate Duplicate Addresses</div>
-        <div style="font-size:.75rem;color:#556677;margin-bottom:10px;line-height:1.5">Merges any rows where the same address was stored under different street name spellings (e.g. "Coal Bank Road" vs "Coal Bank Rd"). Keeps the copy with canvass results &amp; notes.</div>
-        <button onclick="adminConsolidateDupes()" style="width:100%;background:#2a2000;color:var(--gold-light);border:1.5px solid rgba(201,150,42,.35);border-radius:8px;padding:10px;font-family:'Oswald',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;margin-bottom:6px">
-          🔗 Consolidate Duplicates Now
+        <div style="font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-light);margin-bottom:6px">🔗 Manage Duplicates</div>
+        <div style="font-size:.75rem;color:#556677;margin-bottom:10px;line-height:1.5">Scan for duplicate addresses and manually choose which row to keep.</div>
+        <button onclick="adminScanDupes()" style="width:100%;background:#2a2000;color:var(--gold-light);border:1.5px solid rgba(201,150,42,.35);border-radius:8px;padding:10px;font-family:'Oswald',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;margin-bottom:8px">
+          🔍 Scan for Duplicates
         </button>
         <div id="admin-dedup-status" style="font-size:.72rem;margin-top:4px;min-height:16px;color:#556677"></div>
+        <div id="admin-dupe-list" style="margin-top:8px"></div>
       </div>
 
       <button onclick="adminDeleteResults()" style="width:100%;background:#3d1a1a;color:#f87171;border:1.5px solid #6b1a1a;border-radius:10px;padding:14px;font-family:'Oswald',sans-serif;font-size:.82rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;margin-bottom:8px">
@@ -3182,68 +3183,115 @@ document.addEventListener('DOMContentLoaded', function() {
 <script data-cfasync="false">
 window._adminEditMode = false;
 
-window.adminConsolidateDupes = function() {
-  var statusEl = document.getElementById('admin-dedup-status');
+window.adminScanDupes = function() {
+  var statusEl  = document.getElementById('admin-dedup-status');
+  var listEl    = document.getElementById('admin-dupe-list');
+  listEl.innerHTML = '';
   statusEl.style.color = '#aee2ff';
-  statusEl.textContent = 'Working…';
+  statusEl.textContent = 'Scanning…';
+
   try {
     var raw = [];
-    try { raw = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]'); } catch(e) { raw = []; }
+    try { raw = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]'); } catch(e) {}
 
-    var before = raw.length;
-    var seen   = {};
-    var out    = [];
-
-    raw.forEach(function(r) {
-      var normAddr = normalizeAddress((r.address || '')).toLowerCase().trim();
-      var k = normAddr || normalizeStreet((r.street || '')).toLowerCase().trim();
+    // Group by normalized address key, preserving original index
+    var groups = {};
+    raw.forEach(function(r, idx) {
+      var k = normalizeAddress(r.address || '').toLowerCase().trim()
+           || normalizeStreet(r.street || '').toLowerCase().trim();
       if (!k) return;
-
-      if (k in seen) {
-        var ex = out[seen[k]];
-        // Keep whichever copy has a real canvass response
-        if (r.resp && r.resp !== 'Not Visited' && (!ex.resp || ex.resp === 'Not Visited')) {
-          ex.resp = r.resp;
-        }
-        // Merge notes without duplicating text
-        if (r.notes) {
-          if (!ex.notes) {
-            ex.notes = r.notes;
-          } else if (ex.notes.indexOf(r.notes) < 0) {
-            ex.notes = ex.notes + ' | ' + r.notes;
-          }
-        }
-        if (r.sign) ex.sign = true;
-        ex.address = normalizeAddress(ex.address || r.address);
-        ex.street  = normalizeStreet(ex.street   || r.street);
-      } else {
-        r.address = normalizeAddress(r.address);
-        r.street  = normalizeStreet(r.street);
-        seen[k]   = out.length;
-        out.push(r);
-      }
+      if (!groups[k]) groups[k] = [];
+      groups[k].push({ row: r, idx: idx });
     });
 
-    var merged = before - out.length;
-    try { localStorage.setItem('baughman_rows_v2', JSON.stringify(out)); } catch(e2) {}
+    // Collect only groups with more than one entry
+    var dupes = Object.keys(groups).filter(function(k) { return groups[k].length > 1; });
 
-    // Refresh the live table
-    if (typeof window._doRestore === 'function') window._doRestore();
-    if (typeof refreshAdminStatus === 'function') refreshAdminStatus();
+    if (dupes.length === 0) {
+      statusEl.style.color = '#5ce08a';
+      statusEl.textContent = '✓ No duplicates found — data is clean.';
+      return;
+    }
 
-    statusEl.style.color = merged > 0 ? '#5ce08a' : '#74c69d';
-    statusEl.textContent = merged > 0
-      ? '✓ Merged ' + merged + ' duplicate' + (merged !== 1 ? 's' : '') + '. Table refreshed.'
-      : '✓ No duplicates found — data is already clean.';
+    statusEl.style.color = '#f4c460';
+    statusEl.textContent = dupes.length + ' duplicate address' + (dupes.length !== 1 ? 'es' : '') + ' found. Choose which to DELETE:';
+
+    function rowCard(entry, groupKey, cardIdx, totalInGroup) {
+      var r = entry.row;
+      var resp    = r.resp  || 'Not Visited';
+      var notes   = r.notes || '';
+      var address = r.address || r.street || '(unknown)';
+      var respColor = resp === 'Yes' ? '#5ce08a'
+                    : resp === 'No'  ? '#ff8a7a'
+                    : resp === 'Undecided' ? '#f4c460'
+                    : resp === 'Not Home'  ? '#aee2ff'
+                    : '#445566';
+      return '<div style="background:#0a0e14;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:8px 10px;margin-bottom:6px">'
+        + '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:6px">'
+          + '<div style="flex:1;min-width:0">'
+            + '<div style="font-size:.78rem;font-weight:600;color:#c0ccdd;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + address + '</div>'
+            + '<div style="font-size:.7rem;color:' + respColor + ';margin-top:2px">Response: <strong>' + resp + '</strong></div>'
+            + (notes ? '<div style="font-size:.68rem;color:#7a9ab8;margin-top:2px;font-style:italic">Notes: ' + notes + '</div>' : '')
+            + (r.sign  ? '<div style="font-size:.68rem;color:var(--gold-light);margin-top:2px">🪧 Sign requested</div>' : '')
+          + '</div>'
+          + '<button onclick="adminDeleteDupe(\'' + groupKey + '\',' + entry.idx + ')" '
+            + 'style="flex-shrink:0;background:#3d1a1a;color:#ff8a7a;border:1px solid #6b1a1a;border-radius:5px;padding:4px 10px;font-size:.68rem;font-weight:700;font-family:\'Oswald\',sans-serif;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;white-space:nowrap">'
+            + '🗑 Delete This</button>'
+        + '</div>'
+      + '</div>';
+    }
+
+    // Store groups on window for use by delete handler
+    window._adminDupeGroups = groups;
+    window._adminDupeRaw    = raw;
+
+    dupes.forEach(function(k) {
+      var group = groups[k];
+      var block = '<div style="margin-bottom:14px">'
+        + '<div style="font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#556677;margin-bottom:4px">⚠ ' + group.length + ' entries for same address:</div>';
+      group.forEach(function(entry, ci) {
+        block += rowCard(entry, k, ci, group.length);
+      });
+      block += '</div>';
+      listEl.innerHTML += block;
+    });
+
   } catch(err) {
     statusEl.style.color = '#f87171';
     statusEl.textContent = 'Error: ' + err.message;
   }
 };
 
+window.adminDeleteDupe = function(groupKey, rawIdx) {
+  try {
+    var raw = [];
+    try { raw = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]'); } catch(e) {}
+
+    // Remove the row at rawIdx
+    raw.splice(rawIdx, 1);
+
+    try { localStorage.setItem('baughman_rows_v2', JSON.stringify(raw)); } catch(e2) {}
+
+    // Push clean data to cloud
+    var files = [];
+    try { files = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]'); } catch(e) {}
+    if (typeof window.jsonbinPush === 'function') window.jsonbinPush(raw, files);
+
+    // Refresh live table
+    if (typeof window._doRestore === 'function') window._doRestore();
+    if (typeof refreshAdminStatus === 'function') refreshAdminStatus();
+
+    // Re-scan so list updates immediately
+    window.adminScanDupes();
+  } catch(err) {
+    var statusEl = document.getElementById('admin-dedup-status');
+    if (statusEl) { statusEl.style.color = '#f87171'; statusEl.textContent = 'Error: ' + err.message; }
+  }
+};
 
 
-window.toggleAdminEdit = function() {
+
+window.toggleAdminEditdit = function() {
   if (!window._adminEditMode) {
     var pw = prompt('Enter admin password to enable row editing:');
     if (pw !== atob('QWRtaW4yMDI2JA==')) {
