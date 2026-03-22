@@ -44,11 +44,15 @@ function normalizeStreet(s) {
   return s;
 }
 // Normalize a full address like "5043 Coal Bank Road" → "5043 Coal Bank Rd"
+// If the address has no leading house number, treat the whole thing as a street name.
 function normalizeAddress(addr) {
   if (!addr) return addr;
   addr = addr.trim().replace(/\s+/g, ' ');
   var m = addr.match(/^(\S+)\s+(.+)$/);
-  return m ? m[1] + ' ' + normalizeStreet(m[2]) : addr;
+  // Only split if the first token is actually a house number (starts with a digit)
+  if (m && /^\d/.test(m[1])) return m[1] + ' ' + normalizeStreet(m[2]);
+  // No house number — normalize the whole string as a street name
+  return normalizeStreet(addr);
 }
 function getVoterData(a) { var k=(a||'').toLowerCase().trim(); return VOTER_DATA[k]||null; }
 function enrichRow(r) {
