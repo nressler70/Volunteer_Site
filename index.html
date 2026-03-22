@@ -14,6 +14,9 @@ function normalizeStreet(s) {
   s = s.replace(/\broads\b/gi, 'Road');   // plural typo
   // Fix "Coal Banks Road" → "Coal Bank Road" (extra s on Bank)
   s = s.replace(/\bCoal\s+Banks\b/gi, 'Coal Bank');
+  // Fix known bare names that are missing their suffix entirely (e.g. "Coal Bank" → "Coal Bank Rd")
+  var BARE_NAMES = { 'coal bank': 'Coal Bank Rd' };
+  if (BARE_NAMES[s.trim().toLowerCase()]) return BARE_NAMES[s.trim().toLowerCase()];
   // Normalize suffix (last word only, so "Lovers Lane Rd" keeps "Lane" intact)
   var SUFFIX = {
     'road':'Rd','roads':'Rd',
