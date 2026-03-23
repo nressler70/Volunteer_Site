@@ -850,7 +850,15 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 <section id="tally" style="background:var(--navy);border-top:3px solid var(--gold)">
 <div class="sec">
   <div class="sec-label">Canvass Results</div>
-  <h2>Field <em>Report &amp; Follow-Up</em></h2>
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:6px">
+    <h2 style="margin:0">Field <em>Report &amp; Follow-Up</em></h2>
+    <button id="top-pdf-btn" onclick="openReportModal()"
+      style="background:linear-gradient(135deg,rgba(142,68,173,.35),rgba(100,50,140,.25));color:#c0aaff;border:1.5px solid rgba(142,68,173,.55);border-radius:9px;padding:11px 22px;font-family:'Oswald',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0"
+      onmouseover="this.style.background='linear-gradient(135deg,rgba(142,68,173,.55),rgba(100,50,140,.45))'"
+      onmouseout="this.style.background='linear-gradient(135deg,rgba(142,68,173,.35),rgba(100,50,140,.25))'">
+      📄 Generate PDF Report
+    </button>
+  </div>
   <p class="lead">Upload the exported spreadsheet from the canvassing app to see the latest results. Works with any version — just re-upload when a new file comes in from the field.</p>
 
   <!-- DEBUG STATUS BAR — shows localStorage state for troubleshooting -->
@@ -1001,6 +1009,8 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
             style="flex:1;min-width:180px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:7px 11px;color:var(--cream);font-size:.82rem;outline:none">
           <button onclick="exportCSV()"
             style="background:var(--gold);color:var(--navy);border:none;border-radius:6px;padding:7px 16px;font-family:'Oswald',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;white-space:nowrap">⬇ Export CSV</button>
+          <button onclick="openReportModal()"
+            style="background:rgba(142,68,173,.25);color:#c0aaff;border:1.5px solid rgba(142,68,173,.5);border-radius:6px;padding:7px 16px;font-family:'Oswald',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;white-space:nowrap">📄 Generate PDF Report</button>
           <button id="admin-edit-btn" onclick="toggleAdminEdit()" class="admin-edit-btn">🔒 Admin Edit</button>
         </div>
         <div id="det-count" style="font-size:.75rem;color:var(--gray);margin-bottom:8px"></div>
@@ -1048,6 +1058,8 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <script data-cfasync="false">
 (function(){
   var rows = [];
@@ -1328,6 +1340,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   // preserveFilter=true keeps the active filter (cloud sync/restore).
   // preserveFilter=false (default) resets to 'all' — only on fresh uploads.
   function renderReport(filename, exportedAt, preserveFilter) {
+    window._canvassRows = rows;  // expose for PDF report modal
     // Hide empty state, show meta bar
     var emptyEl = document.getElementById('report-empty');
     var metaEl  = document.getElementById('file-meta');
@@ -3422,6 +3435,422 @@ window.submitManualEntry = function() {
     if (typeof window.renderDetail === 'function') window.renderDetail();
   }, 80);
 };
+</script>
+<!-- ══════════════════════════════════════════════════════════════════════
+     PDF REPORT MODAL
+     ══════════════════════════════════════════════════════════════════════ -->
+<style>
+#pdf-modal-overlay{
+  display:none;position:fixed;inset:0;z-index:9999;
+  background:rgba(4,12,24,.88);backdrop-filter:blur(4px);
+  justify-content:center;align-items:flex-start;padding:28px 16px;overflow-y:auto;
+}
+#pdf-modal-overlay.open{ display:flex; }
+#pdf-modal{
+  background:#0e1b2e;border:1px solid rgba(142,68,173,.45);border-radius:16px;
+  width:100%;max-width:740px;box-shadow:0 24px 64px rgba(0,0,0,.7);
+  overflow:hidden;
+}
+#pdf-modal .pm-head{
+  background:linear-gradient(135deg,rgba(142,68,173,.35),rgba(46,134,193,.2));
+  border-bottom:1px solid rgba(142,68,173,.3);padding:22px 28px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+#pdf-modal .pm-head h2{
+  font-family:'Oswald',sans-serif;font-size:1.05rem;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;color:#c0aaff;margin:0;
+}
+#pdf-modal .pm-close{
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+  border-radius:6px;color:#8a9bb0;cursor:pointer;font-size:1rem;
+  padding:4px 10px;font-family:sans-serif;transition:all .15s;
+}
+#pdf-modal .pm-close:hover{ background:rgba(192,57,43,.3);color:#ff8a7a;border-color:rgba(192,57,43,.5); }
+#pdf-modal .pm-body{ padding:24px 28px;display:flex;flex-direction:column;gap:22px; }
+#pdf-modal .pm-section-label{
+  font-family:'Oswald',sans-serif;font-size:.65rem;font-weight:700;
+  letter-spacing:.15em;text-transform:uppercase;color:#8e44ad;margin-bottom:10px;
+}
+#pdf-modal input[type="text"]{
+  width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);
+  border-radius:8px;padding:10px 14px;color:#f0f0f0;font-size:.9rem;
+  outline:none;font-family:inherit;box-sizing:border-box;
+  transition:border-color .2s;
+}
+#pdf-modal input[type="text"]:focus{ border-color:rgba(142,68,173,.7); }
+.pm-status-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;
+}
+.pm-status-check{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  border-radius:8px;padding:9px 12px;cursor:pointer;
+  transition:all .15s;user-select:none;
+}
+.pm-status-check:hover{ background:rgba(255,255,255,.1); }
+.pm-status-check input[type="checkbox"]{ accent-color:#c0aaff;width:15px;height:15px;cursor:pointer;flex-shrink:0; }
+.pm-status-check span{ font-family:'Oswald',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase; }
+.pm-street-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px;
+  max-height:260px;overflow-y:auto;padding:4px 2px;
+}
+.pm-street-check{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:6px;padding:7px 10px;cursor:pointer;transition:all .15s;user-select:none;
+}
+.pm-street-check:hover{ background:rgba(255,255,255,.09); }
+.pm-street-check input[type="checkbox"]{ accent-color:#c0aaff;width:14px;height:14px;cursor:pointer;flex-shrink:0; }
+.pm-street-check span{ font-size:.78rem;color:#c0d0e0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.pm-select-links{ display:flex;gap:12px;margin-bottom:10px; }
+.pm-select-links a{
+  font-family:'Oswald',sans-serif;font-size:.65rem;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;color:#c0aaff;cursor:pointer;
+  text-decoration:underline;text-underline-offset:2px;
+}
+.pm-foot{
+  border-top:1px solid rgba(255,255,255,.08);padding:18px 28px;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;
+}
+#pm-generate-btn{
+  background:linear-gradient(135deg,#8e44ad,#5b2c6f);
+  border:none;border-radius:8px;padding:11px 28px;
+  font-family:'Oswald',sans-serif;font-size:.82rem;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;color:#fff;cursor:pointer;
+  transition:opacity .2s;
+}
+#pm-generate-btn:hover{ opacity:.85; }
+#pm-generate-btn:disabled{ opacity:.4;cursor:not-allowed; }
+#pm-row-count{ font-size:.8rem;color:#8a9bb0;font-family:'Oswald',sans-serif;letter-spacing:.05em; }
+</style>
+
+<div id="pdf-modal-overlay" onclick="if(event.target===this)closePdfModal()">
+  <div id="pdf-modal">
+    <div class="pm-head">
+      <h2>📄 Generate PDF Report</h2>
+      <button class="pm-close" onclick="closePdfModal()">✕ Close</button>
+    </div>
+    <div class="pm-body">
+
+      <!-- Report Title -->
+      <div>
+        <div class="pm-section-label">Report Title</div>
+        <input type="text" id="pm-title" value="Baughman Township — Canvass Report" placeholder="Report title…">
+      </div>
+
+      <!-- Status Filter -->
+      <div>
+        <div class="pm-section-label">Include Households With Status</div>
+        <div class="pm-status-grid" id="pm-status-grid">
+          <!-- filled by JS -->
+        </div>
+      </div>
+
+      <!-- Street Filter -->
+      <div>
+        <div class="pm-section-label">Streets to Include</div>
+        <div class="pm-select-links">
+          <a onclick="pmSelectAllStreets(true)">Select All</a>
+          <a onclick="pmSelectAllStreets(false)">Clear All</a>
+        </div>
+        <div class="pm-street-grid" id="pm-street-grid">
+          <!-- filled by JS -->
+        </div>
+      </div>
+
+    </div>
+    <div class="pm-foot">
+      <span id="pm-row-count">—</span>
+      <button id="pm-generate-btn" onclick="generatePdf()">📄 Generate &amp; Download PDF</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+
+  /* ── Status definitions ──────────────────────────────────────────── */
+  var STATUSES = [
+    { key:'Not Visited', label:'⚪ Not Visited', color:'#667788' },
+    { key:'Not Home',    label:'🏠 Not Home',    color:'#aee2ff' },
+    { key:'Yes',         label:'✅ Yes',          color:'#5ce08a' },
+    { key:'No',          label:'❌ No',           color:'#ff8a7a' },
+    { key:'Undecided',   label:'❓ Undecided',   color:'#f4c460' }
+  ];
+
+  /* ── Open modal ───────────────────────────────────────────────────── */
+  window.openReportModal = function() {
+    var rows = window._canvassRows;
+    if (!rows || rows.length === 0) {
+      // Try restoring from localStorage
+      try {
+        var stored = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]');
+        if (stored.length === 0) {
+          alert('No canvass data loaded yet.\n\nPlease upload a results file first, then click Generate PDF Report.');
+          return;
+        }
+        rows = stored;
+        window._canvassRows = rows;
+      } catch(e) {
+        alert('No canvass data loaded yet. Please upload a results file first.');
+        return;
+      }
+    }
+
+    buildStatusGrid();
+    buildStreetGrid(rows);
+    updateRowCount();
+    document.getElementById('pdf-modal-overlay').classList.add('open');
+  };
+
+  window.closePdfModal = function() {
+    document.getElementById('pdf-modal-overlay').classList.remove('open');
+  };
+
+  /* ── Build status checkboxes ─────────────────────────────────────── */
+  function buildStatusGrid() {
+    var grid = document.getElementById('pm-status-grid');
+    grid.innerHTML = STATUSES.map(function(s) {
+      return '<label class="pm-status-check">' +
+        '<input type="checkbox" class="pm-status-cb" value="'+s.key+'" checked ' +
+        'onchange="updateRowCount()"> ' +
+        '<span style="color:'+s.color+'">'+s.label+'</span>' +
+        '</label>';
+    }).join('');
+  }
+
+  /* ── Build street checkboxes ─────────────────────────────────────── */
+  function buildStreetGrid(rows) {
+    var streetSet = {};
+    rows.forEach(function(r) {
+      var st = r.street || (r.address || '').replace(/^\d+\s*/,'').trim();
+      // Skip blank entries, bare numbers, and known placeholders
+      if (!st || /^\d+$/.test(st.trim()) || st === '(No Street)' || st.toLowerCase() === 'street') return;
+      streetSet[st] = true;
+    });
+    var streets = Object.keys(streetSet).sort();
+    var grid = document.getElementById('pm-street-grid');
+    grid.innerHTML = streets.map(function(st) {
+      return '<label class="pm-street-check">' +
+        '<input type="checkbox" class="pm-street-cb" value="'+escAttr(st)+'" checked ' +
+        'onchange="updateRowCount()"> ' +
+        '<span title="'+escAttr(st)+'">'+escHtml(st)+'</span>' +
+        '</label>';
+    }).join('');
+  }
+
+  window.pmSelectAllStreets = function(val) {
+    document.querySelectorAll('.pm-street-cb').forEach(function(cb){ cb.checked = val; });
+    updateRowCount();
+  };
+
+  /* ── Live row count preview ──────────────────────────────────────── */
+  window.updateRowCount = function() {
+    var filtered = getFilteredRows();
+    var btn = document.getElementById('pm-generate-btn');
+    var cnt = document.getElementById('pm-row-count');
+    cnt.textContent = filtered.length + ' household' + (filtered.length !== 1 ? 's' : '') + ' will appear in the report';
+    btn.disabled = filtered.length === 0;
+  };
+
+  /* ── Get filtered rows based on modal selections ─────────────────── */
+  function getFilteredRows() {
+    var rows = window._canvassRows || [];
+
+    var statuses = {};
+    document.querySelectorAll('.pm-status-cb:checked').forEach(function(cb){ statuses[cb.value] = true; });
+
+    var streets = {};
+    document.querySelectorAll('.pm-street-cb:checked').forEach(function(cb){ streets[cb.value] = true; });
+
+    return rows.filter(function(r) {
+      var resp  = r.resp || 'Not Visited';
+      var st    = r.street || (r.address || '').replace(/^\d+\s*/,'').trim();
+      return statuses[resp] && streets[st];
+    });
+  }
+
+  /* ── Generate and download the PDF ──────────────────────────────── */
+  window.generatePdf = function() {
+    var filtered = getFilteredRows();
+    if (filtered.length === 0) { alert('No households match the selected filters.'); return; }
+
+    var btn = document.getElementById('pm-generate-btn');
+    btn.disabled = true;
+    btn.textContent = '⏳ Generating…';
+
+    setTimeout(function() {
+      try { buildPdf(filtered); } catch(e) { alert('PDF error: ' + e.message); }
+      btn.disabled = false;
+      btn.textContent = '📄 Generate & Download PDF';
+    }, 50);
+  };
+
+  function buildPdf(filtered) {
+    var jsPDF = window.jspdf ? window.jspdf.jsPDF : window.jsPDF;
+    if (!jsPDF) { alert('PDF library not loaded. Please check your internet connection and try again.'); return; }
+
+    var title    = (document.getElementById('pm-title').value || 'Canvass Report').trim();
+    var today    = new Date().toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
+    var timeStr  = new Date().toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit'});
+
+    var selectedStatuses = [];
+    document.querySelectorAll('.pm-status-cb:checked').forEach(function(cb){ selectedStatuses.push(cb.value); });
+    var selectedStreets = [];
+    document.querySelectorAll('.pm-street-cb:checked').forEach(function(cb){ selectedStreets.push(cb.value); });
+
+    /* Group rows by street */
+    var byStreet = {};
+    filtered.forEach(function(r) {
+      var st = r.street || (r.address||'').replace(/^\d+\s*/,'').trim() || 'Unknown Street';
+      if (!byStreet[st]) byStreet[st] = [];
+      byStreet[st].push(r);
+    });
+    var streetNames = Object.keys(byStreet).sort();
+
+    /* Create PDF */
+    var doc = new jsPDF({ orientation:'portrait', unit:'pt', format:'letter' });
+    var pageW  = doc.internal.pageSize.getWidth();
+    var pageH  = doc.internal.pageSize.getHeight();
+    var margin = 42;
+    var cW     = pageW - margin * 2;
+
+    /* Light print-friendly palette */
+    var headBg   = [35, 55, 95];
+    var subBg    = [235, 240, 248];
+    var subHead  = [45, 70, 115];
+    var ruleCol  = [210, 210, 210];
+    var lightGr  = [170, 170, 170];
+    var midGr    = [100, 100, 100];
+
+    function respBg(r)  { return r==='Yes'?[220,240,225]:r==='No'?[245,220,218]:r==='Undecided'?[250,242,210]:r==='Not Home'?[218,232,248]:[235,235,235]; }
+    function respTxt(r) { return r==='Yes'?[25,100,50]:r==='No'?[140,35,25]:r==='Undecided'?[120,85,10]:r==='Not Home'?[25,75,140]:[90,90,90]; }
+    function respAcc(r) { return r==='Yes'?[46,160,90]:r==='No'?[192,57,43]:r==='Undecided'?[180,130,10]:r==='Not Home'?[46,134,193]:[160,160,160]; }
+
+    var headerH = 56;
+    function drawHeader() {
+      doc.setFillColor(35,55,95);
+      doc.rect(0, 0, pageW, headerH, 'F');
+      doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.setTextColor(255,255,255);
+      doc.text(title, margin, 26);
+      doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(200,210,225);
+      doc.text('Baughman Township Levy Campaign  \u00B7  Generated: ' + today + ' at ' + timeStr, margin, 42);
+      doc.setTextColor(180,195,215);
+      doc.text('Page ' + doc.internal.getCurrentPageInfo().pageNumber, pageW-margin, 42, {align:'right'});
+    }
+    function drawFooter() {
+      doc.setDrawColor(210,210,210); doc.setLineWidth(0.5);
+      doc.line(margin, pageH-26, pageW-margin, pageH-26);
+      doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor(170,170,170);
+      doc.text('For canvass team use only  \u00B7  Baughman Township Fire & EMS Levy \u00B7 May 5, 2026', margin, pageH-13);
+      doc.text(today, pageW-margin, pageH-13, {align:'right'});
+    }
+
+    drawHeader();
+    var y = headerH + 18;
+
+    /* Filters line */
+    var statusLabel  = selectedStatuses.join(' \u00B7 ');
+    var streetsLabel = selectedStreets.length === streetNames.length
+      ? 'All streets (' + streetNames.length + ')'
+      : selectedStreets.join(', ');
+    doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(100,100,100);
+    var fLine = 'Statuses: ' + statusLabel + '   \u00B7   Streets: ' + streetsLabel;
+    var fLines = doc.splitTextToSize(fLine, cW);
+    doc.text(fLines, margin, y);
+    y += fLines.length * 10 + 6;
+
+    doc.setDrawColor(210,210,210); doc.setLineWidth(0.5);
+    doc.line(margin, y, pageW-margin, y);
+    y += 14;
+
+    /* Street tables */
+    streetNames.forEach(function(st) {
+      var sRows = byStreet[st];
+      if (y + 55 > pageH - 45) {
+        doc.addPage(); drawHeader(); drawFooter(); y = headerH + 20;
+      }
+
+      /* Street subheading */
+      doc.setFillColor(235,240,248);
+      doc.rect(margin, y, cW, 20, 'F');
+      doc.setDrawColor(210,210,210); doc.setLineWidth(0.4);
+      doc.rect(margin, y, cW, 20, 'S');
+      doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(45,70,115);
+      doc.text(st, margin+8, y+13);
+      doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(100,100,100);
+      doc.text(sRows.length + ' stop' + (sRows.length!==1?'s':''), pageW-margin-6, y+13, {align:'right'});
+      y += 20;
+
+      var respList = sRows.map(function(r){ return r.resp||'Not Visited'; });
+      var tbody = sRows.map(function(r) {
+        return [
+          r.address||'', r.name||'', String(r.voters||''),
+          r.levy?('$'+parseFloat(r.levy).toFixed(2)):'',
+          r.resp||'Not Visited', r.notes||''
+        ];
+      });
+
+      doc.autoTable({
+        startY: y,
+        margin: {left:margin, right:margin},
+        tableWidth: cW,
+        head: [['Address','Resident(s)','Voters','Levy/Yr','Status','Notes / Follow-up']],
+        body: tbody,
+        headStyles: { fillColor:[245,245,245], textColor:[60,60,60], fontStyle:'bold', fontSize:7, lineColor:[210,210,210], lineWidth:0.4, cellPadding:{top:5,bottom:5,left:6,right:4} },
+        columnStyles: {
+          0: {cellWidth:88,  fontStyle:'bold', fontSize:8,   textColor:[30,30,30]},
+          1: {cellWidth:128, fontSize:7.5,                   textColor:[50,50,50]},
+          2: {cellWidth:34,  fontSize:8,   halign:'center',  textColor:[80,80,80]},
+          3: {cellWidth:52,  fontSize:8,   halign:'right',   textColor:[80,80,80]},
+          4: {cellWidth:62,  fontSize:7.5, halign:'center'},
+          5: {               fontSize:7,                     textColor:[100,100,100], fontStyle:'italic'}
+        },
+        styles: { lineColor:[220,220,220], lineWidth:0.3, font:'helvetica', overflow:'linebreak', cellPadding:{top:5,bottom:5,left:6,right:4}, minCellHeight:18, fillColor:[255,255,255], textColor:[30,30,30] },
+        alternateRowStyles: { fillColor:[250,251,253] },
+        didParseCell: function(data) {
+          if (data.section!=='body') return;
+          var resp = respList[data.row.index];
+          if (data.column.index===4) {
+            data.cell.styles.fillColor = respBg(resp);
+            data.cell.styles.textColor = respTxt(resp);
+            data.cell.styles.fontStyle = 'bold';
+            data.cell.styles.fontSize  = 7;
+          }
+          if (data.column.index===0) {
+            data.cell.styles.lineWidth = {left:2.5,top:0.3,right:0.3,bottom:0.3};
+            data.cell.styles.lineColor = {left:respAcc(resp),top:[220,220,220],right:[220,220,220],bottom:[220,220,220]};
+          }
+          if (data.column.index===5) { data.cell.styles.minCellHeight=22; }
+        },
+        didDrawPage: function() { drawHeader(); drawFooter(); }
+      });
+
+      y = doc.lastAutoTable.finalY + 14;
+    });
+
+    drawFooter();
+
+    /* Stamp page numbers */
+    var tp = doc.internal.getNumberOfPages();
+    for (var p=1; p<=tp; p++) {
+      doc.setPage(p);
+      doc.setFillColor(35,55,95);
+      doc.rect(pageW-margin-65, 33, 70, 12, 'F');
+      doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(180,195,215);
+      doc.text('Page '+p+' of '+tp, pageW-margin, 42, {align:'right'});
+    }
+
+    var safeTitle = title.replace(/[^a-z0-9]+/gi,'_').toLowerCase();
+    doc.save(safeTitle+'_'+new Date().toISOString().slice(0,10)+'.pdf');
+    closePdfModal();
+  }
+
+    /* ── HTML escape helpers ── */
+  function escHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function escAttr(s){ return String(s||'').replace(/"/g,'&quot;'); }
+
+})();
 </script>
 </body>
 </html>
