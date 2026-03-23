@@ -3976,44 +3976,81 @@ window.submitManualEntry = function() {
 
 })();
 </script>
-<script>
-// ── Admin gate for Upload Results ─────────────────────────────────────────
+<!-- ── Upload Admin Gate Modal ─────────────────────────────────────────── -->
+<div id="upload-gate-overlay"
+  style="display:none;position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,.82);align-items:center;justify-content:center">
+  <div style="background:#0e1b2e;border:1px solid rgba(201,150,42,.4);border-radius:14px;padding:38px 36px;max-width:380px;width:90%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.7)">
+    <div style="font-size:1.8rem;margin-bottom:10px">🔒</div>
+    <h3 style="font-family:'Oswald',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#f0e6c8;margin:0 0 6px">Admin Access Required</h3>
+    <p style="color:#7a9ab8;font-size:.83rem;margin:0 0 22px;line-height:1.5">Enter the admin password to upload results.</p>
+    <input id="upload-gate-input" type="password" placeholder="Admin password"
+      style="width:100%;box-sizing:border-box;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:11px 14px;color:#f0e6c8;font-size:.95rem;outline:none;margin-bottom:10px;transition:border .2s;font-family:inherit"
+      onkeydown="if(event.key==='Enter')uploadGateCheck()">
+    <div id="upload-gate-error" style="color:#e74c3c;font-size:.8rem;min-height:16px;margin-bottom:12px"></div>
+    <div style="display:flex;gap:10px">
+      <button onclick="uploadGateCancel()"
+        style="flex:1;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:11px;color:#8a9bb0;font-family:'Oswald',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer">
+        Cancel
+      </button>
+      <button onclick="uploadGateCheck()"
+        style="flex:2;background:linear-gradient(135deg,#c9962a,#e6b84a);border:none;border-radius:8px;padding:11px;color:#0a0e1a;font-family:'Oswald',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">
+        Unlock Upload →
+      </button>
+    </div>
+  </div>
+</div>
+
+<script data-cfasync="false">
 (function() {
   var UPLOAD_PW = atob('QWRtaW4yMDI2JA==');
-  var _uploadUnlocked = false;
+  var _unlocked = false;
+  var _pendingAction = null;
 
-  function checkUploadAdmin(onSuccess) {
-    if (_uploadUnlocked) { onSuccess(); return; }
-    var pw = prompt('Admin password required to upload results:');
-    if (pw === null) return; // cancelled
-    if (pw === UPLOAD_PW) {
-      _uploadUnlocked = true;
-      onSuccess();
-    } else {
-      alert('Incorrect password.');
-    }
+  function showGate(action) {
+    _pendingAction = action;
+    var el = document.getElementById('upload-gate-overlay');
+    el.style.display = 'flex';
+    document.getElementById('upload-gate-input').value = '';
+    document.getElementById('upload-gate-error').textContent = '';
+    setTimeout(function(){ document.getElementById('upload-gate-input').focus(); }, 80);
   }
 
+  window.uploadGateCheck = function() {
+    var pw  = document.getElementById('upload-gate-input').value;
+    var err = document.getElementById('upload-gate-error');
+    if (pw === UPLOAD_PW) {
+      _unlocked = true;
+      document.getElementById('upload-gate-overlay').style.display = 'none';
+      if (_pendingAction) { var fn = _pendingAction; _pendingAction = null; fn(); }
+    } else {
+      err.textContent = 'Incorrect password. Try again.';
+      document.getElementById('upload-gate-input').value = '';
+      document.getElementById('upload-gate-input').focus();
+    }
+  };
+
+  window.uploadGateCancel = function() {
+    _pendingAction = null;
+    document.getElementById('upload-gate-overlay').style.display = 'none';
+  };
+
   window.adminGatedUpload = function() {
-    checkUploadAdmin(function() {
-      document.getElementById('file-input').click();
-    });
+    if (_unlocked) { document.getElementById('file-input').click(); return; }
+    showGate(function(){ document.getElementById('file-input').click(); });
   };
 
   window.adminGatedManualEntry = function() {
-    checkUploadAdmin(function() {
-      openManualEntry();
-    });
+    if (_unlocked) { openManualEntry(); return; }
+    showGate(function(){ openManualEntry(); });
   };
 
   window.adminGatedDrop = function(e) {
     e.preventDefault();
-    var zone = document.getElementById('upload-zone');
-    zone.style.borderColor = 'rgba(201,150,42,.4)';
-    checkUploadAdmin(function() {
-      var f = e.dataTransfer && e.dataTransfer.files[0];
-      if (f) window.handleFile(f);
-    });
+    var files = e.dataTransfer && e.dataTransfer.files;
+    var f = files && files[0];
+    if (!f) return;
+    if (_unlocked) { window.handleFile(f); return; }
+    showGate(function(){ window.handleFile(f); });
   };
 })();
 </script>
