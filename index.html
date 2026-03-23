@@ -3600,6 +3600,10 @@ window.submitManualEntry = function() {
     buildStatusGrid();
     buildStreetGrid(rows);
     updateRowCount();
+
+    // Load upload history for PDF
+    try { window._uploadFileList = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]'); } catch(e) { window._uploadFileList = []; }
+
     document.getElementById('pdf-modal-overlay').classList.add('open');
   };
 
@@ -3763,6 +3767,67 @@ window.submitManualEntry = function() {
     doc.setDrawColor(210,210,210); doc.setLineWidth(0.5);
     doc.line(margin, y, pageW-margin, y);
     y += 14;
+
+    /* ── Upload History Table ── */
+    var fileList = window._uploadFileList || [];
+    if (fileList.length > 0) {
+      /* Section heading */
+      doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(45,70,115);
+      doc.text('Uploaded Result Files', margin, y);
+      y += 11;
+
+      var fileBody = fileList.map(function(f, i) {
+        return [
+          String(i + 1),
+          f.filename || '—',
+          f.uploaded || '—',
+          f.added   != null ? String(f.added)   : '—',
+          f.updated != null ? String(f.updated) : '—'
+        ];
+      });
+
+      doc.autoTable({
+        startY: y,
+        margin: { left: margin, right: margin },
+        tableWidth: cW,
+        head: [['#', 'File Name', 'Uploaded', 'New Rows', 'Updated']],
+        body: fileBody,
+        headStyles: {
+          fillColor: [235, 240, 248],
+          textColor: [45, 70, 115],
+          fontStyle: 'bold',
+          fontSize: 7,
+          lineColor: [210, 210, 210],
+          lineWidth: 0.4,
+          cellPadding: { top: 4, bottom: 4, left: 6, right: 4 }
+        },
+        columnStyles: {
+          0: { cellWidth: 22,  halign: 'center', fontSize: 7,   textColor: [120,120,120] },
+          1: { cellWidth: 200, fontSize: 7.5,    fontStyle: 'bold', textColor: [30,30,30] },
+          2: { cellWidth: 155, fontSize: 7,      textColor: [60,60,60] },
+          3: { cellWidth: 50,  halign: 'center', fontSize: 7,   textColor: [46,160,90]  },
+          4: { cellWidth: 50,  halign: 'center', fontSize: 7,   textColor: [46,134,193] }
+        },
+        styles: {
+          lineColor: [220, 220, 220],
+          lineWidth: 0.3,
+          font: 'helvetica',
+          cellPadding: { top: 4, bottom: 4, left: 6, right: 4 },
+          minCellHeight: 14,
+          fillColor: [255, 255, 255],
+          textColor: [50, 50, 50]
+        },
+        alternateRowStyles: { fillColor: [250, 251, 253] },
+        didDrawPage: function() { drawHeader(); drawFooter(); }
+      });
+
+      y = doc.lastAutoTable.finalY + 8;
+
+      /* Divider before street tables */
+      doc.setDrawColor(210,210,210); doc.setLineWidth(0.5);
+      doc.line(margin, y, pageW-margin, y);
+      y += 14;
+    }
 
     /* Street tables */
     streetNames.forEach(function(st) {
