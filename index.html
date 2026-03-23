@@ -3776,7 +3776,7 @@ window.submitManualEntry = function() {
       doc.text('Uploaded Result Files', margin, y);
       y += 11;
 
-      var fileBody = fileList.map(function(f, i) {
+      var fileBody = fileList.slice().reverse().map(function(f, i) {
         return [
           String(i + 1),
           f.filename || '—',
