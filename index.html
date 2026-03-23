@@ -884,7 +884,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:rgba(201,150,42,.06);border:1.5px dashed rgba(201,150,42,.35);border-radius:12px;padding:14px 20px;margin-bottom:24px;cursor:pointer;transition:border-color .2s"
     ondragover="event.preventDefault();this.style.borderColor='var(--gold)'"
     ondragleave="this.style.borderColor='rgba(201,150,42,.35)'"
-    ondrop="handleDrop(event)">
+    ondrop="adminGatedDrop(event)">
     <span style="font-size:1.5rem;flex-shrink:0">📂</span>
     <div style="flex:1;min-width:140px">
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
@@ -896,11 +896,11 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       </div>
       <div id="upload-saved-hint" style="font-size:.72rem;color:#556677;margin-top:2px">Select .xlsx or .csv from the canvass app</div>
     </div>
-    <button onclick="document.getElementById('file-input').click()"
+    <button onclick="adminGatedUpload()"
       style="background:var(--gold);color:var(--navy);border:none;border-radius:8px;padding:9px 22px;font-family:'Oswald',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;white-space:nowrap;flex-shrink:0">
       Choose File
     </button>
-    <button onclick="openManualEntry()"
+    <button onclick="adminGatedManualEntry()"
       style="background:rgba(46,134,193,.15);color:#aee2ff;border:1.5px solid rgba(46,134,193,.35);border-radius:8px;padding:9px 18px;font-family:'Oswald',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;white-space:nowrap;flex-shrink:0">
       ＋ Manual Entry
     </button>
@@ -3974,6 +3974,47 @@ window.submitManualEntry = function() {
   function escHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
   function escAttr(s){ return String(s||'').replace(/"/g,'&quot;'); }
 
+})();
+</script>
+<script>
+// ── Admin gate for Upload Results ─────────────────────────────────────────
+(function() {
+  var UPLOAD_PW = atob('QWRtaW4yMDI2JA==');
+  var _uploadUnlocked = false;
+
+  function checkUploadAdmin(onSuccess) {
+    if (_uploadUnlocked) { onSuccess(); return; }
+    var pw = prompt('Admin password required to upload results:');
+    if (pw === null) return; // cancelled
+    if (pw === UPLOAD_PW) {
+      _uploadUnlocked = true;
+      onSuccess();
+    } else {
+      alert('Incorrect password.');
+    }
+  }
+
+  window.adminGatedUpload = function() {
+    checkUploadAdmin(function() {
+      document.getElementById('file-input').click();
+    });
+  };
+
+  window.adminGatedManualEntry = function() {
+    checkUploadAdmin(function() {
+      openManualEntry();
+    });
+  };
+
+  window.adminGatedDrop = function(e) {
+    e.preventDefault();
+    var zone = document.getElementById('upload-zone');
+    zone.style.borderColor = 'rgba(201,150,42,.4)';
+    checkUploadAdmin(function() {
+      var f = e.dataTransfer && e.dataTransfer.files[0];
+      if (f) window.handleFile(f);
+    });
+  };
 })();
 </script>
 </body>
