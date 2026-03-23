@@ -896,7 +896,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       </div>
       <div id="upload-saved-hint" style="font-size:.72rem;color:#556677;margin-top:2px">Select .xlsx or .csv from the canvass app</div>
     </div>
-    <button onclick="document.getElementById('file-input').click()"
+    <button onclick="openFileWithAuth()"
       style="background:var(--gold);color:var(--navy);border:none;border-radius:8px;padding:9px 22px;font-family:'Oswald',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;white-space:nowrap;flex-shrink:0">
       Choose File
     </button>
@@ -2883,16 +2883,14 @@ window.adminDeleteResults = function() {
   }, 3000);
 };
 
-// ── Manual Entry Admin Gate ───────────────────────────────────────────────
+// ── Admin Gate — shared by Choose File AND Manual Entry ──────────────────
 // Lives in this block so it can directly access ADMIN_PW above.
+// Uses a pending-callback pattern: store what to do after auth, then show gate.
 
-window.openManualEntry = function() {
-  try {
-    if (sessionStorage.getItem('me_admin_unlocked') === '1') {
-      window._openManualEntryForm();
-      return;
-    }
-  } catch(e) {}
+var _meAuthPending = null;  // function to call after successful auth
+
+function _showAdminGate(afterAuth) {
+  _meAuthPending = afterAuth;
   var authOv = document.getElementById('me-auth-overlay');
   if (authOv) {
     document.getElementById('me-auth-input').value = '';
@@ -2900,6 +2898,28 @@ window.openManualEntry = function() {
     authOv.style.display = 'flex';
     setTimeout(function() { document.getElementById('me-auth-input').focus(); }, 100);
   }
+}
+
+function _isAdminAuthed() {
+  try { return sessionStorage.getItem('me_admin_unlocked') === '1'; } catch(e) { return false; }
+}
+
+// Choose File button — requires admin auth
+window.openFileWithAuth = function() {
+  if (_isAdminAuthed()) {
+    document.getElementById('file-input').click();
+    return;
+  }
+  _showAdminGate(function() { document.getElementById('file-input').click(); });
+};
+
+// Manual Entry button — requires admin auth
+window.openManualEntry = function() {
+  if (_isAdminAuthed()) {
+    window._openManualEntryForm();
+    return;
+  }
+  _showAdminGate(window._openManualEntryForm);
 };
 
 window.meAuthCheck = function() {
@@ -2910,7 +2930,7 @@ window.meAuthCheck = function() {
     try { sessionStorage.setItem('me_admin_unlocked', '1'); } catch(e) {}
     var authOv = document.getElementById('me-auth-overlay');
     if (authOv) authOv.style.display = 'none';
-    window._openManualEntryForm();
+    if (typeof _meAuthPending === 'function') { _meAuthPending(); _meAuthPending = null; }
   } else {
     errEl.textContent = 'Incorrect password. Try again.';
     input.value = '';
@@ -2921,6 +2941,7 @@ window.meAuthCheck = function() {
 };
 
 window.meAuthClose = function() {
+  _meAuthPending = null;
   var authOv = document.getElementById('me-auth-overlay');
   if (authOv) authOv.style.display = 'none';
 };
