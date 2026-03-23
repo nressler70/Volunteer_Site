@@ -2883,53 +2883,40 @@ window.adminDeleteResults = function() {
   }, 3000);
 };
 
-// ── Admin Gate — shared by Choose File AND Manual Entry ──────────────────
-// Lives in this block so it can directly access ADMIN_PW above.
-// Uses a pending-callback pattern: store what to do after auth, then show gate.
-
-var _meAuthPending = null;  // function to call after successful auth
-
-function _showAdminGate(afterAuth) {
-  _meAuthPending = afterAuth;
-  var authOv = document.getElementById('me-auth-overlay');
-  if (authOv) {
-    document.getElementById('me-auth-input').value = '';
-    document.getElementById('me-auth-error').textContent = '';
-    authOv.style.display = 'flex';
-    setTimeout(function() { document.getElementById('me-auth-input').focus(); }, 100);
-  }
-}
+// ── Admin Gate — protects Choose File AND Manual Entry ────────────────────
+var _meAuthPending = null;
 
 function _isAdminAuthed() {
   try { return sessionStorage.getItem('me_admin_unlocked') === '1'; } catch(e) { return false; }
 }
 
-// Choose File button — requires admin auth
-window.openFileWithAuth = function() {
-  if (_isAdminAuthed()) {
-    document.getElementById('file-input').click();
-    return;
+function _showAdminGate(afterAuth) {
+  _meAuthPending = afterAuth;
+  var ov = document.getElementById('me-auth-overlay');
+  if (ov) {
+    document.getElementById('me-auth-input').value = '';
+    document.getElementById('me-auth-error').textContent = '';
+    ov.style.display = 'flex';
+    setTimeout(function() { document.getElementById('me-auth-input').focus(); }, 100);
   }
+}
+
+window.openFileWithAuth = function() {
+  if (_isAdminAuthed()) { document.getElementById('file-input').click(); return; }
   _showAdminGate(function() { document.getElementById('file-input').click(); });
 };
 
-// Manual Entry button — requires admin auth
 window.openManualEntry = function() {
-  if (_isAdminAuthed()) {
-    window._openManualEntryForm();
-    return;
-  }
-  _showAdminGate(window._openManualEntryForm);
+  if (_isAdminAuthed()) { window._openManualEntryForm(); return; }
+  _showAdminGate(function() { window._openManualEntryForm(); });
 };
 
 window.meAuthCheck = function() {
   var input = document.getElementById('me-auth-input');
   var errEl = document.getElementById('me-auth-error');
-  var pw    = input ? input.value : '';
-  if (pw === ADMIN_PW) {
+  if (input.value === ADMIN_PW) {
     try { sessionStorage.setItem('me_admin_unlocked', '1'); } catch(e) {}
-    var authOv = document.getElementById('me-auth-overlay');
-    if (authOv) authOv.style.display = 'none';
+    document.getElementById('me-auth-overlay').style.display = 'none';
     if (typeof _meAuthPending === 'function') { _meAuthPending(); _meAuthPending = null; }
   } else {
     errEl.textContent = 'Incorrect password. Try again.';
@@ -2942,8 +2929,7 @@ window.meAuthCheck = function() {
 
 window.meAuthClose = function() {
   _meAuthPending = null;
-  var authOv = document.getElementById('me-auth-overlay');
-  if (authOv) authOv.style.display = 'none';
+  document.getElementById('me-auth-overlay').style.display = 'none';
 };
 
 window._openManualEntryForm = function() {
@@ -2954,7 +2940,7 @@ window._openManualEntryForm = function() {
   var l = document.getElementById('me-like');   if (l) l.value = '';
   document.querySelectorAll('input[name="me-resp"]').forEach(function(r) { r.checked = false; });
   var err = document.getElementById('me-error'); if (err) err.style.display = 'none';
-  var ov  = document.getElementById('manual-entry-overlay');
+  var ov = document.getElementById('manual-entry-overlay');
   if (ov) ov.style.display = 'flex';
   setTimeout(function() { var el = document.getElementById('me-name'); if (el) el.focus(); }, 100);
 };
@@ -3291,12 +3277,12 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <!-- ══ MANUAL ENTRY MODAL ══ -->
-<!-- ── MANUAL ENTRY ADMIN PASSWORD GATE ── -->
+<!-- ── ADMIN AUTH GATE — protects Choose File + Manual Entry ── -->
 <div id="me-auth-overlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.88);z-index:100000;align-items:center;justify-content:center">
   <div style="background:#161b22;border:2px solid rgba(201,150,42,.5);border-radius:16px;padding:28px 26px;width:88%;max-width:360px;box-shadow:0 8px 40px rgba(0,0,0,.9);text-align:center">
     <div style="font-size:2rem;margin-bottom:10px">🔐</div>
-    <div style="font-family:'Oswald',sans-serif;font-size:.85rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-light,#c9962a);margin-bottom:6px">Admin Access Required</div>
-    <div style="font-size:.78rem;color:#556677;margin-bottom:18px;line-height:1.5">Manual entry is restricted to admins.<br>Enter the admin password to continue.</div>
+    <div style="font-family:'Oswald',sans-serif;font-size:.85rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#c9962a;margin-bottom:6px">Admin Access Required</div>
+    <div style="font-size:.78rem;color:#556677;margin-bottom:18px;line-height:1.5">This action is restricted to admins.<br>Enter the admin password to continue.</div>
     <input id="me-auth-input" type="password" placeholder="Admin password" autocomplete="current-password"
       style="width:100%;box-sizing:border-box;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:11px 14px;color:#f0e6c8;font-size:.95rem;outline:none;margin-bottom:8px;transition:border .2s"
       onkeydown="if(event.key==='Enter')meAuthCheck()">
@@ -3464,7 +3450,18 @@ window.saveNotes = function(addr, newNotes) {
   if (typeof window.jsonbinPush === 'function') window.jsonbinPush(stored, fileList);
 };
 
-// openManualEntry, meAuthCheck, meAuthClose, _openManualEntryForm defined in admin-panel script block above
+window.openManualEntry = function() {
+  ['me-name','me-address','me-street','me-prec','me-notes'].forEach(function(id) {
+    var el = document.getElementById(id); if (el) el.value = '';
+  });
+  var v = document.getElementById('me-voters'); if (v) v.value = '1';
+  var l = document.getElementById('me-like');   if (l) l.value = '';
+  document.querySelectorAll('input[name="me-resp"]').forEach(function(r) { r.checked = false; });
+  var err = document.getElementById('me-error'); if (err) err.style.display = 'none';
+  var ov = document.getElementById('manual-entry-overlay');
+  if (ov) { ov.style.display = 'flex'; }
+  setTimeout(function() { var el = document.getElementById('me-name'); if (el) el.focus(); }, 100);
+};
 
 window.closeManualEntry = function() {
   var ov = document.getElementById('manual-entry-overlay');
