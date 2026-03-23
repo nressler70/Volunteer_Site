@@ -896,7 +896,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       </div>
       <div id="upload-saved-hint" style="font-size:.72rem;color:#556677;margin-top:2px">Select .xlsx or .csv from the canvass app</div>
     </div>
-    <button onclick="openFileWithAuth()"
+    <button onclick="document.getElementById('file-input').click()"
       style="background:var(--gold);color:var(--navy);border:none;border-radius:8px;padding:9px 22px;font-family:'Oswald',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;white-space:nowrap;flex-shrink:0">
       Choose File
     </button>
@@ -1386,6 +1386,15 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     var pct = total ? Math.round(visited / total * 100) : 0;
     var yPct = total ? Math.round(yes / total * 100) : 0;
 
+    // Voter counts per category
+    function voterCount(filterKey) {
+      return rows.filter(function(r) {
+        if (filterKey === 'followup') return r.resp==='Undecided' || r.resp==='Not Home';
+        if (filterKey === 'sign')     return r.sign === true;
+        return r.resp === filterKey;
+      }).reduce(function(s, r) { return s + (parseInt(r.voters) || 0); }, 0);
+    }
+
     var TILES = [
       {f:'Yes',         label:'Yes',         val:yes,       col:'#5ce08a', bg:'rgba(39,174,96,.18)',   bdr:'rgba(39,174,96,.5)'},
       {f:'No',          label:'No',          val:no,        col:'#ff8a7a', bg:'rgba(192,57,43,.18)',   bdr:'rgba(192,57,43,.5)'},
@@ -1398,12 +1407,17 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 
     var tilesEl = document.getElementById('dash-tiles');
     tilesEl.innerHTML = TILES.map(function(t) {
-      var active = currentFilter === t.f;
-      var border = active ? t.col : t.bdr;
+      var active  = currentFilter === t.f;
+      var border  = active ? t.col : t.bdr;
+      var voters  = voterCount(t.f);
+      var voterLine = voters > 0
+        ? '<div style="font-size:.58rem;color:' + t.col + ';opacity:.75;margin-top:2px;font-family:monospace;letter-spacing:.03em">' + voters + ' voter' + (voters !== 1 ? 's' : '') + '</div>'
+        : '';
       return '<div data-filter="' + t.f + '" title="Click to view ' + t.label + ' households"' +
         ' style="background:' + t.bg + ';border:2px solid ' + border + ';border-radius:10px;padding:13px 10px;text-align:center;cursor:pointer;transition:border-color .15s">' +
         '<div style="font-size:1.65rem;font-weight:700;color:' + t.col + ';line-height:1;font-family:monospace">' + t.val + '</div>' +
         '<div style="font-family:Oswald,sans-serif;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:#778899;margin-top:4px">' + t.label + '</div>' +
+        voterLine +
         '<div style="font-size:.52rem;color:' + t.col + ';opacity:.6;margin-top:3px">▼ view list</div>' +
         '</div>';
     }).join('');
@@ -2882,68 +2896,6 @@ window.adminDeleteResults = function() {
     if (el) el.style.display = 'none';
   }, 3000);
 };
-
-// ── Admin Gate — protects Choose File AND Manual Entry ────────────────────
-var _meAuthPending = null;
-
-function _isAdminAuthed() {
-  try { return sessionStorage.getItem('me_admin_unlocked') === '1'; } catch(e) { return false; }
-}
-
-function _showAdminGate(afterAuth) {
-  _meAuthPending = afterAuth;
-  var ov = document.getElementById('me-auth-overlay');
-  if (ov) {
-    document.getElementById('me-auth-input').value = '';
-    document.getElementById('me-auth-error').textContent = '';
-    ov.style.display = 'flex';
-    setTimeout(function() { document.getElementById('me-auth-input').focus(); }, 100);
-  }
-}
-
-window.openFileWithAuth = function() {
-  if (_isAdminAuthed()) { document.getElementById('file-input').click(); return; }
-  _showAdminGate(function() { document.getElementById('file-input').click(); });
-};
-
-window.openManualEntry = function() {
-  if (_isAdminAuthed()) { window._openManualEntryForm(); return; }
-  _showAdminGate(function() { window._openManualEntryForm(); });
-};
-
-window.meAuthCheck = function() {
-  var input = document.getElementById('me-auth-input');
-  var errEl = document.getElementById('me-auth-error');
-  if (input.value === ADMIN_PW) {
-    try { sessionStorage.setItem('me_admin_unlocked', '1'); } catch(e) {}
-    document.getElementById('me-auth-overlay').style.display = 'none';
-    if (typeof _meAuthPending === 'function') { _meAuthPending(); _meAuthPending = null; }
-  } else {
-    errEl.textContent = 'Incorrect password. Try again.';
-    input.value = '';
-    input.style.borderColor = '#f87171';
-    setTimeout(function() { input.style.borderColor = 'rgba(255,255,255,.15)'; }, 1500);
-    input.focus();
-  }
-};
-
-window.meAuthClose = function() {
-  _meAuthPending = null;
-  document.getElementById('me-auth-overlay').style.display = 'none';
-};
-
-window._openManualEntryForm = function() {
-  ['me-name','me-address','me-street','me-prec','me-notes'].forEach(function(id) {
-    var el = document.getElementById(id); if (el) el.value = '';
-  });
-  var v = document.getElementById('me-voters'); if (v) v.value = '1';
-  var l = document.getElementById('me-like');   if (l) l.value = '';
-  document.querySelectorAll('input[name="me-resp"]').forEach(function(r) { r.checked = false; });
-  var err = document.getElementById('me-error'); if (err) err.style.display = 'none';
-  var ov = document.getElementById('manual-entry-overlay');
-  if (ov) ov.style.display = 'flex';
-  setTimeout(function() { var el = document.getElementById('me-name'); if (el) el.focus(); }, 100);
-};
 </script>
 <script data-cfasync="false">
 // ══════════════════════════════════════════════════════════════════════════
@@ -3277,29 +3229,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <!-- ══ MANUAL ENTRY MODAL ══ -->
-<!-- ── ADMIN AUTH GATE — protects Choose File + Manual Entry ── -->
-<div id="me-auth-overlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.88);z-index:100000;align-items:center;justify-content:center">
-  <div style="background:#161b22;border:2px solid rgba(201,150,42,.5);border-radius:16px;padding:28px 26px;width:88%;max-width:360px;box-shadow:0 8px 40px rgba(0,0,0,.9);text-align:center">
-    <div style="font-size:2rem;margin-bottom:10px">🔐</div>
-    <div style="font-family:'Oswald',sans-serif;font-size:.85rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#c9962a;margin-bottom:6px">Admin Access Required</div>
-    <div style="font-size:.78rem;color:#556677;margin-bottom:18px;line-height:1.5">This action is restricted to admins.<br>Enter the admin password to continue.</div>
-    <input id="me-auth-input" type="password" placeholder="Admin password" autocomplete="current-password"
-      style="width:100%;box-sizing:border-box;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:11px 14px;color:#f0e6c8;font-size:.95rem;outline:none;margin-bottom:8px;transition:border .2s"
-      onkeydown="if(event.key==='Enter')meAuthCheck()">
-    <div id="me-auth-error" style="font-size:.78rem;color:#f87171;min-height:18px;margin-bottom:10px"></div>
-    <div style="display:flex;gap:10px">
-      <button onclick="meAuthCheck()"
-        style="flex:1;background:linear-gradient(135deg,#c9962a,#e6b84a);border:none;border-radius:8px;padding:12px;color:#0a0e1a;font-family:'Oswald',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">
-        Unlock ➜
-      </button>
-      <button onclick="meAuthClose()"
-        style="background:transparent;color:#8a9bb0;border:1px solid #21262d;border-radius:8px;padding:12px 18px;font-size:.82rem;cursor:pointer">
-        Cancel
-      </button>
-    </div>
-  </div>
-</div>
-
 <div id="manual-entry-overlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.82);z-index:99999;align-items:center;justify-content:center">
   <div style="background:#161b22;border:2px solid #2e86c1;border-radius:16px;padding:24px 26px;width:92%;max-width:440px;max-height:92vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.8)">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
