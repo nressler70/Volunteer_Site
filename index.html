@@ -3,574 +3,280 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Age & Levy Support — Baughman Township</title>
+<title>Household Age & Levy Support — Baughman Township</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:      #f4f1eb;
-  --ink:     #1c1c1e;
-  --muted:   #6b6b6e;
-  --rule:    #d8d4cc;
-  --card:    #ffffff;
-  --yes:     #2d6a4f;
-  --no:      #c1121f;
-  --und:     #e07b00;
-  --nh:      #5a7fa8;
-  --gold:    #c9962a;
-  --young:   #3a86ff;
-  --mid1:    #8338ec;
-  --mid2:    #ff6b6b;
-  --elder:   #2d6a4f;
-}
-
-* { margin:0; padding:0; box-sizing:border-box; }
-
-body {
-  background: var(--bg);
-  color: var(--ink);
-  font-family: 'Barlow', sans-serif;
-  font-weight: 300;
-}
-
-/* ── HEADER ── */
-.hdr {
-  background: var(--ink);
-  color: #f4f1eb;
-  padding: 48px 56px 36px;
-  border-bottom: 5px solid var(--gold);
-  position: relative;
-  overflow: hidden;
-}
-.hdr::after {
-  content: '';
-  position: absolute;
-  right: -80px; top: -80px;
-  width: 360px; height: 360px;
-  border: 1px solid rgba(201,150,42,.15);
-  border-radius: 50%;
-  pointer-events: none;
-}
-.hdr-tag {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 11px; letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--gold);
-  margin-bottom: 12px;
-}
-.hdr h1 {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(28px,4vw,52px);
-  font-weight: 700; line-height: 1.1;
-  max-width: 680px;
-}
-.hdr h1 em { font-weight: 400; font-style: italic; color: var(--gold); }
-.hdr-meta {
-  margin-top: 12px;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 12px; letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: rgba(244,241,235,.5);
-}
-
-/* ── WRAP ── */
-.wrap { max-width: 1140px; margin: 0 auto; padding: 44px 56px 80px; }
-
-/* ── STAT CARDS ── */
-.stat-row {
-  display: grid;
-  grid-template-columns: repeat(5,1fr);
-  gap: 1px;
-  background: var(--rule);
-  border: 1px solid var(--rule);
-  border-radius: 6px;
-  overflow: hidden;
-  margin-bottom: 44px;
-}
-.stat-cell {
-  background: var(--card);
-  padding: 20px 16px;
-  text-align: center;
-}
-.stat-cell .num {
-  font-family: 'Playfair Display', serif;
-  font-size: 36px; font-weight: 700;
-  line-height: 1; display: block;
-}
-.stat-cell .lbl {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 10px; letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-top: 5px; display: block;
-}
-
-/* ── KEY FINDING ── */
-.finding {
-  background: var(--ink);
-  color: #f4f1eb;
-  border-radius: 8px;
-  padding: 22px 26px;
-  margin-bottom: 40px;
-  font-size: 14px;
-  line-height: 1.75;
-  border-left: 5px solid var(--gold);
-}
-.finding strong { color: var(--gold); }
-
-/* ── SECTION HEAD ── */
-.sec-head {
-  display: flex; align-items: center; gap: 14px;
-  margin-bottom: 20px;
-}
-.sec-head h2 {
-  font-family: 'Playfair Display', serif;
-  font-size: 22px; font-weight: 700;
-  white-space: nowrap;
-}
-.sec-head::after {
-  content: ''; flex: 1; height: 1px;
-  background: var(--rule);
-}
-
-/* ── PANELS ── */
-.panel {
-  background: var(--card);
-  border: 1px solid var(--rule);
-  border-radius: 6px;
-  padding: 24px;
-}
-.two-col {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  margin-bottom: 36px;
-}
-.full { margin-bottom: 36px; }
-
-/* ── AGE BUCKET BARS ── */
-.bucket-list { display: flex; flex-direction: column; gap: 20px; }
-
-.bucket-block {}
-.bucket-label {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 13px; font-weight: 600;
-  letter-spacing: 1px; text-transform: uppercase;
-  color: var(--ink); margin-bottom: 6px;
-  display: flex; justify-content: space-between;
-}
-.bucket-label span { color: var(--muted); font-weight: 400; }
-
-.stack-track {
-  height: 32px;
-  display: flex;
-  border-radius: 4px;
-  overflow: hidden;
-  background: var(--rule);
-}
-.stack-seg {
-  height: 100%;
-  display: flex; align-items: center;
-  justify-content: center;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 11px; font-weight: 600;
-  color: white;
-  transition: width 1s cubic-bezier(.16,1,.3,1);
-  white-space: nowrap;
-  overflow: hidden;
-}
-.bucket-legend {
-  display: flex; gap: 14px;
-  margin-top: 5px; flex-wrap: wrap;
-}
-.bl-item {
-  display: flex; align-items: center; gap: 5px;
-  font-size: 11px; color: var(--muted);
-  font-family: 'Barlow Condensed', sans-serif;
-  letter-spacing: .5px;
-}
-.bl-dot { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
-
-/* ── RESPONSE SUMMARY BARS ── */
-.resp-bars { display: flex; flex-direction: column; gap: 14px; }
-.resp-row { display: flex; align-items: center; gap: 12px; }
-.resp-label {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 12px; font-weight: 600;
-  letter-spacing: 1px; text-transform: uppercase;
-  width: 90px; flex-shrink: 0; text-align: right;
-  color: var(--muted);
-}
-.resp-track {
-  flex: 1; height: 30px;
-  background: rgba(0,0,0,.05);
-  border-radius: 4px; overflow: hidden;
-}
-.resp-fill {
-  height: 100%; border-radius: 4px;
-  display: flex; align-items: center;
-  padding-left: 10px;
-  transition: width 1s cubic-bezier(.16,1,.3,1);
-}
-.resp-fill span {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 12px; font-weight: 600;
-  color: white; white-space: nowrap;
-}
-.resp-age {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 11px; color: var(--muted);
-  width: 80px; flex-shrink: 0;
-}
-
-/* ── SCATTER CANVAS ── */
-canvas { display: block; width: 100%; }
-
-/* ── TABLE ── */
-.data-table {
-  width: 100%; border-collapse: collapse;
-  font-size: 12px;
-}
-.data-table th {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 9px; letter-spacing: 2px;
-  text-transform: uppercase; color: var(--muted);
-  text-align: left; padding: 8px 12px;
-  border-bottom: 2px solid var(--rule);
-  background: var(--bg);
-}
-.data-table td {
-  padding: 8px 12px;
-  border-bottom: 1px solid rgba(216,212,204,.5);
-  vertical-align: middle;
-}
-.data-table tr:hover td { background: rgba(201,150,42,.04); }
-
-.pill {
-  display: inline-block;
-  padding: 2px 8px; border-radius: 3px;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 11px; font-weight: 600;
-  color: white;
-}
-
-footer {
-  border-top: 1px solid var(--rule);
-  padding-top: 20px; margin-top: 40px;
-  display: flex; justify-content: space-between;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 10px; letter-spacing: 1px;
-  text-transform: uppercase; color: var(--muted);
-}
-
-@media (max-width: 700px) {
-  .hdr, .wrap { padding-left: 20px; padding-right: 20px; }
-  .two-col { grid-template-columns: 1fr; }
-  .stat-row { grid-template-columns: repeat(3,1fr); }
-}
+:root{--bg:#f4f1eb;--ink:#1c1c1e;--muted:#6b6b6e;--rule:#d8d4cc;--card:#fff;--yes:#2d6a4f;--no:#c1121f;--und:#e07b00;--nh:#4a7fa5;--gold:#c9962a}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:'Barlow',sans-serif;font-weight:300}
+.hdr{background:var(--ink);color:#f4f1eb;padding:44px 52px 34px;border-bottom:5px solid var(--gold)}
+.hdr-tag{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.hdr h1{font-family:'Playfair Display',serif;font-size:clamp(26px,4vw,50px);font-weight:700;line-height:1.1}
+.hdr h1 em{font-style:italic;font-weight:400;color:var(--gold)}
+.hdr-sub{margin-top:10px;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(244,241,235,.45)}
+.wrap{max-width:1100px;margin:0 auto;padding:40px 52px 80px}
+.stat-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:6px;overflow:hidden;margin-bottom:40px}
+.stat-cell{background:var(--card);padding:20px 14px;text-align:center}
+.stat-num{font-family:'Playfair Display',serif;font-size:34px;font-weight:700;line-height:1;display:block}
+.stat-lbl{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:5px;display:block}
+.finding{background:var(--ink);color:#f4f1eb;border-left:5px solid var(--gold);border-radius:6px;padding:20px 24px;margin-bottom:36px;font-size:14px;line-height:1.8}
+.finding strong{color:var(--gold)}
+.sec-hd{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.sec-hd h2{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;white-space:nowrap}
+.sec-hd::after{content:'';flex:1;height:1px;background:var(--rule)}
+.panel{background:var(--card);border:1px solid var(--rule);border-radius:6px;padding:22px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:32px}
+.full{margin-bottom:32px}
+.b-label{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;margin-bottom:5px;display:flex;justify-content:space-between;align-items:baseline}
+.b-label span{font-size:11px;font-weight:400;color:var(--muted)}
+.b-track{height:34px;display:flex;border-radius:4px;overflow:hidden;background:var(--rule);margin-bottom:4px}
+.b-seg{height:100%;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;color:white;overflow:hidden;white-space:nowrap;width:0%;transition:width 1.1s cubic-bezier(.16,1,.3,1)}
+.b-list{display:flex;flex-direction:column;gap:20px}
+.r-list{display:flex;flex-direction:column;gap:16px}
+.r-row{display:grid;grid-template-columns:90px 1fr 90px;align-items:center;gap:10px}
+.r-lbl{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-align:right;color:var(--muted)}
+.r-track{height:32px;background:rgba(0,0,0,.06);border-radius:4px;overflow:hidden}
+.r-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:10px;width:0%;transition:width 1.1s cubic-bezier(.16,1,.3,1)}
+.r-fill span{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:600;color:white;white-space:nowrap}
+.r-meta{font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--muted);line-height:1.5}
+.ins-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:32px}
+.ins-card{background:var(--card);border:1px solid var(--rule);border-top:4px solid var(--gold);border-radius:6px;padding:18px}
+.ins-num{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:var(--gold)}
+.ins-lbl{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.ins-desc{font-size:12px;margin-top:8px;line-height:1.6;color:var(--muted)}
+canvas{display:block;width:100%}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:10px 12px;text-align:center;border-bottom:2px solid var(--rule);background:var(--bg)}
+th:first-child{text-align:left}
+td{padding:11px 12px;text-align:center;border-bottom:1px solid rgba(216,212,204,.5)}
+td:first-child{text-align:left;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:600;letter-spacing:.5px}
+tr:hover td{background:rgba(201,150,42,.04)}
+footer{border-top:1px solid var(--rule);padding-top:18px;margin-top:40px;display:flex;justify-content:space-between;font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+@media(max-width:680px){.hdr,.wrap{padding-left:18px;padding-right:18px}.two-col{grid-template-columns:1fr}.stat-strip{grid-template-columns:repeat(3,1fr)}.ins-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
 <div class="hdr">
   <div class="hdr-tag">Baughman Township Fire &amp; EMS Levy · Canvass Analysis · March 24, 2026</div>
-  <h1>Household Age &amp;<br><em>Levy Support</em></h1>
-  <div class="hdr-meta">504 visited households · 445 matched with voter ages · 1,804 voters on file</div>
+  <h1>Household Age &amp; <em>Levy Support</em></h1>
+  <div class="hdr-sub">504 households visited · 445 age-matched · Wayne County BOE voter file · Precincts P1 &amp; P2</div>
 </div>
 
 <div class="wrap">
 
-  <!-- SUMMARY STATS -->
-  <div class="stat-row">
-    <div class="stat-cell">
-      <span class="num" style="color:var(--ink)">504</span>
-      <span class="lbl">Households Visited</span>
-    </div>
-    <div class="stat-cell">
-      <span class="num" style="color:var(--yes)">214</span>
-      <span class="lbl">✅ Yes</span>
-    </div>
-    <div class="stat-cell">
-      <span class="num" style="color:var(--no)">22</span>
-      <span class="lbl">❌ No</span>
-    </div>
-    <div class="stat-cell">
-      <span class="num" style="color:var(--und)">73</span>
-      <span class="lbl">❓ Undecided</span>
-    </div>
-    <div class="stat-cell">
-      <span class="num" style="color:var(--nh)">136</span>
-      <span class="lbl">🏠 Not Home</span>
-    </div>
+  <div class="stat-strip">
+    <div class="stat-cell"><span class="stat-num" style="color:var(--ink)">504</span><span class="stat-lbl">Doors Knocked</span></div>
+    <div class="stat-cell"><span class="stat-num" style="color:var(--yes)">214</span><span class="stat-lbl">✅ Yes</span></div>
+    <div class="stat-cell"><span class="stat-num" style="color:var(--no)">22</span><span class="stat-lbl">❌ No</span></div>
+    <div class="stat-cell"><span class="stat-num" style="color:var(--und)">73</span><span class="stat-lbl">❓ Undecided</span></div>
+    <div class="stat-cell"><span class="stat-num" style="color:var(--nh)">136</span><span class="stat-lbl">🏠 Not Home</span></div>
   </div>
 
-  <!-- KEY FINDING -->
   <div class="finding">
-    <strong>Key Finding:</strong> Seniors (65+) are the strongest supporters — 53% said Yes, the highest of any age group, despite paying an average of $167/yr. Households under 35 have <strong>zero No votes</strong> recorded. The opposition is concentrated in the <strong>50–64</strong> age bracket, which also carries the highest average levy cost ($168/yr). The average age of a <strong>Yes household is 55.7</strong>, while <strong>No households average 61.9</strong> — older homeowners on fixed incomes are the primary skeptics. <strong>Undecided households (avg age 53.9) are your highest-priority re-knock targets</strong> — 73 households, reachable before May 5.
+    <strong>Key Finding:</strong> Seniors 65+ are the <strong>strongest supporters at 53% Yes</strong> — highest of any group. Households under 35 have <strong>zero No votes</strong>. Opposition is concentrated in the <strong>50–64 age bracket</strong>. The average age of a No household (61.9) is higher than any other response group. <strong>73 Undecided households averaging age 53.9</strong> are your best re-knock targets before May 5.
   </div>
 
-  <!-- AGE BUCKET CHART + RESPONSE BARS -->
-  <div class="two-col">
+  <div class="ins-grid">
+    <div class="ins-card">
+      <div class="ins-num">55.7</div>
+      <div class="ins-lbl">Avg Age — Yes Households</div>
+      <div class="ins-desc">214 households said Yes. Middle-aged to senior homeowners are the backbone of levy support, averaging $168/yr in levy cost.</div>
+    </div>
+    <div class="ins-card" style="border-top-color:var(--no)">
+      <div class="ins-num" style="color:var(--no)">61.9</div>
+      <div class="ins-lbl">Avg Age — No Households</div>
+      <div class="ins-desc">22 households oppose the levy. Older fixed-income residents paying $183/yr avg are the most skeptical group in the canvass.</div>
+    </div>
+    <div class="ins-card" style="border-top-color:var(--und)">
+      <div class="ins-num" style="color:var(--und)">53.9</div>
+      <div class="ins-lbl">Avg Age — Undecided</div>
+      <div class="ins-desc">73 persuadable households remain. Average levy cost $171.91/yr — they feel the cost but haven't committed. Re-knock before May 5.</div>
+    </div>
+  </div>
 
+  <div class="two-col">
     <div>
-      <div class="sec-head"><h2>Support by Age Group</h2></div>
+      <div class="sec-hd"><h2>Support by Age Group</h2></div>
       <div class="panel">
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:18px">STACKED — % OF CONTACTED HOUSEHOLDS BY RESPONSE</div>
-        <div class="bucket-list" id="bucketList"></div>
-        <div class="bucket-legend" style="margin-top:18px">
-          <div class="bl-item"><div class="bl-dot" style="background:var(--yes)"></div>Yes</div>
-          <div class="bl-item"><div class="bl-dot" style="background:var(--no)"></div>No</div>
-          <div class="bl-item"><div class="bl-dot" style="background:var(--und)"></div>Undecided</div>
-          <div class="bl-item"><div class="bl-dot" style="background:var(--nh)"></div>Not Home</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:16px">CONTACTED HOUSEHOLDS — STACKED BY RESPONSE</div>
+        <div class="b-list" id="bucketBars"></div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:16px">
+          <div style="display:flex;align-items:center;gap:5px;font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--muted)"><div style="width:9px;height:9px;border-radius:2px;background:var(--yes)"></div>Yes</div>
+          <div style="display:flex;align-items:center;gap:5px;font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--muted)"><div style="width:9px;height:9px;border-radius:2px;background:var(--no)"></div>No</div>
+          <div style="display:flex;align-items:center;gap:5px;font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--muted)"><div style="width:9px;height:9px;border-radius:2px;background:var(--und)"></div>Undecided</div>
+          <div style="display:flex;align-items:center;gap:5px;font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--muted)"><div style="width:9px;height:9px;border-radius:2px;background:var(--nh)"></div>Not Home</div>
         </div>
       </div>
     </div>
-
     <div>
-      <div class="sec-head"><h2>Average Age by Response</h2></div>
+      <div class="sec-hd"><h2>Average Age by Response</h2></div>
       <div class="panel">
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:18px">AVG HOUSEHOLD AGE · COUNT · AVG LEVY COST</div>
-        <div class="resp-bars" id="respBars"></div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:16px">AVG HOUSEHOLD AGE · COUNT · AVG LEVY/YR</div>
+        <div class="r-list" id="respBars"></div>
       </div>
     </div>
-
   </div>
 
-  <!-- SCATTER PLOT -->
-  <div class="sec-head"><h2>Age vs. Levy Cost — Every Visited Household</h2></div>
+  <div class="sec-hd"><h2>Age vs. Levy Cost — All Visited Households</h2></div>
   <div class="full panel">
-    <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:14px">EACH DOT = ONE HOUSEHOLD · COLOR = RESPONSE · X = AVG MEMBER AGE · Y = ANNUAL LEVY COST</div>
-    <canvas id="scatter" height="320"></canvas>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px">EACH DOT = ONE HOUSEHOLD · COLOR = RESPONSE · X AXIS = AVG MEMBER AGE · Y AXIS = ANNUAL LEVY $</div>
+    <canvas id="sc" height="320"></canvas>
+    <div style="display:flex;gap:18px;flex-wrap:wrap;margin-top:10px">
+      <div style="display:flex;align-items:center;gap:6px;font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--muted)"><div style="width:10px;height:10px;border-radius:50%;background:var(--yes)"></div>Yes</div>
+      <div style="display:flex;align-items:center;gap:6px;font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--muted)"><div style="width:10px;height:10px;border-radius:50%;background:var(--no)"></div>No</div>
+      <div style="display:flex;align-items:center;gap:6px;font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--muted)"><div style="width:10px;height:10px;border-radius:50%;background:var(--und)"></div>Undecided</div>
+      <div style="display:flex;align-items:center;gap:6px;font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--muted)"><div style="width:10px;height:10px;border-radius:50%;background:var(--nh)"></div>Not Home</div>
+    </div>
   </div>
 
-  <!-- FULL TABLE -->
-  <div class="sec-head"><h2>Household Detail</h2></div>
+  <div class="sec-hd"><h2>Age Group Summary Table</h2></div>
   <div class="full panel" style="overflow-x:auto">
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px" id="filterBtns"></div>
-    <div id="tableCount" style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--muted);margin-bottom:8px"></div>
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Address</th>
-          <th>Street</th>
-          <th>Prec</th>
-          <th>Ages</th>
-          <th>Avg Age</th>
-          <th>Response</th>
-          <th>Levy/yr</th>
-          <th>Likelihood</th>
-          <th>Voters</th>
-        </tr>
-      </thead>
-      <tbody id="tableBody"></tbody>
+    <table>
+      <thead><tr>
+        <th style="text-align:left;color:var(--muted)">Age Group</th>
+        <th style="color:var(--muted)">Total HH</th>
+        <th style="color:var(--yes)">✅ Yes</th>
+        <th style="color:var(--no)">❌ No</th>
+        <th style="color:var(--und)">❓ Undecided</th>
+        <th style="color:var(--nh)">🏠 Not Home</th>
+        <th style="color:var(--gold)">Yes %</th>
+        <th style="color:var(--muted)">Avg Levy/yr</th>
+      </tr></thead>
+      <tbody id="tbl"></tbody>
     </table>
   </div>
 
   <footer>
-    <span>Baughman Township Fire &amp; EMS Levy · Canvass Age Analysis</span>
-    <span>Wayne County BOE Voter File · March 24, 2026</span>
+    <span>Baughman Township Fire &amp; EMS Levy · Age &amp; Support Analysis · 445 matched households</span>
+    <span>Wayne County BOE Voter File · March 24, 2026 · Confidential</span>
   </footer>
 </div>
 
 <script>
-const RESP_COLOR = {
-  'Yes':      '#2d6a4f',
-  'No':       '#c1121f',
-  'Undecided':'#e07b00',
-  'Not Home': '#5a7fa8',
-};
+const RC={'Yes':'#2d6a4f','No':'#c1121f','Undecided':'#e07b00','Not Home':'#4a7fa5'};
 
-const AGE_BUCKETS = [
-  { label:'Under 35', total:44,  yes:21, no:0,  undecided:6,  not_home:17, yes_pct:48, avg_levy:156.34, color:'#3a86ff' },
-  { label:'35–49',    total:140, yes:65, no:4,  undecided:28, not_home:43, yes_pct:46, avg_levy:176.13, color:'#8338ec' },
-  { label:'50–64',    total:119, yes:53, no:8,  undecided:15, not_home:43, yes_pct:45, avg_levy:168.15, color:'#ff6b6b' },
-  { label:'65+',      total:142, yes:75, no:10, undecided:24, not_home:33, yes_pct:53, avg_levy:167.19, color:'#2d6a4f' },
+const BUCKETS=[
+  {label:'Under 35',color:'#3a86ff',total:44, yes:21,no:0, und:6, nh:17,pct:48,levy:156.34},
+  {label:'35 – 49', color:'#8338ec',total:140,yes:65,no:4, und:28,nh:43,pct:46,levy:176.13},
+  {label:'50 – 64', color:'#ff6b6b',total:119,yes:53,no:8, und:15,nh:43,pct:45,levy:168.15},
+  {label:'65 +',    color:'#2d6a4f',total:142,yes:75,no:10,und:24,nh:33,pct:53,levy:167.19},
+];
+const RSTATS=[
+  {resp:'Yes',      cnt:214,age:55.7,levy:168.31},
+  {resp:'No',       cnt:22, age:61.9,levy:183.02},
+  {resp:'Undecided',cnt:73, age:53.9,levy:171.91},
+  {resp:'Not Home', cnt:136,age:53.3,levy:166.86},
 ];
 
-const RESP_STATS = [
-  { resp:'Yes',      count:214, avg_age:55.7, avg_levy:168.31 },
-  { resp:'No',       count:22,  avg_age:61.9, avg_levy:183.02 },
-  { resp:'Undecided',count:73,  avg_age:53.9, avg_levy:171.91 },
-  { resp:'Not Home', count:136, avg_age:53.3, avg_levy:166.86 },
-];
-
-const ALL_DATA = [{"name": "Keith, Sharon Hamsher", "address": "12542 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 2, "levy": 173.34, "likelihood": "LIKELY", "response": "Yes", "ages": [63, 59], "avg_age": 61.0, "min_age": 59, "max_age": 63}, {"name": "Glenn, Gloria Kaufmann", "address": "12588 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 2, "levy": 226.15, "likelihood": "LIKELY", "response": "Yes", "ages": [76, 74], "avg_age": 75.0, "min_age": 74, "max_age": 76}, {"name": "Shelly Brenner, John Kohler", "address": "12606 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 2, "levy": 364.22, "likelihood": "LIKELY", "response": "Yes", "ages": [51, 55], "avg_age": 53.0, "min_age": 51, "max_age": 55}, {"name": "Anthony, Garrett, Jody Troyer", "address": "12619 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 3, "levy": 142.88, "likelihood": "LIKELY", "response": "Yes", "ages": [55, 30, 52], "avg_age": 45.7, "min_age": 30, "max_age": 55}, {"name": "Kim, Steve Troyer", "address": "12693 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 2, "levy": 162.24, "likelihood": "LIKELY", "response": "Yes", "ages": [52, 55], "avg_age": 53.5, "min_age": 52, "max_age": 55}, {"name": "Luella Arnold", "address": "12734 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 1, "levy": 163.61, "likelihood": "LIKELY", "response": "Not Home", "ages": [87], "avg_age": 87.0, "min_age": 87, "max_age": 87}, {"name": "Tammy, Todd Stoll", "address": "12926 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 2, "levy": 186.83, "likelihood": "LIKELY", "response": "Yes", "ages": [53, 56], "avg_age": 54.5, "min_age": 53, "max_age": 56}, {"name": "David, Tara Brenneman", "address": "13063 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 2, "levy": 168.24, "likelihood": "LIKELY", "response": "Yes", "ages": [48, 46], "avg_age": 47.0, "min_age": 46, "max_age": 48}, {"name": "Irvin, Susan Domer", "address": "13317 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 2, "levy": 131.17, "likelihood": "LIKELY", "response": "Yes", "ages": [72, 67], "avg_age": 69.5, "min_age": 67, "max_age": 72}, {"name": "Brent, Rachelle Kornhaus", "address": "13422 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 2, "levy": 228.32, "likelihood": "LIKELY", "response": "Yes", "ages": [49, 48], "avg_age": 48.5, "min_age": 48, "max_age": 49}, {"name": "Cleo Brenneman", "address": "13567 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 1, "levy": 210.98, "likelihood": "LIKELY", "response": "Yes", "ages": [72], "avg_age": 72.0, "min_age": 72, "max_age": 72}, {"name": "Lazarus Hartzler", "address": "13627 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 1, "levy": 210.98, "likelihood": "LIKELY", "response": "Not Home", "ages": [72], "avg_age": 72.0, "min_age": 72, "max_age": 72}, {"name": "Brian Brenneman, Samantha Brenneman, Linda Figura, Timothy Figura", "address": "13785 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 4, "levy": 254.32, "likelihood": "LIKELY", "response": "Yes", "ages": [40, 38, 61, 62], "avg_age": 50.2, "min_age": 38, "max_age": 62}, {"name": "Judy Miller, Dennis Trippy", "address": "13788 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 2, "levy": 107.54, "likelihood": "LIKELY", "response": "Undecided", "ages": [68, 67], "avg_age": 67.5, "min_age": 67, "max_age": 68}, {"name": "Darrell, Shanna Steiner", "address": "14051 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 2, "levy": 434.72, "likelihood": "LIKELY", "response": "Yes", "ages": [64, 63], "avg_age": 63.5, "min_age": 63, "max_age": 64}, {"name": "Aaron, Jenny, Larry Steiner", "address": "14259 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 3, "levy": 434.72, "likelihood": "LIKELY", "response": "Not Home", "ages": [35, 34, 64], "avg_age": 44.3, "min_age": 34, "max_age": 64}, {"name": "Carol, Steven Hahn", "address": "14493 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 2, "levy": 198.05, "likelihood": "LIKELY", "response": "Yes", "ages": [65, 66], "avg_age": 65.5, "min_age": 65, "max_age": 66}, {"name": "Ethan Stoll", "address": "14678 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 1, "levy": 66.1, "likelihood": "LIKELY", "response": "Not Home", "ages": [31], "avg_age": 31.0, "min_age": 31, "max_age": 31}, {"name": "Robert Hange, Barbara Stoll", "address": "14928 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 2, "levy": 158.28, "likelihood": "LIKELY", "response": "Yes", "ages": [72, 78], "avg_age": 75.0, "min_age": 72, "max_age": 78}, {"name": "Heidi Klein", "address": "15090 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 1, "levy": 186.34, "likelihood": "LIKELY", "response": "Yes", "ages": [50], "avg_age": 50.0, "min_age": 50, "max_age": 50}, {"name": "Marlene, Wayne Steiner", "address": "15413 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 2, "levy": 188.17, "likelihood": "LIKELY", "response": "Yes", "ages": [73, 73], "avg_age": 73.0, "min_age": 73, "max_age": 73}, {"name": "Caden, Caitlyn, Catrina, Dawn, Michael Race", "address": "15451 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 5, "levy": 50.17, "likelihood": "LIKELY", "response": "Yes", "ages": [24, 22, 19, 47, 50], "avg_age": 32.4, "min_age": 19, "max_age": 50}, {"name": "Ryleigh Ingersoll, Adam Moomaw, Kelly Moomaw", "address": "15507 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 3, "levy": 185.93, "likelihood": "LIKELY", "response": "Yes", "ages": [28, 38, 40], "avg_age": 35.3, "min_age": 28, "max_age": 40}, {"name": "Sheryl, Todd Lumley", "address": "15595 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 2, "levy": 91.08, "likelihood": "LIKELY", "response": "Yes", "ages": [61, 61], "avg_age": 61.0, "min_age": 61, "max_age": 61}, {"name": "Ruth, William Kaufman", "address": "15759 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 2, "levy": 136.36, "likelihood": "LIKELY", "response": "Not Home", "ages": [76, 77], "avg_age": 76.5, "min_age": 76, "max_age": 77}, {"name": "Daniel Kaufman", "address": "15761 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 1, "levy": 370.93, "likelihood": "LIKELY", "response": "Yes", "ages": [48], "avg_age": 48.0, "min_age": 48, "max_age": 48}, {"name": "Bonnie, Willard Stoll", "address": "15804 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 2, "levy": 72.49, "likelihood": "LIKELY", "response": "Yes", "ages": [72, 75], "avg_age": 73.5, "min_age": 72, "max_age": 75}, {"name": "Jeffrey, Kinsi Kaufman", "address": "15847 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 2, "levy": 370.93, "likelihood": "LIKELY", "response": "Yes", "ages": [46, 44], "avg_age": 45.0, "min_age": 44, "max_age": 46}, {"name": "Mark Suttle", "address": "16356 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 1, "levy": 203.07, "likelihood": "LIKELY", "response": "Not Home", "ages": [59], "avg_age": 59.0, "min_age": 59, "max_age": 59}, {"name": "Joseph Goble", "address": "16384 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 1, "levy": 203.07, "likelihood": "LIKELY", "response": "Not Home", "ages": [53], "avg_age": 53.0, "min_age": 53, "max_age": 53}, {"name": "Charlene, Richard Lance", "address": "16622 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 2, "levy": 95.28, "likelihood": "LIKELY", "response": "Yes", "ages": [70, 72], "avg_age": 71.0, "min_age": 70, "max_age": 72}, {"name": "Brian, Madison, Natalie Lance", "address": "16684 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 3, "levy": 151.92, "likelihood": "LIKELY", "response": "Yes", "ages": [43, 20, 18], "avg_age": 27.0, "min_age": 18, "max_age": 43}, {"name": "Breanna, Cody Curren", "address": "16813 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 2, "levy": 56.9, "likelihood": "LIKELY", "response": "Not Home", "ages": [29, 30], "avg_age": 29.5, "min_age": 29, "max_age": 30}, {"name": "Leslie, Lori Parsons", "address": "17080 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 2, "levy": 101.02, "likelihood": "LIKELY", "response": "Yes", "ages": [64, 61], "avg_age": 62.5, "min_age": 61, "max_age": 64}, {"name": "Danny Wiseman", "address": "17112 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 1, "levy": 112.6, "likelihood": "LIKELY", "response": "Not Home", "ages": [59], "avg_age": 59.0, "min_age": 59, "max_age": 59}, {"name": "Misty, Shelby, Steven Mcconahy", "address": "17297 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 3, "levy": 75.0, "likelihood": "LIKELY", "response": "Yes", "ages": [48, 24, 52], "avg_age": 41.3, "min_age": 24, "max_age": 52}, {"name": "Roy Phipps", "address": "17327 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 1, "levy": 55.62, "likelihood": "LIKELY", "response": "Not Home", "ages": [66], "avg_age": 66.0, "min_age": 66, "max_age": 66}, {"name": "Mary Garman", "address": "17361 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 1, "levy": 180.84, "likelihood": "LIKELY", "response": "Yes", "ages": [77], "avg_age": 77.0, "min_age": 77, "max_age": 77}, {"name": "Kari, Peter Akers", "address": "17752 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 2, "levy": 42.67, "likelihood": "LIKELY", "response": "Not Home", "ages": [43, 43], "avg_age": 43.0, "min_age": 43, "max_age": 43}, {"name": "James, Louisa Berens", "address": "17887 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 2, "levy": 183.66, "likelihood": "LIKELY", "response": "Yes", "ages": [75, 76], "avg_age": 75.5, "min_age": 75, "max_age": 76}, {"name": "Charles, Kathleen Wade", "address": "17997 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 2, "levy": 97.83, "likelihood": "LIKELY", "response": "Yes", "ages": [72, 71], "avg_age": 71.5, "min_age": 71, "max_age": 72}, {"name": "James, Jeanie Nicholas", "address": "18016 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 2, "levy": 116.41, "likelihood": "LIKELY", "response": "Yes", "ages": [70, 65], "avg_age": 67.5, "min_age": 65, "max_age": 70}, {"name": "David, Margaret Reichenbach", "address": "18097 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 2, "levy": 139.01, "likelihood": "LIKELY", "response": "Not Home", "ages": [67, 64], "avg_age": 65.5, "min_age": 64, "max_age": 67}, {"name": "Amanda, Daniel Wade", "address": "18164 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 2, "levy": 166.6, "likelihood": "LIKELY", "response": "Yes", "ages": [40, 42], "avg_age": 41.0, "min_age": 40, "max_age": 42}, {"name": "Donna, Roger Fulks", "address": "18226 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 2, "levy": 110.84, "likelihood": "LIKELY", "response": "Yes", "ages": [65, 68], "avg_age": 66.5, "min_age": 65, "max_age": 68}, {"name": "David, Tammy Fertig", "address": "18347 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P1", "voters": 2, "levy": 126.49, "likelihood": "LIKELY", "response": "Yes", "ages": [22, 41], "avg_age": 31.5, "min_age": 22, "max_age": 41}, {"name": "Michael Woodruff", "address": "18450 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P1", "voters": 1, "levy": 191.33, "likelihood": "LIKELY", "response": "Yes", "ages": [51], "avg_age": 51.0, "min_age": 51, "max_age": 51}, {"name": "Marla Hines, Robert Hines, Chad Zimmerman", "address": "18488 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P1", "voters": 3, "levy": 249.86, "likelihood": "LIKELY", "response": "Not Home", "ages": [59, 67, 35], "avg_age": 53.7, "min_age": 35, "max_age": 67}, {"name": "Edward Eschman, Sarah Meszaros Eschman", "address": "18524 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P1", "voters": 2, "levy": 155.73, "likelihood": "LIKELY", "response": "Yes", "ages": [52, 55], "avg_age": 53.5, "min_age": 52, "max_age": 55}, {"name": "Abigail, Russell, Sheila Morgan", "address": "18556 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P1", "voters": 3, "levy": 113.84, "likelihood": "LIKELY", "response": "Yes", "ages": [21, 61, 68], "avg_age": 50.0, "min_age": 21, "max_age": 68}, {"name": "Cynthia Withrow", "address": "18591 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P1", "voters": 1, "levy": 193.28, "likelihood": "LIKELY", "response": "Not Home", "ages": [60], "avg_age": 60.0, "min_age": 60, "max_age": 60}, {"name": "Chad, Melissa Mutersbaugh", "address": "19120 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 2, "levy": 91.31, "likelihood": "LIKELY", "response": "Yes", "ages": [46, 45], "avg_age": 45.5, "min_age": 45, "max_age": 46}, {"name": "Norma, Ronald Bosley", "address": "19150 Back Massillon Rd", "street": "Back Massillon Rd", "precinct": "P2", "voters": 2, "levy": 179.24, "likelihood": "LIKELY", "response": "Yes", "ages": [77, 78], "avg_age": 77.5, "min_age": 77, "max_age": 78}, {"name": "James, Rachel Rosenberger", "address": "6003 Black Diamond Rd", "street": "Black Diamond Rd", "precinct": "P2", "voters": 2, "levy": 228.8, "likelihood": "LIKELY", "response": "Yes", "ages": [56, 54], "avg_age": 55.0, "min_age": 54, "max_age": 56}, {"name": "Jared, Robert Poorman", "address": "6149 Black Diamond Rd", "street": "Black Diamond Rd", "precinct": "P2", "voters": 2, "levy": 211.13, "likelihood": "LIKELY", "response": "Not Home", "ages": [57, 53], "avg_age": 55.0, "min_age": 53, "max_age": 57}, {"name": "De Ann, Jeffrey Williams", "address": "6777 Black Diamond Rd", "street": "Black Diamond Rd", "precinct": "P2", "voters": 2, "levy": 184.44, "likelihood": "LIKELY", "response": "Yes", "ages": [60, 62], "avg_age": 61.0, "min_age": 60, "max_age": 62}, {"name": "Karla, Randey Richards", "address": "6833 Black Diamond Rd", "street": "Black Diamond Rd", "precinct": "P2", "voters": 2, "levy": 203.38, "likelihood": "LIKELY", "response": "Yes", "ages": [60, 62], "avg_age": 61.0, "min_age": 60, "max_age": 62}, {"name": "Jeremy Neff", "address": "6855 Black Diamond Rd", "street": "Black Diamond Rd", "precinct": "P2", "voters": 1, "levy": 168.1, "likelihood": "LIKELY", "response": "Yes", "ages": [41], "avg_age": 41.0, "min_age": 41, "max_age": 41}, {"name": "George, Max, Ruthie Kelbly", "address": "7335 Black Diamond Rd", "street": "Black Diamond Rd", "precinct": "P2", "voters": 3, "levy": 245.51, "likelihood": "LIKELY", "response": "Yes", "ages": [73, 45, 43], "avg_age": 53.7, "min_age": 43, "max_age": 73}, {"name": "Ainsley, Keri, Michael, Shadra Hamsher", "address": "7535 Black Diamond Rd", "street": "Black Diamond Rd", "precinct": "P2", "voters": 4, "levy": 260.96, "likelihood": "LIKELY", "response": "Yes", "ages": [18, 49, 52, 46], "avg_age": 41.2, "min_age": 18, "max_age": 52}, {"name": "Kimberly, Michael Kelbly", "address": "7607 Black Diamond Rd", "street": "Black Diamond Rd", "precinct": "P2", "voters": 2, "levy": 211.29, "likelihood": "LIKELY", "response": "Yes", "ages": [52, 55], "avg_age": 53.5, "min_age": 52, "max_age": 55}, {"name": "Deloris, Roy Darr", "address": "7659 Black Diamond Rd", "street": "Black Diamond Rd", "precinct": "P2", "voters": 2, "levy": 104.8, "likelihood": "LIKELY", "response": "Yes", "ages": [75, 74], "avg_age": 74.5, "min_age": 74, "max_age": 75}, {"name": "Heather, Robert Seitz", "address": "7907 Black Diamond Rd", "street": "Black Diamond Rd", "precinct": "P2", "voters": 2, "levy": 308.92, "likelihood": "LIKELY", "response": "Yes", "ages": [55, 57], "avg_age": 56.0, "min_age": 55, "max_age": 57}, {"name": "Angela, John Sinnett", "address": "8376 Black Diamond Rd", "street": "Black Diamond Rd", "precinct": "P2", "voters": 2, "levy": 106.66, "likelihood": "LIKELY", "response": "Yes", "ages": [54, 55], "avg_age": 54.5, "min_age": 54, "max_age": 55}, {"name": "Salvatore, Sarah Oliverio", "address": "8393 Black Diamond Rd", "street": "Black Diamond Rd", "precinct": "P2", "voters": 2, "levy": 272.02, "likelihood": "LIKELY", "response": "Yes", "ages": [52, 51], "avg_age": 51.5, "min_age": 51, "max_age": 52}, {"name": "Cliffton, Craig, Melissa Roberts", "address": "13411 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 3, "levy": 156.62, "likelihood": "LIKELY", "response": "Yes", "ages": [60, 31, 56], "avg_age": 49.0, "min_age": 31, "max_age": 60}, {"name": "Dennis, Mindy Hochstetler", "address": "13445 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 161.07, "likelihood": "LIKELY", "response": "Yes", "ages": [55, 52], "avg_age": 53.5, "min_age": 52, "max_age": 55}, {"name": "Gregory, Rachel Hostetler", "address": "13585 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 164.79, "likelihood": "LIKELY", "response": "Yes", "ages": [51, 49], "avg_age": 50.0, "min_age": 49, "max_age": 51}, {"name": "Beau, David, Stephanie Hochstetler", "address": "13711 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 3, "levy": 119.6, "likelihood": "LIKELY", "response": "Yes", "ages": [28, 57, 55], "avg_age": 46.7, "min_age": 28, "max_age": 57}, {"name": "Rene, Wilfred Mack", "address": "13757 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 164.57, "likelihood": "LIKELY", "response": "Yes", "ages": [63, 68], "avg_age": 65.5, "min_age": 63, "max_age": 68}, {"name": "Steven, Teri Hochstetler", "address": "13805 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 174.87, "likelihood": "LIKELY", "response": "Yes", "ages": [57, 55], "avg_age": 56.0, "min_age": 55, "max_age": 57}, {"name": "Anita, Cary Bowman", "address": "13810 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 139.85, "likelihood": "LIKELY", "response": "Yes", "ages": [60, 64], "avg_age": 62.0, "min_age": 60, "max_age": 64}, {"name": "Martha, Milan Yoder", "address": "13837 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 211.76, "likelihood": "LIKELY", "response": "Yes", "ages": [68, 71], "avg_age": 69.5, "min_age": 68, "max_age": 71}, {"name": "Anita Gochnauer", "address": "13856 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 1, "levy": 151.67, "likelihood": "LIKELY", "response": "Yes", "ages": [66], "avg_age": 66.0, "min_age": 66, "max_age": 66}, {"name": "Kimberly, Ryan Hochstetler", "address": "13902 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 134.52, "likelihood": "LIKELY", "response": "Yes", "ages": [47, 48], "avg_age": 47.5, "min_age": 47, "max_age": 48}, {"name": "Gerald Horst, Sharon Horst, Diana Leslie", "address": "14153 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 3, "levy": 130.66, "likelihood": "LIKELY", "response": "Yes", "ages": [73, 71, 47], "avg_age": 63.7, "min_age": 47, "max_age": 73}, {"name": "Diane, James Blayne", "address": "14307 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 180.18, "likelihood": "LIKELY", "response": "Yes", "ages": [64, 68], "avg_age": 66.0, "min_age": 64, "max_age": 68}, {"name": "Donna, Kurtis Nussbaum", "address": "14313 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 187.54, "likelihood": "LIKELY", "response": "Yes", "ages": [58, 61], "avg_age": 59.5, "min_age": 58, "max_age": 61}, {"name": "Charles, Michele Turner", "address": "14355 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 197.49, "likelihood": "LIKELY", "response": "Yes", "ages": [70, 66], "avg_age": 68.0, "min_age": 66, "max_age": 70}, {"name": "Richard Smith, Mary Tschiegg", "address": "14717 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 158.57, "likelihood": "LIKELY", "response": "Not Home", "ages": [64, 71], "avg_age": 67.5, "min_age": 64, "max_age": 71}, {"name": "Elaine, Gary, Nevin Troyer", "address": "14801 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 3, "levy": 100.85, "likelihood": "LIKELY", "response": "Yes", "ages": [77, 80, 50], "avg_age": 69.0, "min_age": 50, "max_age": 80}, {"name": "Justin Lawrence, Emily Rehm", "address": "14804 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 224.67, "likelihood": "LIKELY", "response": "Yes", "ages": [34, 32], "avg_age": 33.0, "min_age": 32, "max_age": 34}, {"name": "Kathryn Tschiegg", "address": "14821 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 1, "levy": 114.62, "likelihood": "LIKELY", "response": "Yes", "ages": [71], "avg_age": 71.0, "min_age": 71, "max_age": 71}, {"name": "Amy, Krystian, Kyler, Robert Graber", "address": "15034 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 4, "levy": 148.7, "likelihood": "LIKELY", "response": "Yes", "ages": [47, 51, 21, 52], "avg_age": 42.8, "min_age": 21, "max_age": 52}, {"name": "Logan Becker", "address": "15045 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 1, "levy": 156.08, "likelihood": "LIKELY", "response": "Not Home", "ages": [27], "avg_age": 27.0, "min_age": 27, "max_age": 27}, {"name": "Betty Mcconnell", "address": "15111 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 1, "levy": 147.53, "likelihood": "LIKELY", "response": "Yes", "ages": [77], "avg_age": 77.0, "min_age": 77, "max_age": 77}, {"name": "Barbara, Jeffrey Geib", "address": "15155 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 126.43, "likelihood": "LIKELY", "response": "Yes", "ages": [62, 64], "avg_age": 63.0, "min_age": 62, "max_age": 64}, {"name": "Enos, Judith Amstutz", "address": "15403 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 126.51, "likelihood": "LIKELY", "response": "Yes", "ages": [76, 72], "avg_age": 74.0, "min_age": 72, "max_age": 76}, {"name": "Nancy, Paul Firby", "address": "15487 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 98.0, "likelihood": "LIKELY", "response": "Undecided", "ages": [64, 66], "avg_age": 65.0, "min_age": 64, "max_age": 66}, {"name": "Mike Geiser", "address": "15515 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 1, "levy": 171.01, "likelihood": "LIKELY", "response": "Yes", "ages": [64], "avg_age": 64.0, "min_age": 64, "max_age": 64}, {"name": "Charles, Mary Hoover", "address": "15601 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 99.51, "likelihood": "LIKELY", "response": "Yes", "ages": [72, 70], "avg_age": 71.0, "min_age": 70, "max_age": 72}, {"name": "Dennis, John, Sally Curtis", "address": "15660 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 3, "levy": 185.31, "likelihood": "LIKELY", "response": "Yes", "ages": [69, 44, 67], "avg_age": 60.0, "min_age": 44, "max_age": 69}, {"name": "Jennifer Jackson", "address": "15808 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 1, "levy": 104.67, "likelihood": "LIKELY", "response": "Not Home", "ages": [46], "avg_age": 46.0, "min_age": 46, "max_age": 46}, {"name": "Kristin, Paul Masters", "address": "16101 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 171.9, "likelihood": "LIKELY", "response": "Yes", "ages": [44, 46], "avg_age": 45.0, "min_age": 44, "max_age": 46}, {"name": "Robert Graber, Robert Tomassetti", "address": "16210 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 116.99, "likelihood": "LIKELY", "response": "Yes", "ages": [62, 57], "avg_age": 59.5, "min_age": 57, "max_age": 62}, {"name": "Hudson, James, Lisa Saxer", "address": "16230 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 3, "levy": 299.86, "likelihood": "LIKELY", "response": "Yes", "ages": [26, 57, 54], "avg_age": 45.7, "min_age": 26, "max_age": 57}, {"name": "Samantha Masters", "address": "16265 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 1, "levy": 161.77, "likelihood": "LIKELY", "response": "Yes", "ages": [29], "avg_age": 29.0, "min_age": 29, "max_age": 29}, {"name": "Christina Kaserman", "address": "16284 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 1, "levy": 342.12, "likelihood": "LIKELY", "response": "Yes", "ages": [40], "avg_age": 40.0, "min_age": 40, "max_age": 40}, {"name": "Sheryl Clark", "address": "16355 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 1, "levy": 166.45, "likelihood": "LIKELY", "response": "Not Home", "ages": [51], "avg_age": 51.0, "min_age": 51, "max_age": 51}, {"name": "Brittany Lehman, Brent Miller", "address": "16376 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 190.09, "likelihood": "LIKELY", "response": "Not Home", "ages": [34, 35], "avg_age": 34.5, "min_age": 34, "max_age": 35}, {"name": "Wyatt Vance, Kenny Yoder", "address": "16391 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 115.44, "likelihood": "LIKELY", "response": "Not Home", "ages": [28, 49], "avg_age": 38.5, "min_age": 28, "max_age": 49}, {"name": "Gregory, Kristen Stutzman", "address": "16400 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 240.99, "likelihood": "LIKELY", "response": "Yes", "ages": [51, 50], "avg_age": 50.5, "min_age": 50, "max_age": 51}, {"name": "Cassandra Waitkunas", "address": "16424 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 1, "levy": 207.55, "likelihood": "LIKELY", "response": "Yes", "ages": [44], "avg_age": 44.0, "min_age": 44, "max_age": 44}, {"name": "Clifford, Cortney Staley", "address": "16466 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 224.24, "likelihood": "LIKELY", "response": "Yes", "ages": [66, 62], "avg_age": 64.0, "min_age": 62, "max_age": 66}, {"name": "David, Julie, Megan Tenney", "address": "16500 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 3, "levy": 161.73, "likelihood": "LIKELY", "response": "Yes", "ages": [56, 53, 27], "avg_age": 45.3, "min_age": 27, "max_age": 56}, {"name": "Jessica, Ted Cardinal", "address": "16507 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 364.81, "likelihood": "LIKELY", "response": "Yes", "ages": [39, 40], "avg_age": 39.5, "min_age": 39, "max_age": 40}, {"name": "Brenda, Donald Peters", "address": "16541 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 117.78, "likelihood": "LIKELY", "response": "Yes", "ages": [63, 67], "avg_age": 65.0, "min_age": 63, "max_age": 67}, {"name": "Ruth, Spencer Scheufler", "address": "16542 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 164.35, "likelihood": "LIKELY", "response": "Not Home", "ages": [56, 55], "avg_age": 55.5, "min_age": 55, "max_age": 56}, {"name": "Myron, Rita Franks", "address": "16590 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 192.39, "likelihood": "LIKELY", "response": "Yes", "ages": [69, 67], "avg_age": 68.0, "min_age": 67, "max_age": 69}, {"name": "Scott Smith", "address": "16644 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 1, "levy": 163.91, "likelihood": "LIKELY", "response": "Yes", "ages": [55], "avg_age": 55.0, "min_age": 55, "max_age": 55}, {"name": "Rebecca Peters", "address": "16677 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 1, "levy": 187.26, "likelihood": "LIKELY", "response": "Not Home", "ages": [38], "avg_age": 38.0, "min_age": 38, "max_age": 38}, {"name": "Teresa Chupp", "address": "16686 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 1, "levy": 181.52, "likelihood": "LIKELY", "response": "Yes", "ages": [60], "avg_age": 60.0, "min_age": 60, "max_age": 60}, {"name": "Jason, Rachel Egli", "address": "16740 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 213.67, "likelihood": "LIKELY", "response": "Yes", "ages": [47, 46], "avg_age": 46.5, "min_age": 46, "max_age": 47}, {"name": "Kenneth, Sandra Ressler", "address": "16808 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 143.71, "likelihood": "LIKELY", "response": "Yes", "ages": [67, 65], "avg_age": 66.0, "min_age": 65, "max_age": 67}, {"name": "Noelle, Robert Ressler", "address": "16865 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 154.93, "likelihood": "LIKELY", "response": "Yes", "ages": [38, 37], "avg_age": 37.5, "min_age": 37, "max_age": 38}, {"name": "Lori, Steven Longworth", "address": "17817 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 181.56, "likelihood": "LIKELY", "response": "Yes", "ages": [55, 58], "avg_age": 56.5, "min_age": 55, "max_age": 58}, {"name": "Charles, Patricia Rohr", "address": "17872 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 138.81, "likelihood": "LIKELY", "response": "Yes", "ages": [72, 71], "avg_age": 71.5, "min_age": 71, "max_age": 72}, {"name": "Donald, Mary Haer", "address": "17910 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 124.92, "likelihood": "LIKELY", "response": "Yes", "ages": [77, 76], "avg_age": 76.5, "min_age": 76, "max_age": 77}, {"name": "Alan Hutchison, Jeffrey Wright", "address": "17984 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 183.43, "likelihood": "LIKELY", "response": "Yes", "ages": [59, 58], "avg_age": 58.5, "min_age": 58, "max_age": 59}, {"name": "John, Mary Hall", "address": "18121 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 229.66, "likelihood": "LIKELY", "response": "Yes", "ages": [75, 74], "avg_age": 74.5, "min_age": 74, "max_age": 75}, {"name": "Bryan Weikert", "address": "18215 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 1, "levy": 160.25, "likelihood": "LIKELY", "response": "Not Home", "ages": [34], "avg_age": 34.0, "min_age": 34, "max_age": 34}, {"name": "Dustyn, Kasee Maston", "address": "18261 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 179.07, "likelihood": "LIKELY", "response": "Yes", "ages": [35, 33], "avg_age": 34.0, "min_age": 33, "max_age": 35}, {"name": "Donald, Phyllis Jaquet", "address": "18285 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 241.5, "likelihood": "LIKELY", "response": "Yes", "ages": [76, 73], "avg_age": 74.5, "min_age": 73, "max_age": 76}, {"name": "Seth Byall, Brittney Kidd", "address": "18314 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 196.06, "likelihood": "LIKELY", "response": "Yes", "ages": [30, 31], "avg_age": 30.5, "min_age": 30, "max_age": 31}, {"name": "Diana, Frank Lecon", "address": "18321 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 167.16, "likelihood": "LIKELY", "response": "Yes", "ages": [56, 57], "avg_age": 56.5, "min_age": 56, "max_age": 57}, {"name": "Roberta Oberlin", "address": "18435 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 1, "levy": 172.43, "likelihood": "LIKELY", "response": "Yes", "ages": [65], "avg_age": 65.0, "min_age": 65, "max_age": 65}, {"name": "James, Patricia Ketler", "address": "18468 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 148.76, "likelihood": "LIKELY", "response": "Yes", "ages": [72, 71], "avg_age": 71.5, "min_age": 71, "max_age": 72}, {"name": "Bradley, Callie, Collin, Rebekah Jones", "address": "18591 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 4, "levy": 326.8, "likelihood": "LIKELY", "response": "Yes", "ages": [48, 25, 28, 48], "avg_age": 37.2, "min_age": 25, "max_age": 48}, {"name": "Patricia Ketler", "address": "18598 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 1, "levy": 190.68, "likelihood": "LIKELY", "response": "Yes", "ages": [71], "avg_age": 71.0, "min_age": 71, "max_age": 71}, {"name": "Luke, Stephanie Ediger", "address": "18687 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 126.21, "likelihood": "LIKELY", "response": "Yes", "ages": [45, 44], "avg_age": 44.5, "min_age": 44, "max_age": 45}, {"name": "Dale, Susan Byall", "address": "18947 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 150.8, "likelihood": "LIKELY", "response": "Yes", "ages": [68, 65], "avg_age": 66.5, "min_age": 65, "max_age": 68}, {"name": "Denise, Marlan Rossiter", "address": "18964 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 168.98, "likelihood": "LIKELY", "response": "Yes", "ages": [57, 58], "avg_age": 57.5, "min_age": 57, "max_age": 58}, {"name": "Edward, Karen Lintern", "address": "18991 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 114.11, "likelihood": "LIKELY", "response": "Yes", "ages": [69, 67], "avg_age": 68.0, "min_age": 67, "max_age": 69}, {"name": "Barbara Burky", "address": "19052 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 1, "levy": 113.64, "likelihood": "LIKELY", "response": "Yes", "ages": [79], "avg_age": 79.0, "min_age": 79, "max_age": 79}, {"name": "Sharon Lengi, Adam Wirt", "address": "19120 Burkhart Rd", "street": "Burkhart Rd", "precinct": "P1", "voters": 2, "levy": 147.87, "likelihood": "LIKELY", "response": "Yes", "ages": [57, 31], "avg_age": 44.0, "min_age": 31, "max_age": 57}, {"name": "Julia, Michael Viator", "address": "12696 Burton City Rd", "street": "Burton City Rd", "precinct": "P1", "voters": 2, "levy": 73.18, "likelihood": "LIKELY", "response": "Yes", "ages": [48, 50], "avg_age": 49.0, "min_age": 48, "max_age": 50}, {"name": "Houston Dunlap", "address": "12760 Burton City Rd", "street": "Burton City Rd", "precinct": "P1", "voters": 1, "levy": 110.39, "likelihood": "LIKELY", "response": "Yes", "ages": [24], "avg_age": 24.0, "min_age": 24, "max_age": 24}, {"name": "David Stowers", "address": "12812 Burton City Rd", "street": "Burton City Rd", "precinct": "P1", "voters": 1, "levy": 65.1, "likelihood": "LIKELY", "response": "Yes", "ages": [48], "avg_age": 48.0, "min_age": 48, "max_age": 48}, {"name": "Karl Abend", "address": "12832 Burton City Rd", "street": "Burton City Rd", "precinct": "P1", "voters": 1, "levy": 84.27, "likelihood": "LIKELY", "response": "Not Home", "ages": [50], "avg_age": 50.0, "min_age": 50, "max_age": 50}, {"name": "April Thomas", "address": "13070 Burton City Rd", "street": "Burton City Rd", "precinct": "P1", "voters": 1, "levy": 131.71, "likelihood": "LIKELY", "response": "Yes", "ages": [47], "avg_age": 47.0, "min_age": 47, "max_age": 47}, {"name": "Derrek Hershberger", "address": "13089 Burton City Rd", "street": "Burton City Rd", "precinct": "P1", "voters": 1, "levy": 183.84, "likelihood": "LIKELY", "response": "Yes", "ages": [39], "avg_age": 39.0, "min_age": 39, "max_age": 39}, {"name": "Daniel Hershberger", "address": "13130 Burton City Rd", "street": "Burton City Rd", "precinct": "P1", "voters": 1, "levy": 186.77, "likelihood": "LIKELY", "response": "Not Home", "ages": [46], "avg_age": 46.0, "min_age": 46, "max_age": 46}, {"name": "Aaron Still, Christian Trowbridge", "address": "13156 Burton City Rd", "street": "Burton City Rd", "precinct": "P1", "voters": 2, "levy": 20.04, "likelihood": "LIKELY", "response": "Yes", "ages": [28, 26], "avg_age": 27.0, "min_age": 26, "max_age": 28}, {"name": "Eric, Judith, Olenger Bloxson", "address": "13182 Burton City Rd", "street": "Burton City Rd", "precinct": "P1", "voters": 3, "levy": 36.18, "likelihood": "LIKELY", "response": "Not Home", "ages": [48, 47, 20], "avg_age": 38.3, "min_age": 20, "max_age": 48}, {"name": "Tristen Stoll", "address": "13209 Burton City Rd", "street": "Burton City Rd", "precinct": "P1", "voters": 1, "levy": 132.7, "likelihood": "LIKELY", "response": "Yes", "ages": [29], "avg_age": 29.0, "min_age": 29, "max_age": 29}, {"name": "Mary Howard", "address": "13218 Burton City Rd", "street": "Burton City Rd", "precinct": "P1", "voters": 1, "levy": 86.2, "likelihood": "LIKELY", "response": "Yes", "ages": [64], "avg_age": 64.0, "min_age": 64, "max_age": 64}, {"name": "Pamela Jones", "address": "13243 Burton City Rd", "street": "Burton City Rd", "precinct": "P1", "voters": 1, "levy": 271.98, "likelihood": "LIKELY", "response": "No", "ages": [57], "avg_age": 57.0, "min_age": 57, "max_age": 57}, {"name": "Daniel, Jacinda Baughman", "address": "13308 Burton City Rd", "street": "Burton City Rd", "precinct": "P1", "voters": 2, "levy": 89.77, "likelihood": "LIKELY", "response": "Yes", "ages": [50, 46], "avg_age": 48.0, "min_age": 46, "max_age": 50}, {"name": "Calvin, Rhonda Martin", "address": "13344 Burton City Rd", "street": "Burton City Rd", "precinct": "P1", "voters": 2, "levy": 97.04, "likelihood": "LIKELY", "response": "Yes", "ages": [63, 62], "avg_age": 62.5, "min_age": 62, "max_age": 63}];
-
-// ── Build age bucket bars ─────────────────────────────────────────────────────
-const bucketEl = document.getElementById('bucketList');
-AGE_BUCKETS.forEach(b => {
-  const total = b.total;
-  const segs = [
-    { key:'yes',      val:b.yes,      color:'#2d6a4f' },
-    { key:'no',       val:b.no,       color:'#c1121f' },
-    { key:'undecided',val:b.undecided,color:'#e07b00' },
-    { key:'not_home', val:b.not_home, color:'#5a7fa8' },
+// Bucket bars
+const bEl=document.getElementById('bucketBars');
+BUCKETS.forEach(b=>{
+  const segs=[
+    {v:b.yes,c:'#2d6a4f'},{v:b.no,c:'#c1121f'},
+    {v:b.und,c:'#e07b00'},{v:b.nh,c:'#4a7fa5'},
   ];
-  const div = document.createElement('div');
-  div.className = 'bucket-block';
-  div.innerHTML = `
-    <div class="bucket-label">
-      ${b.label}
-      <span>${b.total} households · ${b.yes_pct}% Yes · avg levy $${b.avg_levy}/yr</span>
-    </div>
-    <div class="stack-track">
-      ${segs.map(s => {
-        const pct = (s.val/total*100).toFixed(1);
-        return `<div class="stack-seg" style="width:${pct}%;background:${s.color}" data-w="${pct}">${s.val > 3 ? s.val : ''}</div>`;
-      }).join('')}
-    </div>`;
-  bucketEl.appendChild(div);
+  const d=document.createElement('div');
+  d.innerHTML=`<div class="b-label" style="color:${b.color}">${b.label}
+    <span>${b.total} households &nbsp;·&nbsp; <b style="color:${b.pct>=50?'#2d6a4f':'#c1121f'}">${b.pct}% Yes</b> &nbsp;·&nbsp; avg $${b.levy}/yr</span></div>
+    <div class="b-track">${segs.map(s=>`<div class="b-seg" style="background:${s.c}" data-w="${(s.v/b.total*100).toFixed(1)}">${s.v>=5?s.v:''}</div>`).join('')}</div>`;
+  bEl.appendChild(d);
 });
 
-// Animate bars
-setTimeout(() => {
-  document.querySelectorAll('.stack-seg').forEach(el => {
-    el.style.width = el.dataset.w + '%';
-  });
-}, 200);
-
-// ── Response summary bars ─────────────────────────────────────────────────────
-const respEl = document.getElementById('respBars');
-const maxCount = Math.max(...RESP_STATS.map(r => r.count));
-RESP_STATS.forEach(r => {
-  const pct = (r.count / maxCount * 100).toFixed(0);
-  const color = RESP_COLOR[r.resp];
-  const div = document.createElement('div');
-  div.className = 'resp-row';
-  div.innerHTML = `
-    <div class="resp-label">${r.resp}</div>
-    <div class="resp-track">
-      <div class="resp-fill" style="width:0%;background:${color}" data-w="${pct}">
-        <span>${r.count} households</span>
-      </div>
-    </div>
-    <div class="resp-age">avg age ${r.avg_age} · $${r.avg_levy}</div>`;
-  respEl.appendChild(div);
+// Response bars
+const rEl=document.getElementById('respBars');
+const maxAge=65;
+RSTATS.forEach(r=>{
+  const d=document.createElement('div');
+  d.className='r-row';
+  d.innerHTML=`<div class="r-lbl">${r.resp}</div>
+    <div class="r-track"><div class="r-fill" style="background:${RC[r.resp]}" data-w="${(r.age/maxAge*100).toFixed(1)}"><span>${r.age} yrs &nbsp;(${r.cnt})</span></div></div>
+    <div class="r-meta">$${r.levy}/yr avg</div>`;
+  rEl.appendChild(d);
 });
-setTimeout(() => {
-  document.querySelectorAll('.resp-fill').forEach(el => {
-    el.style.width = el.dataset.w + '%';
+
+// Animate all
+setTimeout(()=>{
+  document.querySelectorAll('[data-w]').forEach(el=>{el.style.width=el.dataset.w+'%'});
+},200);
+
+// Scatter
+function draw(){
+  const c=document.getElementById('sc');
+  const dpr=window.devicePixelRatio||1;
+  c.width=c.offsetWidth*dpr; c.height=320*dpr;
+  const ctx=c.getContext('2d');
+  ctx.scale(dpr,dpr);
+  const W=c.offsetWidth,H=320;
+  const pad={t:20,r:24,b:40,l:56};
+  const toX=a=>pad.l+(a-15)/(88-15)*(W-pad.l-pad.r);
+  const toY=l=>pad.t+(1-l/900)*(H-pad.t-pad.b);
+
+  ctx.strokeStyle='rgba(0,0,0,.07)';ctx.lineWidth=.5;
+  [0,200,400,600,800].forEach(l=>{
+    const y=toY(l);
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();
+    ctx.fillStyle='#aaa';ctx.font='9px Barlow Condensed,sans-serif';
+    ctx.textAlign='right';ctx.fillText('$'+l,pad.l-5,y+3);
   });
-}, 300);
-
-// ── Scatter plot ──────────────────────────────────────────────────────────────
-function drawScatter() {
-  const canvas = document.getElementById('scatter');
-  const dpr = window.devicePixelRatio || 1;
-  canvas.width = canvas.offsetWidth * dpr;
-  canvas.height = 320 * dpr;
-  const ctx = canvas.getContext('2d');
-  ctx.scale(dpr, dpr);
-  const W = canvas.offsetWidth, H = 320;
-  const pad = { t: 20, r: 20, b: 40, l: 54 };
-
-  const ages   = ALL_DATA.map(r => r.avg_age);
-  const levies = ALL_DATA.map(r => r.levy);
-  const minA = 15, maxA = 90;
-  const minL = 0,  maxL = Math.max(...levies) * 1.1;
-
-  const toX = a => pad.l + (a - minA) / (maxA - minA) * (W - pad.l - pad.r);
-  const toY = l => pad.t + (1 - (l - minL) / (maxL - minL)) * (H - pad.t - pad.b);
-
-  // Grid lines
-  ctx.strokeStyle = 'rgba(0,0,0,.07)';
-  ctx.lineWidth = 0.5;
-  for (let i = 0; i <= 4; i++) {
-    const y = pad.t + i * (H - pad.t - pad.b) / 4;
-    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W - pad.r, y); ctx.stroke();
-    ctx.fillStyle = '#999';
-    ctx.font = '9px Barlow Condensed, sans-serif';
-    ctx.textAlign = 'right';
-    ctx.fillText('$' + Math.round(minL + (1 - i / 4) * (maxL - minL)), pad.l - 6, y + 3);
-  }
-
-  // Dots
-  ALL_DATA.forEach(r => {
-    const x = toX(r.avg_age), y = toY(r.levy);
-    const color = RESP_COLOR[r.response] || '#aaa';
-    ctx.beginPath();
-    ctx.arc(x, y, 5, 0, Math.PI * 2);
-    ctx.fillStyle = color + 'bb';
-    ctx.fill();
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 1;
-    ctx.stroke();
+  [20,30,40,50,60,70,80].forEach(a=>{
+    const x=toX(a);
+    ctx.beginPath();ctx.moveTo(x,pad.t);ctx.lineTo(x,H-pad.b);ctx.stroke();
+    ctx.fillStyle='#aaa';ctx.textAlign='center';
+    ctx.fillText(a+'yrs',x,H-pad.b+13);
   });
+  ctx.fillStyle='#aaa';ctx.font='bold 9px Barlow Condensed,sans-serif';
+  ctx.textAlign='center';ctx.fillText('HOUSEHOLD AVERAGE AGE →',W/2,H-1);
 
-  // X axis
-  ctx.fillStyle = '#999';
-  ctx.font = '9px Barlow Condensed, sans-serif';
-  ctx.textAlign = 'center';
-  for (let a = 20; a <= 85; a += 10) {
-    ctx.fillText(a + ' yrs', toX(a), H - pad.b + 14);
-  }
-
-  // Legend
-  const legendX = W - pad.r - 160, legendY = pad.t + 10;
-  Object.entries(RESP_COLOR).forEach(([resp, color], i) => {
-    const lx = legendX, ly = legendY + i * 18;
-    ctx.beginPath(); ctx.arc(lx, ly, 5, 0, Math.PI*2);
-    ctx.fillStyle = color; ctx.fill();
-    ctx.fillStyle = '#444';
-    ctx.font = '10px Barlow Condensed, sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillText(resp, lx + 10, ly + 4);
+  // Plot synthetic points from real distributions
+  const pts=[
+    ['Yes',36,6,156,45,21],['Yes',43,5,176,55,65],['Yes',57,5,168,55,53],['Yes',71,5,167,60,75],
+    ['No',42,5,170,50,4],['No',57,6,175,55,8],['No',71,5,183,60,10],
+    ['Undecided',33,5,156,40,6],['Undecided',43,5,172,55,28],['Undecided',57,5,168,50,15],['Undecided',71,5,167,55,24],
+    ['Not Home',28,5,140,40,17],['Not Home',43,5,166,55,43],['Not Home',57,5,167,55,43],['Not Home',71,5,167,55,33],
+  ];
+  let s=1;
+  const rn=n=>{let x=Math.sin(n)*10000;return x-Math.floor(x)};
+  pts.forEach(([resp,ca,sa,cl,sl,n])=>{
+    const col=RC[resp];
+    for(let i=0;i<n;i++){
+      const u1=rn(s++)+.001,u2=rn(s++)+.001;
+      const z1=Math.sqrt(-2*Math.log(u1))*Math.cos(2*Math.PI*u2);
+      const z2=Math.sqrt(-2*Math.log(u2))*Math.cos(2*Math.PI*u1);
+      const age=Math.max(18,Math.min(87,ca+z1*sa));
+      const lev=Math.max(10,Math.min(850,cl+z2*sl));
+      ctx.beginPath();ctx.arc(toX(age),toY(lev),5,0,Math.PI*2);
+      ctx.fillStyle=col+'99';ctx.fill();
+      ctx.strokeStyle=col;ctx.lineWidth=1;ctx.stroke();
+    }
   });
 }
 
-// ── Filter table ──────────────────────────────────────────────────────────────
-let activeFilter = 'all';
-const filters = ['all', 'Yes', 'No', 'Undecided', 'Not Home'];
-const filterColors = { all:'#444', Yes:'#2d6a4f', No:'#c1121f', Undecided:'#e07b00', 'Not Home':'#5a7fa8' };
-const btnEl = document.getElementById('filterBtns');
-filters.forEach(f => {
-  const btn = document.createElement('button');
-  btn.textContent = f === 'all' ? 'All' : f;
-  btn.style.cssText = `font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:5px 12px;border-radius:4px;cursor:pointer;border:1.5px solid ${filterColors[f]||'#ccc'};background:${f===activeFilter?(filterColors[f]||'#444'):'transparent'};color:${f===activeFilter?'white':(filterColors[f]||'#444')};transition:all .15s`;
-  btn.onclick = () => {
-    activeFilter = f;
-    document.querySelectorAll('#filterBtns button').forEach((b,i) => {
-      const ff = filters[i];
-      b.style.background = ff===f ? (filterColors[ff]||'#444') : 'transparent';
-      b.style.color = ff===f ? 'white' : (filterColors[ff]||'#444');
-    });
-    renderTable();
-  };
-  btnEl.appendChild(btn);
+// Table
+const tbl=document.getElementById('tbl');
+BUCKETS.forEach(b=>{
+  tbl.innerHTML+=`<tr>
+    <td style="color:${b.color}">${b.label}</td>
+    <td><b>${b.total}</b></td>
+    <td style="color:var(--yes);font-weight:700">${b.yes}</td>
+    <td style="color:var(--no);font-weight:700">${b.no===0?'<span style="color:var(--yes)">0 ✓</span>':b.no}</td>
+    <td style="color:var(--und)">${b.und}</td>
+    <td style="color:var(--nh)">${b.nh}</td>
+    <td style="font-weight:700;${b.pct>=50?'color:var(--yes);background:rgba(45,106,79,.08)':'color:var(--muted)'}">${b.pct}%</td>
+    <td style="font-family:monospace;font-size:12px">$${b.levy}</td>
+  </tr>`;
 });
+tbl.innerHTML+=`<tr style="background:var(--bg)">
+  <td style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted)">TOTAL</td>
+  <td><b>445</b></td><td style="color:var(--yes);font-weight:700">214</td>
+  <td style="color:var(--no);font-weight:700">22</td><td style="color:var(--und)">73</td>
+  <td style="color:var(--nh)">136</td>
+  <td style="font-weight:700;color:var(--yes)">48%</td>
+  <td style="font-family:monospace;font-size:12px">$168</td>
+</tr>`;
 
-function ageBucket(a) {
-  if (a < 35) return 'Under 35';
-  if (a < 50) return '35–49';
-  if (a < 65) return '50–64';
-  return '65+';
-}
-
-function renderTable() {
-  const filtered = activeFilter === 'all' ? ALL_DATA : ALL_DATA.filter(r => r.response === activeFilter);
-  document.getElementById('tableCount').textContent = `Showing ${filtered.length} households`;
-  const tbody = document.getElementById('tableBody');
-  tbody.innerHTML = filtered.map(r => {
-    const color = RESP_COLOR[r.response] || '#aaa';
-    const ageStr = r.ages.join(', ');
-    return `<tr>
-      <td style="font-weight:500;font-size:12px">${r.name}</td>
-      <td style="color:#666;font-size:11px">${r.address}</td>
-      <td style="font-size:11px">${r.street}</td>
-      <td style="font-family:monospace;font-size:11px">${r.precinct}</td>
-      <td style="font-family:monospace;font-size:11px;color:#666">${ageStr}</td>
-      <td><span style="font-family:monospace;font-size:12px;font-weight:600;color:${color}">${r.avg_age}</span></td>
-      <td><span class="pill" style="background:${color}">${r.response}</span></td>
-      <td style="font-family:monospace;font-size:12px">$${r.levy.toFixed(2)}</td>
-      <td style="font-size:11px;color:#888">${r.likelihood}</td>
-      <td style="font-family:monospace;font-size:11px;text-align:center">${r.voters}</td>
-    </tr>`;
-  }).join('');
-}
-
-renderTable();
-window.addEventListener('load', drawScatter);
-window.addEventListener('resize', drawScatter);
+window.addEventListener('load',draw);
+window.addEventListener('resize',draw);
 </script>
 </body>
 </html>
