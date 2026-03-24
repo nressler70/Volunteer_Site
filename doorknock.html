@@ -6,23 +6,10 @@
 <title>Door-Knock Tracker — Baughman Township Fire &amp; EMS Levy</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Oswald:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --navy:#0f1928; --navy-mid:#1a2e44; --navy-light:#243d58;
-  --red:#c0392b;  --red-light:#e74c3c;
-  --gold:#c9962a; --gold-light:#f4a460;
-  --cream:#f5f0e8;
-  --green:#1e7a4a; --green-light:#27ae60;
-  --blue:#1a5276;  --blue-light:#2e86c1;
-  --gray:#8a9bb0;
-  /* Lighter background tones for the page */
-  --surface:#1c2d40;
-  --surface2:#223348;
-}
+:root{--navy:#0f1928;--navy-mid:#1a2e44;--red:#c0392b;--red-light:#e74c3c;--gold:#c9962a;--gold-light:#f4a460;--cream:#f5f0e8;--green:#1e7a4a;--green-light:#27ae60;--blue:#1a5276;--blue-light:#2e86c1;--gray:#8a9bb0;--surface:#1c2d40;--surface2:#223348}
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{font-family:'Source Sans 3',sans-serif;font-size:1rem;background:#16273a;color:#d8e8f4;line-height:1.65}
-
-/* ── Nav ──────────────────────────────────────── */
 nav{background:var(--navy);border-bottom:3px solid var(--red);position:sticky;top:0;z-index:1000}
 .nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:56px}
 .nav-brand{font-family:'Playfair Display',serif;font-size:.9rem;font-weight:700;color:var(--cream);text-decoration:none;white-space:nowrap}
@@ -31,8 +18,6 @@ nav{background:var(--navy);border-bottom:3px solid var(--red);position:sticky;to
 .nav-links a:hover{color:var(--cream);background:rgba(255,255,255,.07)}
 .nav-links a.nav-ev{background:var(--blue);color:#aee2ff}
 .nav-links a.nav-active{color:var(--gold-light);border-bottom:2px solid var(--gold)}
-
-/* ── Hero ─────────────────────────────────────── */
 .page-hero{background:linear-gradient(135deg,#0f1928 0%,#1a2e44 60%,#1e3a52 100%);padding:40px 28px 32px;border-bottom:3px solid var(--gold);position:relative;overflow:hidden}
 .page-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% 50%,rgba(192,57,43,.1) 0%,transparent 55%)}
 .page-hero-inner{max-width:1200px;margin:0 auto;position:relative;z-index:1;display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap}
@@ -50,84 +35,52 @@ nav{background:var(--navy);border-bottom:3px solid var(--red);position:sticky;to
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
 .btn-refresh{font-family:'Oswald',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:9px 18px;border-radius:6px;cursor:pointer;border:1px solid rgba(255,255,255,.2);background:transparent;color:#8aafcc;transition:all .15s;white-space:nowrap}
 .btn-refresh:hover{border-color:var(--gold);color:var(--gold-light)}
-
-/* ── Main ─────────────────────────────────────── */
 .main{max-width:1200px;margin:0 auto;padding:32px 28px 64px}
 .sec-label{font-family:'Oswald',sans-serif;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:10px;color:#a0b8cc}
 .sec-label::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.08);max-width:180px}
-
 .err-banner{background:rgba(192,57,43,.12);border:1px solid rgba(192,57,43,.35);border-radius:8px;padding:14px 18px;margin-bottom:20px;font-size:.95rem;color:#ffb3ae;display:none;line-height:1.6}
-
-/* ── Street selector ──────────────────────────── */
 .select-card{background:var(--surface);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:24px;margin-bottom:20px}
-.select-card .hint{font-size:.9rem;color:#7a9ab0;margin-bottom:12px}
+.select-card .hint{font-size:.85rem;color:#7a9ab0;margin-bottom:12px}
 .select-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-select#streetPicker{
-  flex:1;min-width:260px;
-  background:var(--surface2);
-  border:1px solid rgba(255,255,255,.18);
-  color:#e0eef8;
-  font-family:'Source Sans 3',sans-serif;
-  font-size:1.05rem;font-weight:600;
-  padding:12px 40px 12px 16px;
-  border-radius:8px;outline:none;cursor:pointer;appearance:none;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a9bb0' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 14px center;
-  transition:border-color .2s;
-}
+select#streetPicker{flex:1;min-width:260px;background:var(--surface2);border:1px solid rgba(255,255,255,.18);color:#e0eef8;font-family:'Source Sans 3',sans-serif;font-size:1.05rem;font-weight:600;padding:12px 40px 12px 16px;border-radius:8px;outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a9bb0' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;transition:border-color .2s}
 select#streetPicker:focus{border-color:var(--gold-light)}
 select#streetPicker option{background:#1a2e44;color:#e0eef8}
-
-/* ── Stats pills ──────────────────────────────── */
 .stats-row{display:none;flex-wrap:wrap;gap:8px;margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,.08)}
-.pill{display:inline-flex;align-items:center;gap:7px;padding:6px 14px;border-radius:20px;font-size:.88rem;font-weight:600;border:1px solid transparent}
+.pill{display:inline-flex;align-items:center;gap:7px;padding:6px 14px;border-radius:20px;font-size:.88rem;font-weight:600;border:1px solid transparent;cursor:pointer;transition:filter .15s,transform .1s;user-select:none}
+.pill:hover{filter:brightness(1.2);transform:translateY(-1px)}
+.pill.active{box-shadow:0 0 0 2px currentColor;filter:brightness(1.15)}
 .pill-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.p-total    {background:rgba(201,150,42,.1); border-color:rgba(201,150,42,.3); color:#e8c96a} .p-total     .pill-dot{background:#c9962a}
-.p-unvisited{background:rgba(70,150,220,.1); border-color:rgba(70,150,220,.3); color:#88c8ee} .p-unvisited  .pill-dot{background:#4696dc}
-.p-nothome  {background:rgba(200,80,70,.1);  border-color:rgba(200,80,70,.3);  color:#f0a09a} .p-nothome    .pill-dot{background:#c85046}
-.p-yes      {background:rgba(50,170,100,.1); border-color:rgba(50,170,100,.3); color:#7dd8a0} .p-yes        .pill-dot{background:#32aa64}
-.p-no       {background:rgba(180,60,50,.1);  border-color:rgba(180,60,50,.25); color:#f0b8b4} .p-no         .pill-dot{background:#b43c32}
-.p-undecided{background:rgba(180,150,60,.1); border-color:rgba(180,150,60,.3); color:#ddc870} .p-undecided  .pill-dot{background:#b49630}
-
-/* ── Progress bar ─────────────────────────────── */
+.p-total    {background:rgba(201,150,42,.12);border-color:rgba(201,150,42,.3);color:#e8c96a} .p-total     .pill-dot{background:var(--gold)}
+.p-unvisited{background:rgba(70,150,220,.12);border-color:rgba(70,150,220,.3);color:#88c8ee} .p-unvisited  .pill-dot{background:#4696dc}
+.p-nothome  {background:rgba(200,80,70,.12); border-color:rgba(200,80,70,.3); color:#f0a09a} .p-nothome    .pill-dot{background:#c85046}
+.p-yes      {background:rgba(50,170,100,.12);border-color:rgba(50,170,100,.3);color:#7dd8a0} .p-yes        .pill-dot{background:#32aa64}
+.p-no       {background:rgba(180,60,50,.10); border-color:rgba(180,60,50,.25);color:#f0b8b4} .p-no         .pill-dot{background:#b43c32}
+.p-undecided{background:rgba(180,150,60,.10);border-color:rgba(180,150,60,.3);color:#ddc870} .p-undecided  .pill-dot{background:#b49630}
+.pills-hint{font-size:.75rem;color:#5a7a90;margin-top:8px}
 .prog-wrap{display:none;margin-bottom:18px}
 .prog-labels{display:flex;justify-content:space-between;font-size:.85rem;color:#8aafcc;margin-bottom:6px;font-weight:600}
 .prog-track{height:8px;background:rgba(255,255,255,.08);border-radius:5px;overflow:hidden}
-.prog-fill{height:100%;border-radius:5px;transition:width .5s ease;background:linear-gradient(90deg,#1e7a4a,#32aa64)}
-
-/* ── Alert banner ─────────────────────────────── */
+.prog-fill{height:100%;border-radius:5px;transition:width .5s ease;background:linear-gradient(90deg,var(--green),var(--green-light))}
 .alert-banner{background:rgba(192,57,43,.1);border:1px solid rgba(192,57,43,.3);border-radius:8px;padding:13px 18px;font-size:.95rem;color:#f0a09a;margin-bottom:18px;display:none;font-weight:600;line-height:1.5}
 .alert-banner b{color:#e06058}
-
-/* ── Table card ───────────────────────────────── */
 .table-card{background:var(--surface);border:1px solid rgba(255,255,255,.1);border-radius:10px;overflow:hidden}
 .table-toolbar{background:rgba(0,0,0,.2);border-bottom:1px solid rgba(255,255,255,.08);padding:12px 18px;display:none;align-items:center;gap:8px;flex-wrap:wrap}
 .toolbar-title{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;color:#e0eef8;margin-right:8px;white-space:nowrap}
 .toolbar-hint{font-size:.78rem;color:var(--gray);margin-right:4px}
-
-/* filter buttons */
 .flt{font-family:'Source Sans 3',sans-serif;font-size:.82rem;font-weight:600;padding:6px 13px;border-radius:6px;cursor:pointer;border:1px solid rgba(255,255,255,.15);background:transparent;color:#9ab8cc;transition:all .15s;white-space:nowrap}
 .flt:hover{color:#e0eef8;border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.05)}
-.flt.on-all      {background:rgba(201,150,42,.15);border-color:rgba(201,150,42,.4);color:#e8c96a}
-.flt.on-unvisited{background:rgba(70,150,220,.15);border-color:rgba(70,150,220,.4);color:#88c8ee}
-.flt.on-nothome  {background:rgba(200,80,70,.15); border-color:rgba(200,80,70,.4); color:#f0a09a}
-.flt.on-yes      {background:rgba(50,170,100,.15);border-color:rgba(50,170,100,.4);color:#7dd8a0}
-.flt.on-no       {background:rgba(180,60,50,.12); border-color:rgba(180,60,50,.35);color:#f0b8b4}
-.flt.on-undecided{background:rgba(180,150,60,.12);border-color:rgba(180,150,60,.35);color:#ddc870}
-
-/* ── Table rows ───────────────────────────────── */
+.flt.active{background:rgba(201,150,42,.18);border-color:rgba(201,150,42,.5);color:#e8c96a}
 table{width:100%;border-collapse:collapse}
-thead th{font-family:'Oswald',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7a9ab0;padding:10px 18px;text-align:left;background:rgba(0,0,0,.15);border-bottom:1px solid rgba(255,255,255,.08)}
+thead th{font-family:'Oswald',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7a9ab0;padding:10px 18px;text-align:left;background:rgba(0,0,0,.15);border-bottom:1px solid rgba(255,255,255,.08)}
 thead th.tc{text-align:center}
-tbody tr{border-bottom:1px solid rgba(255,255,255,.05);transition:background .1s}
+tbody tr{border-bottom:1px solid rgba(255,255,255,.05)}
 tbody tr:last-child{border-bottom:none}
 tbody tr:hover{background:rgba(255,255,255,.03)}
 tbody tr.r-unvisited{border-left:4px solid rgba(70,150,220,.4)}
-tbody tr.r-nothome  {border-left:4px solid #c85046;background:rgba(200,80,70,.05)}
-tbody tr.r-yes      {border-left:4px solid #32aa64;background:rgba(50,170,100,.05)}
-tbody tr.r-no       {border-left:4px solid #b43c32;background:rgba(180,60,50,.05)}
+tbody tr.r-nothome{border-left:4px solid #c85046;background:rgba(200,80,70,.05)}
+tbody tr.r-yes{border-left:4px solid #32aa64;background:rgba(50,170,100,.05)}
+tbody tr.r-no{border-left:4px solid #b43c32;background:rgba(180,60,50,.05)}
 tbody tr.r-undecided{border-left:4px solid #b49630;background:rgba(180,150,60,.05)}
-
 td{padding:12px 18px;vertical-align:middle}
 .td-addr{font-family:'JetBrains Mono',monospace;font-size:.95rem;font-weight:600;color:#e8f4ff;white-space:nowrap}
 .td-name{font-size:.9rem;color:#b8d0e4;max-width:240px;line-height:1.4}
@@ -136,102 +89,51 @@ td{padding:12px 18px;vertical-align:middle}
 .v-badge{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);font-size:.82rem;font-weight:700;color:#d0e8f8}
 .td-prec{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#8a7ab0;text-align:center;font-weight:600}
 .td-resp{text-align:center;white-space:nowrap}
-.resp-badge{display:inline-block;font-family:'Source Sans 3',sans-serif;font-size:.82rem;font-weight:700;padding:5px 14px;border-radius:5px;min-width:100px;text-align:center;letter-spacing:.01em}
-.rb-unvisited{background:rgba(70,150,220,.15); color:#88c8ee; border:1px solid rgba(70,150,220,.3)}
-.rb-nothome  {background:rgba(200,80,70,.18);  color:#f0a09a; border:1px solid rgba(200,80,70,.4)}
-.rb-yes      {background:rgba(50,170,100,.18); color:#7dd8a0; border:1px solid rgba(50,170,100,.4)}
-.rb-no       {background:rgba(180,60,50,.15);  color:#f0b8b4; border:1px solid rgba(180,60,50,.35)}
-.rb-undecided{background:rgba(180,150,60,.15); color:#ddc870; border:1px solid rgba(180,150,60,.35)}
+.resp-badge{display:inline-block;font-family:'Source Sans 3',sans-serif;font-size:.82rem;font-weight:700;padding:5px 14px;border-radius:5px;min-width:100px;text-align:center}
+.rb-unvisited{background:rgba(70,150,220,.15);color:#88c8ee;border:1px solid rgba(70,150,220,.3)}
+.rb-nothome{background:rgba(200,80,70,.18);color:#f0a09a;border:1px solid rgba(200,80,70,.4)}
+.rb-yes{background:rgba(50,170,100,.18);color:#7dd8a0;border:1px solid rgba(50,170,100,.4)}
+.rb-no{background:rgba(180,60,50,.15);color:#f0b8b4;border:1px solid rgba(180,60,50,.35)}
+.rb-undecided{background:rgba(180,150,60,.15);color:#ddc870;border:1px solid rgba(180,150,60,.35)}
 .td-notes-col{font-size:.82rem;color:#9ab8cc;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-
-/* ── Empty state ──────────────────────────────── */
 .empty-state{padding:64px 24px;text-align:center;color:#6a8aa0}
 .empty-state .ei{font-size:3rem;margin-bottom:14px;display:block}
 .empty-state h3{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:#5a8099;margin-bottom:6px}
 .empty-state p{font-size:.9rem;line-height:1.7}
-
-/* ── Legend ───────────────────────────────────── */
 .legend{display:none;flex-wrap:wrap;gap:16px;margin-top:14px;font-size:.85rem;color:#8aafcc}
 .li{display:flex;align-items:center;gap:7px;font-weight:500}
 .ld{width:11px;height:11px;border-radius:3px;flex-shrink:0}
-
-/* ── Toast ────────────────────────────────────── */
 .toast{position:fixed;bottom:24px;right:24px;background:#1c2d40;border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:12px 20px;font-size:.88rem;color:#d8e8f4;box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:3000;transform:translateY(60px);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
 .toast.show{transform:translateY(0);opacity:1}
-
-@media(max-width:680px){
-  .td-prec,.td-notes-col{display:none}
-  td{padding:10px 12px}
-  .resp-badge{min-width:80px;font-size:.78rem;padding:4px 10px}
-}
+@media(max-width:680px){.td-prec,.td-notes-col{display:none}td{padding:10px 12px}}
 </style>
 </head>
 <body>
 
-<!-- ── PASSWORD GATE ── -->
+<!-- PASSWORD GATE -->
 <div id="pg-overlay" style="display:none;position:fixed;inset:0;z-index:99999;background:linear-gradient(135deg,#0a0e1a 0%,#111827 60%,#0d1f0f 100%);align-items:center;justify-content:center;font-family:'Source Sans 3',sans-serif">
   <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:48px 40px;max-width:400px;width:90%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.6)">
-    <div style="font-size:2.4rem;margin-bottom:12px">🔒</div>
+    <div style="font-size:2.4rem;margin-bottom:12px">&#x1F512;</div>
     <h2 style="color:#f0e6c8;font-size:1.4rem;font-weight:700;margin:0 0 6px;font-family:'Playfair Display',serif">Baughman Levy Campaign</h2>
     <p style="color:#8899aa;font-size:.95rem;margin:0 0 28px;line-height:1.5">Volunteer access only. Enter the team password to continue.</p>
-    <input id="pg-input" type="password" placeholder="Team password" autocomplete="current-password"
-      style="width:100%;box-sizing:border-box;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:13px 16px;color:#f0e6c8;font-size:1.1rem;outline:none;margin-bottom:12px;transition:border .2s;font-family:'Source Sans 3',sans-serif"
-      onkeydown="if(event.key==='Enter')pgCheck()">
-    <div id="pg-error" style="color:#e74c3c;font-size:.88rem;min-height:20px;margin-bottom:10px;font-weight:600"></div>
-    <button onclick="pgCheck()"
-      style="width:100%;background:linear-gradient(135deg,#c9962a,#e6b84a);border:none;border-radius:8px;padding:14px;color:#0a0e1a;font-weight:700;font-size:1.05rem;cursor:pointer;letter-spacing:.03em;font-family:'Source Sans 3',sans-serif">
-      Enter Site →
-    </button>
-    <p style="color:#445566;font-size:.78rem;margin:18px 0 0">Baughman Township Fire &amp; EMS Levy · May 5, 2026</p>
+    <input id="pg-inp" type="password" placeholder="Team password" autocomplete="current-password"
+      style="width:100%;box-sizing:border-box;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:13px 16px;color:#f0e6c8;font-size:1.1rem;outline:none;margin-bottom:12px;transition:border .2s;font-family:'Source Sans 3',sans-serif">
+    <div id="pg-err" style="color:#e74c3c;font-size:.88rem;min-height:20px;margin-bottom:10px;font-weight:600"></div>
+    <button id="pg-btn" style="width:100%;background:linear-gradient(135deg,#c9962a,#e6b84a);border:none;border-radius:8px;padding:14px;color:#0a0e1a;font-weight:700;font-size:1.05rem;cursor:pointer;font-family:'Source Sans 3',sans-serif">Enter Site &#x2192;</button>
+    <p style="color:#445566;font-size:.78rem;margin:18px 0 0">Baughman Township Fire &amp; EMS Levy &middot; May 5, 2026</p>
   </div>
 </div>
 
-<script data-cfasync="false">
-(function() {
-  var TEAM_PASSWORD = atob('V2luMjAyNiQ=');
-  function unlockSite() {
-    var o = document.getElementById('pg-overlay');
-    if (o) o.style.display = 'none';
-    document.body.style.overflow = '';
-  }
-  window.pgCheck = function() {
-    var input = document.getElementById('pg-input');
-    var error = document.getElementById('pg-error');
-    if (!input) return;
-    if (input.value === TEAM_PASSWORD) {
-      try { sessionStorage.setItem('pg_unlocked','1'); } catch(e) {}
-      unlockSite();
-    } else {
-      if (error) error.textContent = 'Incorrect password. Try again.';
-      input.value = '';
-      input.style.borderColor = '#e74c3c';
-      setTimeout(function() { input.style.borderColor='rgba(255,255,255,.2)'; }, 1500);
-      input.focus();
-    }
-  };
-  var unlocked = false;
-  try { unlocked = sessionStorage.getItem('pg_unlocked') === '1'; } catch(e) {}
-  if (unlocked) {
-    unlockSite();
-  } else {
-    var o = document.getElementById('pg-overlay');
-    if (o) o.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-    setTimeout(function() { var i=document.getElementById('pg-input'); if(i) i.focus(); }, 100);
-  }
-})();
-</script>
-
 <nav>
   <div class="nav-inner">
-    <a href="index.html" class="nav-brand">🔥 Baughman Township Fire &amp; EMS Levy</a>
+    <a href="index.html" class="nav-brand">&#x1F525; Baughman Township Fire &amp; EMS Levy</a>
     <ul class="nav-links">
-      <li><a href="index.html#early-voting" class="nav-ev">🗳 Vote Early</a></li>
+      <li><a href="index.html#early-voting" class="nav-ev">&#x1F5F3; Vote Early</a></li>
       <li><a href="index.html#about">Levy Info</a></li>
       <li><a href="index.html#strategy">Strategy</a></li>
-      <li><a href="index.html#tally" style="color:#74c69d">📊 Results</a></li>
+      <li><a href="index.html#tally" style="color:#74c69d">&#x1F4CA; Results</a></li>
       <li><a href="index.html#teams">Canvassers</a></li>
-      <li><a href="doorknock.html" class="nav-active">🏘️ Door Knock</a></li>
+      <li><a href="doorknock.html" class="nav-active">&#x1F3D8; Door Knock</a></li>
     </ul>
   </div>
 </nav>
@@ -241,85 +143,76 @@ td{padding:12px 18px;vertical-align:middle}
     <div>
       <div class="page-eyebrow">Canvass Report</div>
       <h1>Door-Knock <em>Street Report</em></h1>
-      <p>Pick a street to see every household and whether it has been visited.</p>
+      <p>Pick a street to see every household. Click any coloured pill or filter button to narrow the list.</p>
     </div>
     <div class="sync-wrap">
       <div class="sync-badge">
         <div class="sync-dot loading" id="syncDot"></div>
-        <span id="syncLabel">Loading data…</span>
+        <span id="syncLabel">Loading&#x2026;</span>
       </div>
-      <button class="btn-refresh" onclick="refreshData()">⟳ Refresh</button>
+      <button class="btn-refresh" id="refreshBtn">&#x21BA; Refresh</button>
     </div>
   </div>
 </div>
 
 <div class="main">
   <div class="err-banner" id="errBanner"></div>
-
   <div class="sec-label">Select Street</div>
   <div class="select-card">
-    <p class="hint">Choose a street from the list below to view all addresses on that street.</p>
+    <p class="hint">Choose a street &mdash; then click any coloured pill to filter the list.</p>
     <div class="select-row">
-      <select id="streetPicker" onchange="loadStreet(this.value)">
-        <option value="">— Choose a street —</option>
-      </select>
+      <select id="streetPicker"><option value="">&#x2014; Choose a street &#x2014;</option></select>
     </div>
     <div class="stats-row" id="statsRow">
-      <span class="pill p-total"    title="Show all" onclick="setFilter('all')"       style="cursor:pointer"><span class="pill-dot"></span><span id="pTotal">—</span></span>
-      <span class="pill p-unvisited" title="Filter: Not Visited" onclick="setFilter('unvisited')" style="cursor:pointer"><span class="pill-dot"></span><span id="pUnvisited">—</span></span>
-      <span class="pill p-nothome"   title="Filter: Not Home"    onclick="setFilter('nothome')"   style="cursor:pointer"><span class="pill-dot"></span><span id="pNothome">—</span></span>
-      <span class="pill p-yes"       title="Filter: Yes"         onclick="setFilter('yes')"       style="cursor:pointer"><span class="pill-dot"></span><span id="pYes">—</span></span>
-      <span class="pill p-no"        title="Filter: No"          onclick="setFilter('no')"        style="cursor:pointer"><span class="pill-dot"></span><span id="pNo">—</span></span>
-      <span class="pill p-undecided" title="Filter: Undecided"   onclick="setFilter('undecided')" style="cursor:pointer"><span class="pill-dot"></span><span id="pUndecided">—</span></span>
+      <span class="pill p-total"    id="pill-all"       title="Show all"><span class="pill-dot"></span><span id="pTotal">&#x2014;</span></span>
+      <span class="pill p-unvisited"id="pill-unvisited" title="Not visited"><span class="pill-dot"></span><span id="pUnvisited">&#x2014;</span></span>
+      <span class="pill p-nothome"  id="pill-nothome"   title="Not home"><span class="pill-dot"></span><span id="pNothome">&#x2014;</span></span>
+      <span class="pill p-yes"      id="pill-yes"       title="Yes"><span class="pill-dot"></span><span id="pYes">&#x2014;</span></span>
+      <span class="pill p-no"       id="pill-no"        title="No"><span class="pill-dot"></span><span id="pNo">&#x2014;</span></span>
+      <span class="pill p-undecided"id="pill-undecided" title="Undecided"><span class="pill-dot"></span><span id="pUndecided">&#x2014;</span></span>
     </div>
-    <div style="font-size:.75rem;color:#6a8aa0;margin-top:10px">💡 Click any pill above to filter the list below</div>
+    <div class="pills-hint" id="pillsHint" style="display:none">&#x1F446; Click a pill above to filter the table</div>
   </div>
-
   <div class="prog-wrap" id="progWrap">
     <div class="prog-labels"><span>Street canvassed</span><span id="progPct">0%</span></div>
     <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
   </div>
-
   <div class="alert-banner" id="alertBanner">
-    ⚠️&nbsp; <b id="alertCount">0 addresses</b> on this street still need a visit.
+    &#x26A0;&#xFE0F;&nbsp; <b id="alertCount">0 addresses</b> on this street still need a visit.
   </div>
-
   <div class="table-card">
     <div class="table-toolbar" id="tableToolbar">
       <span class="toolbar-title" id="toolbarTitle"></span>
-      <span class="toolbar-hint">Show:</span>
-      <button class="flt on-all"  data-f="all"       onclick="setFilter('all')">All</button>
-      <button class="flt"         data-f="unvisited"  onclick="setFilter('unvisited')">🔵 Not Visited</button>
-      <button class="flt"         data-f="nothome"    onclick="setFilter('nothome')">🚫 Not Home</button>
-      <button class="flt"         data-f="yes"        onclick="setFilter('yes')">✅ Yes</button>
-      <button class="flt"         data-f="no"         onclick="setFilter('no')">❌ No</button>
-      <button class="flt"         data-f="undecided"  onclick="setFilter('undecided')">❓ Undecided</button>
+      <span class="toolbar-hint">Filter:</span>
+      <button class="flt active" data-filter="all">All</button>
+      <button class="flt" data-filter="unvisited">Not Visited</button>
+      <button class="flt" data-filter="nothome">Not Home</button>
+      <button class="flt" data-filter="yes">Yes</button>
+      <button class="flt" data-filter="no">No</button>
+      <button class="flt" data-filter="undecided">Undecided</button>
     </div>
     <div id="tableBody">
       <div class="empty-state">
-        <span class="ei">🗺️</span>
-        <h3>Choose a street above to get started</h3>
-        <p>Every registered-voter household on that street will appear here<br>
-           along with the canvass response recorded for each address.</p>
+        <span class="ei">&#x1F5FA;</span>
+        <h3>Choose a street above</h3>
+        <p>All registered-voter households will appear here<br>with the canvass response recorded for each address.</p>
       </div>
     </div>
   </div>
-
   <div class="legend" id="legend">
     <div class="li"><div class="ld" style="background:#4696dc;opacity:.7"></div>Not Visited yet</div>
-    <div class="li"><div class="ld" style="background:#c85046"></div>Not Home — needs a return visit</div>
-    <div class="li"><div class="ld" style="background:#32aa64"></div>Yes — supports the levy</div>
-    <div class="li"><div class="ld" style="background:#b43c32"></div>No — opposes the levy</div>
+    <div class="li"><div class="ld" style="background:#c85046"></div>Not Home &mdash; needs a return visit</div>
+    <div class="li"><div class="ld" style="background:#32aa64"></div>Yes &mdash; supports the levy</div>
+    <div class="li"><div class="ld" style="background:#b43c32"></div>No &mdash; opposes the levy</div>
     <div class="li"><div class="ld" style="background:#b49630"></div>Undecided</div>
   </div>
 </div>
-
 <div class="toast" id="toast"></div>
 
 <script>
-var JB_BIN_ID  = '69b85326c3097a1dd52eccfa';
-var JB_API_KEY = '$2a$10$el71.1j4wiZ87uKBZM14Q.px5l/2h6Wu1Vs4LoU46/Ulz4glVWLzC';
-var BIN_URL    = 'https://api.jsonbin.io/v3/b/' + JB_BIN_ID;
+var JB_BIN_ID  = "69b85326c3097a1dd52eccfa";
+var JB_API_KEY = "$2a$10$el71.1j4wiZ87uKBZM14Q.px5l/2h6Wu1Vs4LoU46/Ulz4glVWLzC";
+var BIN_URL    = "https://api.jsonbin.io/v3/b/" + JB_BIN_ID;
 var VOTER_DATA = {"7724 ault rd":{"name":"John, Lois Douglass","prec":"P2","voters":2,"levy":232.7},"8013 ault rd":{"name":"Benjamin, Kathy Ault","prec":"P2","voters":2,"levy":358.54},"12105 back massillon rd":{"name":"Clark, Frances Marshall","prec":"P2","voters":2,"levy":95.27},"12107 back massillon rd":{"name":"Charles, Emily Marshall","prec":"P2","voters":2,"levy":95.27},"12135 back massillon rd":{"name":"Matthew Garland","prec":"P2","voters":1,"levy":112.91},"12169 back massillon rd":{"name":"Donna, James Wallen","prec":"P2","voters":2,"levy":141.84},"12542 back massillon rd":{"name":"Keith, Sharon Hamsher","prec":"P2","voters":2,"levy":173.34},"12588 back massillon rd":{"name":"Glenn, Gloria Kaufmann","prec":"P2","voters":2,"levy":226.15},"12606 back massillon rd":{"name":"Shelly Brenner, John Kohler","prec":"P2","voters":2,"levy":364.22},"12619 back massillon rd":{"name":"Anthony, Garrett, Jody Troyer","prec":"P2","voters":3,"levy":142.88},"12693 back massillon rd":{"name":"Kim, Steve Troyer","prec":"P2","voters":2,"levy":162.24},"12734 back massillon rd":{"name":"Luella Arnold","prec":"P2","voters":1,"levy":163.61},"12926 back massillon rd":{"name":"Tammy, Todd Stoll","prec":"P2","voters":2,"levy":186.83},"13063 back massillon rd":{"name":"David, Tara Brenneman","prec":"P2","voters":2,"levy":168.24},"13317 back massillon rd":{"name":"Irvin, Susan Domer","prec":"P2","voters":2,"levy":131.17},"13422 back massillon rd":{"name":"Brent, Rachelle Kornhaus","prec":"P2","voters":2,"levy":228.32},"13567 back massillon rd":{"name":"Cleo Brenneman","prec":"P2","voters":1,"levy":210.98},"13627 back massillon rd":{"name":"Lazarus Hartzler","prec":"P2","voters":1,"levy":210.98},"13785 back massillon rd":{"name":"Brian Brenneman, Samantha Brenneman, Linda Figura, Timothy Figura","prec":"P2","voters":4,"levy":254.32},"13788 back massillon rd":{"name":"Judy Miller, Dennis Trippy","prec":"P2","voters":2,"levy":107.54},"14051 back massillon rd":{"name":"Darrell, Shanna Steiner","prec":"P2","voters":2,"levy":434.72},"14259 back massillon rd":{"name":"Aaron, Jenny, Larry Steiner","prec":"P2","voters":3,"levy":434.72},"14493 back massillon rd":{"name":"Carol, Steven Hahn","prec":"P2","voters":2,"levy":198.05},"14678 back massillon rd":{"name":"Ethan Stoll","prec":"P2","voters":1,"levy":66.1},"14928 back massillon rd":{"name":"Robert Hange, Barbara Stoll","prec":"P2","voters":2,"levy":158.28},"15090 back massillon rd":{"name":"Heidi Klein","prec":"P2","voters":1,"levy":186.34},"15413 back massillon rd":{"name":"Marlene, Wayne Steiner","prec":"P2","voters":2,"levy":188.17},"15451 back massillon rd":{"name":"Caden, Caitlyn, Catrina, Dawn, Michael Race","prec":"P2","voters":5,"levy":50.17},"15507 back massillon rd":{"name":"Ryleigh Ingersoll, Adam Moomaw, Kelly Moomaw","prec":"P2","voters":3,"levy":185.93},"15595 back massillon rd":{"name":"Sheryl, Todd Lumley","prec":"P2","voters":2,"levy":91.08},"15759 back massillon rd":{"name":"Ruth, William Kaufman","prec":"P2","voters":2,"levy":136.36},"15761 back massillon rd":{"name":"Daniel Kaufman","prec":"P2","voters":1,"levy":370.93},"15804 back massillon rd":{"name":"Bonnie, Willard Stoll","prec":"P2","voters":2,"levy":72.49},"15847 back massillon rd":{"name":"Jeffrey, Kinsi Kaufman","prec":"P2","voters":2,"levy":370.93},"16356 back massillon rd":{"name":"Mark Suttle","prec":"P2","voters":1,"levy":203.07},"16384 back massillon rd":{"name":"Joseph Goble","prec":"P2","voters":1,"levy":203.07},"16622 back massillon rd":{"name":"Charlene, Richard Lance","prec":"P2","voters":2,"levy":95.28},"16684 back massillon rd":{"name":"Brian, Madison, Natalie Lance","prec":"P2","voters":3,"levy":151.92},"16813 back massillon rd":{"name":"Breanna, Cody Curren","prec":"P2","voters":2,"levy":56.9},"17080 back massillon rd":{"name":"Leslie, Lori Parsons","prec":"P2","voters":2,"levy":101.02},"17112 back massillon rd":{"name":"Danny Wiseman","prec":"P2","voters":1,"levy":112.6},"17297 back massillon rd":{"name":"Misty, Shelby, Steven Mcconahy","prec":"P2","voters":3,"levy":75.0},"17327 back massillon rd":{"name":"Roy Phipps","prec":"P2","voters":1,"levy":55.62},"17361 back massillon rd":{"name":"Mary Garman","prec":"P2","voters":1,"levy":180.84},"17752 back massillon rd":{"name":"Kari, Peter Akers","prec":"P2","voters":2,"levy":42.67},"17887 back massillon rd":{"name":"James, Louisa Berens","prec":"P2","voters":2,"levy":183.66},"17997 back massillon rd":{"name":"Charles, Kathleen Wade","prec":"P2","voters":2,"levy":97.83},"18016 back massillon rd":{"name":"James, Jeanie Nicholas","prec":"P2","voters":2,"levy":116.41},"18097 back massillon rd":{"name":"David, Margaret Reichenbach","prec":"P2","voters":2,"levy":139.01},"18164 back massillon rd":{"name":"Amanda, Daniel Wade","prec":"P2","voters":2,"levy":166.6},"18226 back massillon rd":{"name":"Donna, Roger Fulks","prec":"P2","voters":2,"levy":110.84},"18347 back massillon rd":{"name":"David, Tammy Fertig","prec":"P1","voters":2,"levy":126.49},"18450 back massillon rd":{"name":"Michael Woodruff","prec":"P1","voters":1,"levy":191.33},"18488 back massillon rd":{"name":"Marla Hines, Robert Hines, Chad Zimmerman","prec":"P1","voters":3,"levy":249.86},"18524 back massillon rd":{"name":"Edward Eschman, Sarah Meszaros Eschman","prec":"P1","voters":2,"levy":155.73},"18556 back massillon rd":{"name":"Abigail, Russell, Sheila Morgan","prec":"P1","voters":3,"levy":113.84},"18591 back massillon rd":{"name":"Cynthia Withrow","prec":"P1","voters":1,"levy":193.28},"18604 back massillon rd":{"name":"Jenna, Luke Orr","prec":"P2","voters":2,"levy":86.7},"19120 back massillon rd":{"name":"Chad, Melissa Mutersbaugh","prec":"P2","voters":2,"levy":91.31},"19150 back massillon rd":{"name":"Norma, Ronald Bosley","prec":"P2","voters":2,"levy":179.24},"5986 black diamond rd":{"name":"Dusty Gauder, Jesica Shockey","prec":"P2","voters":2,"levy":33.09},"6003 black diamond rd":{"name":"James, Rachel Rosenberger","prec":"P2","voters":2,"levy":228.8},"6041 black diamond rd":{"name":"Crystal Woodarski","prec":"P2","voters":1,"levy":185.49},"6149 black diamond rd":{"name":"Jared, Robert Poorman","prec":"P2","voters":2,"levy":211.13},"6289 black diamond rd":{"name":"Joshua Carraway","prec":"P2","voters":1,"levy":63.05},"6777 black diamond rd":{"name":"De Ann, Jeffrey Williams","prec":"P2","voters":2,"levy":184.44},"6833 black diamond rd":{"name":"Karla, Randey Richards","prec":"P2","voters":2,"levy":203.38},"6855 black diamond rd":{"name":"Jeremy Neff","prec":"P2","voters":1,"levy":168.1},"7335 black diamond rd":{"name":"George, Max, Ruthie Kelbly","prec":"P2","voters":3,"levy":245.51},"7535 black diamond rd":{"name":"Ainsley, Keri, Michael, Shadra Hamsher","prec":"P2","voters":4,"levy":260.96},"7607 black diamond rd":{"name":"Kimberly, Michael Kelbly","prec":"P2","voters":2,"levy":211.29},"7659 black diamond rd":{"name":"Deloris, Roy Darr","prec":"P2","voters":2,"levy":104.8},"7819 black diamond rd":{"name":"Eliza, Roy Darr","prec":"P2","voters":2,"levy":85.23},"7907 black diamond rd":{"name":"Heather, Robert Seitz","prec":"P2","voters":2,"levy":308.92},"8376 black diamond rd":{"name":"Angela, John Sinnett","prec":"P2","voters":2,"levy":106.66},"8393 black diamond rd":{"name":"Salvatore, Sarah Oliverio","prec":"P2","voters":2,"levy":272.02},"13411 burkhart rd":{"name":"Cliffton, Craig, Melissa Roberts","prec":"P1","voters":3,"levy":156.62},"13445 burkhart rd":{"name":"Dennis, Mindy Hochstetler","prec":"P1","voters":2,"levy":161.07},"13585 burkhart rd":{"name":"Gregory, Rachel Hostetler","prec":"P1","voters":2,"levy":164.79},"13711 burkhart rd":{"name":"Beau, David, Stephanie Hochstetler","prec":"P1","voters":3,"levy":119.6},"13757 burkhart rd":{"name":"Rene, Wilfred Mack","prec":"P1","voters":2,"levy":164.57},"13805 burkhart rd":{"name":"Steven, Teri Hochstetler","prec":"P1","voters":2,"levy":174.87},"13810 burkhart rd":{"name":"Anita, Cary Bowman","prec":"P1","voters":2,"levy":139.85},"13837 burkhart rd":{"name":"Martha, Milan Yoder","prec":"P1","voters":2,"levy":211.76},"13856 burkhart rd":{"name":"Anita Gochnauer","prec":"P1","voters":1,"levy":151.67},"13902 burkhart rd":{"name":"Kimberly, Ryan Hochstetler","prec":"P1","voters":2,"levy":134.52},"14153 burkhart rd":{"name":"Gerald Horst, Sharon Horst, Diana Leslie","prec":"P1","voters":3,"levy":130.66},"14307 burkhart rd":{"name":"Diane, James Blayne","prec":"P1","voters":2,"levy":180.18},"14313 burkhart rd":{"name":"Donna, Kurtis Nussbaum","prec":"P1","voters":2,"levy":187.54},"14355 burkhart rd":{"name":"Charles, Michele Turner","prec":"P1","voters":2,"levy":197.49},"14717 burkhart rd":{"name":"Richard Smith, Mary Tschiegg","prec":"P1","voters":2,"levy":158.57},"14801 burkhart rd":{"name":"Elaine, Gary, Nevin Troyer","prec":"P1","voters":3,"levy":100.85},"14804 burkhart rd":{"name":"Justin Lawrence, Emily Rehm","prec":"P1","voters":2,"levy":224.67},"14821 burkhart rd":{"name":"Kathryn Tschiegg","prec":"P1","voters":1,"levy":114.62},"15034 burkhart rd":{"name":"Amy, Krystian, Kyler, Robert Graber","prec":"P1","voters":4,"levy":148.7},"15045 burkhart rd":{"name":"Logan Becker","prec":"P1","voters":1,"levy":156.08},"15111 burkhart rd":{"name":"Betty Mcconnell","prec":"P1","voters":1,"levy":147.53},"15155 burkhart rd":{"name":"Barbara, Jeffrey Geib","prec":"P1","voters":2,"levy":126.43},"15403 burkhart rd":{"name":"Enos, Judith Amstutz","prec":"P1","voters":2,"levy":126.51},"15487 burkhart rd":{"name":"Nancy, Paul Firby","prec":"P1","voters":2,"levy":98.0},"15515 burkhart rd":{"name":"Mike Geiser","prec":"P1","voters":1,"levy":171.01},"15601 burkhart rd":{"name":"Charles, Mary Hoover","prec":"P1","voters":2,"levy":99.51},"15660 burkhart rd":{"name":"Dennis, John, Sally Curtis","prec":"P1","voters":3,"levy":185.31},"15808 burkhart rd":{"name":"Jennifer Jackson","prec":"P1","voters":1,"levy":104.67},"16101 burkhart rd":{"name":"Kristin, Paul Masters","prec":"P1","voters":2,"levy":171.9},"16210 burkhart rd":{"name":"Robert Graber, Robert Tomassetti","prec":"P1","voters":2,"levy":116.99},"16230 burkhart rd":{"name":"Hudson, James, Lisa Saxer","prec":"P1","voters":3,"levy":299.86},"16265 burkhart rd":{"name":"Samantha Masters","prec":"P1","voters":1,"levy":161.77},"16284 burkhart rd":{"name":"Christina Kaserman","prec":"P1","voters":1,"levy":342.12},"16355 burkhart rd":{"name":"Sheryl Clark","prec":"P1","voters":1,"levy":166.45},"16376 burkhart rd":{"name":"Brittany Lehman, Brent Miller","prec":"P1","voters":2,"levy":190.09},"16391 burkhart rd":{"name":"Wyatt Vance, Kenny Yoder","prec":"P1","voters":2,"levy":115.44},"16400 burkhart rd":{"name":"Gregory, Kristen Stutzman","prec":"P1","voters":2,"levy":240.99},"16424 burkhart rd":{"name":"Cassandra Waitkunas","prec":"P1","voters":1,"levy":207.55},"16466 burkhart rd":{"name":"Clifford, Cortney Staley","prec":"P1","voters":2,"levy":224.24},"16500 burkhart rd":{"name":"David, Julie, Megan Tenney","prec":"P1","voters":3,"levy":161.73},"16507 burkhart rd":{"name":"Jessica, Ted Cardinal","prec":"P1","voters":2,"levy":364.81},"16541 burkhart rd":{"name":"Brenda, Donald Peters","prec":"P1","voters":2,"levy":117.78},"16542 burkhart rd":{"name":"Ruth, Spencer Scheufler","prec":"P1","voters":2,"levy":164.35},"16590 burkhart rd":{"name":"Myron, Rita Franks","prec":"P1","voters":2,"levy":192.39},"16644 burkhart rd":{"name":"Scott Smith","prec":"P1","voters":1,"levy":163.91},"16677 burkhart rd":{"name":"Rebecca Peters","prec":"P1","voters":1,"levy":187.26},"16686 burkhart rd":{"name":"Teresa Chupp","prec":"P1","voters":1,"levy":181.52},"16740 burkhart rd":{"name":"Jason, Rachel Egli","prec":"P1","voters":2,"levy":213.67},"16808 burkhart rd":{"name":"Kenneth, Sandra Ressler","prec":"P1","voters":2,"levy":143.71},"16865 burkhart rd":{"name":"Noelle, Robert Ressler","prec":"P1","voters":2,"levy":154.93},"17817 burkhart rd":{"name":"Lori, Steven Longworth","prec":"P1","voters":2,"levy":181.56},"17872 burkhart rd":{"name":"Charles, Patricia Rohr","prec":"P1","voters":2,"levy":138.81},"17910 burkhart rd":{"name":"Donald, Mary Haer","prec":"P1","voters":2,"levy":124.92},"17984 burkhart rd":{"name":"Alan Hutchison, Jeffrey Wright","prec":"P1","voters":2,"levy":183.43},"18121 burkhart rd":{"name":"John, Mary Hall","prec":"P1","voters":2,"levy":229.66},"18215 burkhart rd":{"name":"Bryan Weikert","prec":"P1","voters":1,"levy":160.25},"18261 burkhart rd":{"name":"Dustyn, Kasee Maston","prec":"P1","voters":2,"levy":179.07},"18285 burkhart rd":{"name":"Donald, Phyllis Jaquet","prec":"P1","voters":2,"levy":241.5},"18314 burkhart rd":{"name":"Seth Byall, Brittney Kidd","prec":"P1","voters":2,"levy":196.06},"18321 burkhart rd":{"name":"Diana, Frank Lecon","prec":"P1","voters":2,"levy":167.16},"18435 burkhart rd":{"name":"Roberta Oberlin","prec":"P1","voters":1,"levy":172.43},"18468 burkhart rd":{"name":"James, Patricia Ketler","prec":"P1","voters":2,"levy":148.76},"18591 burkhart rd":{"name":"Bradley, Callie, Collin, Rebekah Jones","prec":"P1","voters":4,"levy":326.8},"18598 burkhart rd":{"name":"Patricia Ketler","prec":"P1","voters":1,"levy":190.68},"18687 burkhart rd":{"name":"Luke, Stephanie Ediger","prec":"P1","voters":2,"levy":126.21},"18947 burkhart rd":{"name":"Dale, Susan Byall","prec":"P1","voters":2,"levy":150.8},"18964 burkhart rd":{"name":"Denise, Marlan Rossiter","prec":"P1","voters":2,"levy":168.98},"18991 burkhart rd":{"name":"Edward, Karen Lintern","prec":"P1","voters":2,"levy":114.11},"19052 burkhart rd":{"name":"Barbara Burky","prec":"P1","voters":1,"levy":113.64},"19120 burkhart rd":{"name":"Sharon Lengi, Adam Wirt","prec":"P1","voters":2,"levy":147.87},"12696 burton city rd":{"name":"Julia, Michael Viator","prec":"P1","voters":2,"levy":73.18},"12760 burton city rd":{"name":"Houston Dunlap","prec":"P1","voters":1,"levy":110.39},"12812 burton city rd":{"name":"David Stowers","prec":"P1","voters":1,"levy":65.1},"12832 burton city rd":{"name":"Karl Abend","prec":"P1","voters":1,"levy":84.27},"13070 burton city rd":{"name":"April Thomas","prec":"P1","voters":1,"levy":131.71},"13089 burton city rd":{"name":"Derrek Hershberger","prec":"P1","voters":1,"levy":183.84},"13130 burton city rd":{"name":"Daniel Hershberger","prec":"P1","voters":1,"levy":186.77},"13156 burton city rd":{"name":"Aaron Still, Christian Trowbridge","prec":"P1","voters":2,"levy":20.04},"13182 burton city rd":{"name":"Eric, Judith, Olenger Bloxson","prec":"P1","voters":3,"levy":36.18},"13209 burton city rd":{"name":"Tristen Stoll","prec":"P1","voters":1,"levy":132.7},"13218 burton city rd":{"name":"Mary Howard","prec":"P1","voters":1,"levy":86.2},"13243 burton city rd":{"name":"Pamela Jones","prec":"P1","voters":1,"levy":271.98},"13308 burton city rd":{"name":"Daniel, Jacinda Baughman","prec":"P1","voters":2,"levy":89.77},"13344 burton city rd":{"name":"Calvin, Rhonda Martin","prec":"P1","voters":2,"levy":97.04},"14949 burton city rd":{"name":"Christopher Parker","prec":"P1","voters":1,"levy":82.89},"15059 burton city rd":{"name":"Michael Miller","prec":"P1","voters":1,"levy":48.23},"15191 burton city rd":{"name":"Andrew, Hazel Stalnaker","prec":"P1","voters":2,"levy":95.81},"15257 burton city rd":{"name":"Dana Booth","prec":"P1","voters":1,"levy":103.08},"15538 burton city rd":{"name":"Kimberly Vanzile","prec":"P1","voters":1,"levy":29.99},"15616 burton city rd":{"name":"Daniel, Rose Stark","prec":"P1","voters":2,"levy":29.99},"15642 burton city rd":{"name":"William Forrer","prec":"P1","voters":1,"levy":87.76},"15949 burton city rd":{"name":"Ross Landis","prec":"P1","voters":1,"levy":180.01},"15999 burton city rd":{"name":"Cressie, Daniel Winter","prec":"P1","voters":2,"levy":66.95},"16155 burton city rd":{"name":"Brian, Donna Mcconkey","prec":"P1","voters":2,"levy":151.7},"16201 burton city rd":{"name":"Henry Marshall, Payton Marshall, Maddison Smucker","prec":"P1","voters":3,"levy":183.76},"16208 burton city rd":{"name":"Lucinda Mitchell","prec":"P1","voters":1,"levy":139.6},"16281 burton city rd":{"name":"Lisa, Mark, Trevor Wilson","prec":"P1","voters":3,"levy":183.86},"16325 burton city rd":{"name":"Kelly Eby","prec":"P1","voters":1,"levy":169.66},"16371 burton city rd":{"name":"Brian Amstutz","prec":"P1","voters":1,"levy":182.9},"16810 burton city rd":{"name":"Cindy, James, Jennifer, Julianna, Justin Byall","prec":"P1","voters":5,"levy":91.49},"16861 burton city rd":{"name":"Ken, Pamela Landis","prec":"P1","voters":2,"levy":275.75},"17114 burton city rd":{"name":"Diane, Ronald Marthey","prec":"P1","voters":2,"levy":129.91},"17201 burton city rd":{"name":"John Winter","prec":"P1","voters":1,"levy":275.75},"17288 burton city rd":{"name":"Jody Fry, Christine Pavelschak","prec":"P1","voters":2,"levy":105.51},"17354 burton city rd":{"name":"Thomas Remaley","prec":"P1","voters":1,"levy":112.71},"3532 chambersburg pike":{"name":"Ronald, Trina Stoll","prec":"P1","voters":2,"levy":189.58},"12066 church rd":{"name":"Harvey, Patricia Beltz","prec":"P1","voters":2,"levy":152.41},"12095 church rd":{"name":"Adam, Michal Bowers","prec":"P1","voters":2,"levy":207.05},"12180 church rd":{"name":"Janice, Rick Zacharias","prec":"P1","voters":2,"levy":235.62},"12185 church rd":{"name":"Karen, Stephen Schoolcraft","prec":"P1","voters":2,"levy":187.33},"12204 church rd":{"name":"David, Marilyn Link","prec":"P1","voters":2,"levy":249.23},"12268 church rd":{"name":"Deborah, Mark Coblentz","prec":"P1","voters":2,"levy":369.17},"12315 church rd":{"name":"Heather Anderson, Matthew Anderson, Rachel Anderson, Robert Anderson, Joyce Winget, Joseph Zehnder","prec":"P1","voters":6,"levy":345.71},"12356 church rd":{"name":"Albert, Carol Yeagley","prec":"P1","voters":2,"levy":438.0},"12358 church rd":{"name":"Lisa, Nick Yeagley","prec":"P1","voters":2,"levy":335.57},"12365 church rd":{"name":"Kathleen, Nevin Nussbaum","prec":"P1","voters":2,"levy":159.66},"12416 church rd":{"name":"Jeffrey, Mildred, Rustin Stoller","prec":"P1","voters":3,"levy":192.79},"12433 church rd":{"name":"Byron Miller","prec":"P1","voters":1,"levy":128.39},"12471 church rd":{"name":"Owen Stoller","prec":"P1","voters":1,"levy":155.8},"12505 church rd":{"name":"Gregory Harder","prec":"P1","voters":1,"levy":117.61},"12517 church rd":{"name":"Adam, Julie, Todd Werntz","prec":"P1","voters":3,"levy":183.65},"12546 church rd":{"name":"Mary, Paul Troyer","prec":"P1","voters":2,"levy":163.64},"12573 church rd":{"name":"Cheryl, Timothy Myers","prec":"P1","voters":2,"levy":149.26},"12804 church rd":{"name":"Melvin, Miriam Wenger","prec":"P1","voters":2,"levy":342.67},"12828 church rd":{"name":"Benjamin, Brianne Froese","prec":"P1","voters":2,"levy":240.99},"12851 church rd":{"name":"Mabel Warfel","prec":"P1","voters":1,"levy":173.94},"12904 church rd":{"name":"Nolan, Sharon Hilty","prec":"P1","voters":2,"levy":93.48},"12942 church rd":{"name":"Melodie Nussbaum","prec":"P1","voters":1,"levy":213.41},"13181 church rd":{"name":"Janet, Roger Horst","prec":"P1","voters":2,"levy":133.76},"13218 church rd":{"name":"Abigail Steiner","prec":"P1","voters":1,"levy":94.48},"13460 church rd":{"name":"Bethany Hochstetler","prec":"P1","voters":1,"levy":116.9},"13500 church rd":{"name":"Esther, Michael Nussbaum","prec":"P1","voters":2,"levy":868.93},"13507 church rd":{"name":"Carol, Marion Hochstetler","prec":"P1","voters":2,"levy":178.26},"14126 church rd":{"name":"Natalie Richards","prec":"P1","voters":1,"levy":49.7},"14148 church rd":{"name":"John Derksen, Matthew Derksen, Jennifer Fischer","prec":"P1","voters":3,"levy":109.26},"15568 church rd":{"name":"Rita Wenger","prec":"P1","voters":1,"levy":203.83},"15659 church rd":{"name":"Rex Kaufman","prec":"P1","voters":1,"levy":60.71},"15664 church rd":{"name":"Mark Dorffer","prec":"P1","voters":1,"levy":374.9},"15688 church rd":{"name":"Ashley, Jonathan Ramer","prec":"P1","voters":2,"levy":345.86},"15746 church rd":{"name":"Jaclyn, Matthew Lecon","prec":"P1","voters":2,"levy":250.97},"16183 church rd":{"name":"Stephen Berg, Jonathan Sprunger","prec":"P1","voters":2,"levy":135.14},"16255 church rd":{"name":"Beth, Jacob, Jeffrey Fink","prec":"P1","voters":3,"levy":115.43},"16266 church rd":{"name":"Austin, Nathan Horst","prec":"P1","voters":2,"levy":108.08},"16300 church rd":{"name":"Zackary Welsh","prec":"P1","voters":1,"levy":112.95},"16326 church rd":{"name":"Alexander, Breana Hurtt","prec":"P1","voters":2,"levy":141.57},"16360 church rd":{"name":"Ashley, Mark Sibila","prec":"P1","voters":2,"levy":119.51},"16388 church rd":{"name":"Matthew August, Wendy August, Billy Borton, Linda Borton","prec":"P1","voters":4,"levy":162.73},"16404 church rd":{"name":"Jared Sidle","prec":"P1","voters":1,"levy":114.06},"16635 church rd":{"name":"Linda Ressler","prec":"P1","voters":1,"levy":173.76},"17295 church rd":{"name":"Jeanette Tennant","prec":"P1","voters":1,"levy":174.48},"17933 church rd":{"name":"Hannah, Lisa, Michael Amstutz","prec":"P1","voters":3,"levy":168.05},"18152 church rd":{"name":"Jane, Ronald Smucker","prec":"P1","voters":2,"levy":153.55},"18288 church rd":{"name":"Alana, Tana, Todd Smucker","prec":"P1","voters":3,"levy":183.21},"18290 church rd":{"name":"Kelly Nussbaum","prec":"P1","voters":1,"levy":136.21},"18690 church rd":{"name":"Zach Shoup, Jason Troyer, Summer Troyer","prec":"P1","voters":3,"levy":106.12},"18704 church rd":{"name":"Joshua Bartholomew","prec":"P1","voters":1,"levy":50.17},"18708 church rd":{"name":"Nevin, Tamara Horst","prec":"P1","voters":2,"levy":155.05},"18803 church rd":{"name":"Meredith Cutlip, Ryan Cutlip, David Ring, Dustin Ring, Julie Ring","prec":"P1","voters":5,"levy":103.14},"4948 coal bank rd":{"name":"Everal, Judy Tomblin","prec":"P2","voters":2,"levy":99.75},"5043 coal bank rd":{"name":"Donald, Ellen Grimes","prec":"P2","voters":2,"levy":326.55},"5143 coal bank rd":{"name":"Lecia, William Napier","prec":"P2","voters":2,"levy":34.87},"5164 coal bank rd":{"name":"Everal, Jessica Tomblin","prec":"P2","voters":2,"levy":140.37},"5231 coal bank rd":{"name":"Dominic, Ethan Numer","prec":"P2","voters":2,"levy":157.57},"5233 coal bank rd":{"name":"Belinda, James Holzaepfel","prec":"P2","voters":2,"levy":190.36},"5235 coal bank rd":{"name":"Marci, Scott Rehm","prec":"P2","voters":2,"levy":148.7},"5236 coal bank rd":{"name":"Clinton, Shauna Fender","prec":"P2","voters":2,"levy":144.15},"5237 coal bank rd":{"name":"Allen, Cora Keener","prec":"P2","voters":2,"levy":188.87},"5240 coal bank rd":{"name":"Brooke, Corbin Hartzler","prec":"P2","voters":2,"levy":92.74},"5358 coal bank rd":{"name":"Austin, Joshua, Stephanie Smucker","prec":"P2","voters":3,"levy":105.54},"5360 coal bank rd":{"name":"Kevin, Shawn Whited","prec":"P2","voters":2,"levy":144.21},"5436 coal bank rd":{"name":"Jack, Jamie Eggeman","prec":"P2","voters":2,"levy":137.97},"5466 coal bank rd":{"name":"Benjamin, Seka Masters","prec":"P2","voters":2,"levy":183.34},"5564 coal bank rd":{"name":"Donna, James Davis","prec":"P2","voters":2,"levy":222.61},"5630 coal bank rd":{"name":"Debra Schneider","prec":"P2","voters":1,"levy":203.35},"5686 coal bank rd":{"name":"Ashley, Duane, Laura, Shannon Steiner","prec":"P2","voters":4,"levy":155.16},"6212 coal bank rd":{"name":"Lisa, Ralph Stoll","prec":"P2","voters":2,"levy":366.17},"6669 coal bank rd":{"name":"Carolyn, Elmer Baer","prec":"P2","voters":2,"levy":0.0},"7505 coal bank rd":{"name":"Gary, Michelle Eggeman","prec":"P2","voters":2,"levy":127.16},"7538 coal bank rd":{"name":"Charles, Paige Bailey","prec":"P2","voters":2,"levy":313.06},"7607 coal bank rd":{"name":"Travis Fennell, Margaret Walsh","prec":"P2","voters":2,"levy":123.71},"7635 coal bank rd":{"name":"Shirley Musal","prec":"P2","voters":1,"levy":186.59},"7649 coal bank rd":{"name":"Larry Caskey","prec":"P2","voters":1,"levy":90.61},"8053 coal bank rd":{"name":"Elijah Frederick, Pamela Frederick, Vivian Frederick, Frederick Kullman","prec":"P2","voters":4,"levy":290.5},"8291 coal bank rd":{"name":"Brandy, James Bramlett","prec":"P2","voters":2,"levy":115.31},"8329 coal bank rd":{"name":"Chase, John Freitas","prec":"P2","voters":2,"levy":194.67},"1200 dalton fox lake rd":{"name":"Kimberly, Travis Steiner","prec":"P1","voters":2,"levy":111.63},"1204 dalton fox lake rd":{"name":"John, Kristine Steiner","prec":"P1","voters":2,"levy":204.94},"1208 dalton fox lake rd":{"name":"David Zimmerman","prec":"P1","voters":1,"levy":334.5},"1345 dalton fox lake rd":{"name":"Cherie Marthey, Diane Merriman","prec":"P1","voters":2,"levy":157.65},"1375 dalton fox lake rd":{"name":"Shelley Merriman","prec":"P1","voters":1,"levy":108.61},"1401 dalton fox lake rd":{"name":"Jared, Joshua Merriman","prec":"P1","voters":2,"levy":112.69},"1548 dalton fox lake rd":{"name":"Laurel, Lawrence Strasbaugh","prec":"P1","voters":2,"levy":273.39},"1550 dalton fox lake rd":{"name":"Craig, Jennifer Strasbaugh","prec":"P1","voters":2,"levy":273.39},"1868 dalton fox lake rd":{"name":"Dianna, Gary Jameson","prec":"P1","voters":2,"levy":237.85},"2282 dalton fox lake rd":{"name":"Carol, Elwyn Martin","prec":"P1","voters":2,"levy":84.65},"2346 dalton fox lake rd":{"name":"Jennifer, Jonathan Downs","prec":"P1","voters":2,"levy":154.57},"2721 dalton fox lake rd":{"name":"Douglas, Jennifer Grim","prec":"P1","voters":2,"levy":143.77},"2799 dalton fox lake rd":{"name":"John, Kaitlyn, Leslie Uhl","prec":"P1","voters":3,"levy":186.97},"2924 dalton fox lake rd":{"name":"Aubriana, Caleb Groves","prec":"P1","voters":2,"levy":93.84},"3017 dalton fox lake rd":{"name":"Preston Coleman","prec":"P1","voters":1,"levy":78.22},"3093 dalton fox lake rd":{"name":"John Shapaka","prec":"P1","voters":1,"levy":152.06},"3152 dalton fox lake rd":{"name":"Christine Mummertz","prec":"P1","voters":1,"levy":133.12},"3154 dalton fox lake rd":{"name":"Katie Byler","prec":"P1","voters":1,"levy":133.12},"3179 dalton fox lake rd":{"name":"Brittany Shapaka","prec":"P1","voters":1,"levy":118.99},"3232 dalton fox lake rd":{"name":"Darren, Megan Ressler","prec":"P1","voters":2,"levy":93.59},"3273 dalton fox lake rd":{"name":"Garrett, Kimberly, Megan, Robert Kanya","prec":"P1","voters":4,"levy":187.16},"3381 dalton fox lake rd":{"name":"Brianne Gray, Ryan Sullivan","prec":"P1","voters":2,"levy":141.34},"3429 dalton fox lake rd":{"name":"Caleb, Danielle, Michael Rose","prec":"P1","voters":3,"levy":136.66},"3463 dalton fox lake rd":{"name":"Tim, Valerie Mcgreal","prec":"P1","voters":2,"levy":137.78},"3491 dalton fox lake rd":{"name":"Steven Burdette","prec":"P1","voters":1,"levy":113.35},"3555 dalton fox lake rd":{"name":"Terri Peterman","prec":"P1","voters":1,"levy":183.65},"4198 dalton fox lake rd":{"name":"Karen Everett","prec":"P1","voters":1,"levy":98.91},"4325 dalton fox lake rd":{"name":"Justin Everett, Arrin Riley","prec":"P1","voters":2,"levy":112.71},"4358 dalton fox lake rd":{"name":"Raymond Hawks","prec":"P1","voters":1,"levy":96.46},"4365 dalton fox lake rd":{"name":"Dale Hostetler","prec":"P1","voters":1,"levy":117.95},"4571 dalton fox lake rd":{"name":"Brittney, Charles Odell","prec":"P1","voters":2,"levy":194.2},"4683 dalton fox lake rd":{"name":"Tiffany Hunter","prec":"P1","voters":1,"levy":110.57},"4703 dalton fox lake rd":{"name":"Larry Caskey, Connie Hallaway","prec":"P1","voters":2,"levy":91.1},"4735 dalton fox lake rd":{"name":"Paul Martin","prec":"P1","voters":1,"levy":123.16},"4783 dalton fox lake rd":{"name":"Daniel, Sharon Ciammaichella","prec":"P1","voters":2,"levy":163.36},"4838 dalton fox lake rd":{"name":"Lonnie, Shelia Kiser","prec":"P2","voters":2,"levy":142.92},"4976 dalton fox lake rd":{"name":"Dawn, Jerrod Lance","prec":"P2","voters":2,"levy":205.42},"4991 dalton fox lake rd":{"name":"Stephany Marmol, Jeanne Wasson","prec":"P2","voters":2,"levy":167.58},"5370 dalton fox lake rd":{"name":"Alyssa, Jeffrey Harper","prec":"P2","voters":2,"levy":147.14},"5945 dalton fox lake rd":{"name":"Andrea, Timothy Sigler","prec":"P2","voters":2,"levy":217.14},"6001 dalton fox lake rd":{"name":"Daniel Nemastil","prec":"P2","voters":1,"levy":145.95},"6029 dalton fox lake rd":{"name":"Bruce, Diana Shepherd","prec":"P2","voters":2,"levy":185.89},"6037 dalton fox lake rd":{"name":"Dorothy, Timothy Tabellion","prec":"P2","voters":2,"levy":139.46},"6095 dalton fox lake rd":{"name":"Derek, Nicole Bunker","prec":"P2","voters":2,"levy":77.39},"6155 dalton fox lake rd":{"name":"Cynthia, George Martini","prec":"P2","voters":2,"levy":102.65},"6203 dalton fox lake rd":{"name":"Angela Meyer","prec":"P2","voters":1,"levy":88.37},"6512 dalton fox lake rd":{"name":"Suzanne, Thomas Robart","prec":"P2","voters":2,"levy":229.83},"6571 dalton fox lake rd":{"name":"Rebecca, Timothy Workinger","prec":"P2","voters":2,"levy":187.62},"6621 dalton fox lake rd":{"name":"Kyle, Taylor Allen","prec":"P2","voters":2,"levy":99.65},"6848 dalton fox lake rd":{"name":"Cheryl, James, Ryan Kelbly","prec":"P2","voters":3,"levy":259.33},"6965 dalton fox lake rd":{"name":"Jennifer, Keith Adkins","prec":"P2","voters":2,"levy":153.99},"7042 dalton fox lake rd":{"name":"Eric, Jessica Mattison","prec":"P2","voters":2,"levy":102.89},"7187 dalton fox lake rd":{"name":"Alivia Barnes, James Howard","prec":"P2","voters":2,"levy":154.11},"7220 dalton fox lake rd":{"name":"Amy, Ian Kelbly","prec":"P2","voters":2,"levy":0.0},"7222 dalton fox lake rd":{"name":"Karen Kelbly","prec":"P2","voters":1,"levy":403.69},"7420 dalton fox lake rd":{"name":"Matthew, Renee Shilling","prec":"P2","voters":2,"levy":116.97},"7443 dalton fox lake rd":{"name":"Larry Tope","prec":"P2","voters":1,"levy":118.81},"3121 deerfield ave nw":{"name":"Andrew, Austin, Rebecca Byall","prec":"P1","voters":3,"levy":144.9},"3145 deerfield ave nw":{"name":"Jeffrey, Robin Nicewander","prec":"P1","voters":2,"levy":121.4},"3163 deerfield ave nw":{"name":"Heather, Robert, Brooke Emmert, Radabaugh","prec":"P1","voters":3,"levy":139.86},"3171 deerfield ave nw":{"name":"Allen, Amy Chupp","prec":"P1","voters":2,"levy":201.05},"3197 deerfield ave nw":{"name":"Judith, Robert Ramer","prec":"P1","voters":2,"levy":118.12},"3275 deerfield ave nw":{"name":"Daniel, Stephanie Cumer","prec":"P1","voters":2,"levy":560.93},"3563 deerfield ave nw":{"name":"Adrianne, Chad Flickinger","prec":"P1","voters":2,"levy":151.36},"3565 deerfield ave nw":{"name":"Pamela, Paul Soemisch","prec":"P1","voters":2,"levy":147.53},"3741 deerfield ave nw":{"name":"Thomas Marshall","prec":"P1","voters":1,"levy":49.51},"4275 deerfield ave nw":{"name":"Kay Orr","prec":"P1","voters":1,"levy":255.69},"4363 deerfield ave nw":{"name":"Matthew Orr","prec":"P1","voters":1,"levy":286.88},"4429 deerfield ave nw":{"name":"Sharla Rohrbaugh","prec":"P1","voters":1,"levy":181.28},"4741 deerfield ave nw":{"name":"Dale Smeyres","prec":"P1","voters":1,"levy":40.03},"4791 deerfield ave nw":{"name":"Tammy Wagner","prec":"P1","voters":1,"levy":134.66},"5157 deerfield ave nw":{"name":"Macey Juersivich","prec":"P2","voters":1,"levy":135.73},"5355 deerfield ave nw":{"name":"Aimee, Scott Rohr","prec":"P2","voters":2,"levy":69.65},"5363 deerfield ave nw":{"name":"Jennifer, Scott Negulic","prec":"P2","voters":2,"levy":142.74},"5407 deerfield ave nw":{"name":"Jennifer, Sean Mccormack","prec":"P2","voters":2,"levy":78.35},"5615 deerfield ave nw":{"name":"John Holmes","prec":"P2","voters":1,"levy":143.2},"5717 deerfield ave nw":{"name":"Christian, Laura Miller","prec":"P2","voters":2,"levy":210.31},"5825 deerfield ave nw":{"name":"Ellen, Ronald Porter","prec":"P2","voters":2,"levy":135.47},"5881 deerfield ave nw":{"name":"Edward, Patricia, Kimberly Donahue, Heishman, Heishman Donahue","prec":"P2","voters":3,"levy":196.88},"6759 deerfield ave nw":{"name":"Justin Johnson","prec":"P2","voters":1,"levy":223.97},"7193 deerfield ave nw":{"name":"Eric, Luann Ucker","prec":"P2","voters":2,"levy":171.44},"7729 deerfield ave nw":{"name":"Lori, Kairalee, Mario Markly, Zito","prec":"P2","voters":3,"levy":103.15},"7831 deerfield ave nw":{"name":"Dinese Dross","prec":"P2","voters":1,"levy":0.0},"7955 deerfield ave nw":{"name":"Mark Fox","prec":"P2","voters":1,"levy":87.43},"7999 deerfield ave nw":{"name":"Michael, Rachel Hirschfelt","prec":"P2","voters":2,"levy":135.68},"8059 deerfield ave nw":{"name":"Donna, Timothy, Jessica Baer, Jones","prec":"P2","voters":3,"levy":52.04},"8061 deerfield ave nw":{"name":"Robert Johnson","prec":"P2","voters":1,"levy":65.22},"8065 deerfield ave nw":{"name":"Jean, Philip Veneziano","prec":"P2","voters":2,"levy":171.77},"8069 deerfield ave nw":{"name":"Joann, Lisa, Taylor Veneziano","prec":"P2","voters":3,"levy":167.44},"8181 deerfield ave nw":{"name":"Aaron Butzer","prec":"P2","voters":1,"levy":231.52},"8207 deerfield ave nw":{"name":"Jordan Harris","prec":"P2","voters":1,"levy":82.56},"16479 emmitsburg rd":{"name":"Timothy Smith","prec":"P1","voters":1,"levy":254.55},"16525 emmitsburg rd":{"name":"Carol, Keith Bell","prec":"P1","voters":2,"levy":197.69},"16526 emmitsburg rd":{"name":"Catherine, Robert Jones","prec":"P1","voters":2,"levy":227.25},"16574 emmitsburg rd":{"name":"Dawn, William Stitt","prec":"P1","voters":2,"levy":221.0},"16575 emmitsburg rd":{"name":"Aleah, Alexis, Bradley, Cynthia Daugherty","prec":"P1","voters":4,"levy":186.83},"16619 emmitsburg rd":{"name":"Ronald Isler","prec":"P1","voters":1,"levy":288.13},"16620 emmitsburg rd":{"name":"Aaron, Kimberly Hills","prec":"P1","voters":2,"levy":232.35},"16665 emmitsburg rd":{"name":"Alan, Danielle Shatto","prec":"P1","voters":2,"levy":236.26},"16666 emmitsburg rd":{"name":"Brian, Hailey, Nancy Copeland","prec":"P1","voters":3,"levy":173.71},"16695 emmitsburg rd":{"name":"Carrie, Jacob, Mark Andrew","prec":"P1","voters":3,"levy":230.83},"16696 emmitsburg rd":{"name":"Wanda, William Amstutz","prec":"P1","voters":2,"levy":199.33},"16705 emmitsburg rd":{"name":"Herbert, Patricia Robinson","prec":"P1","voters":2,"levy":264.66},"16710 emmitsburg rd":{"name":"Heather, Jeffrey Congo","prec":"P1","voters":2,"levy":188.51},"3730 forrer rd":{"name":"Jessica Davis","prec":"P1","voters":1,"levy":62.53},"3783 forrer rd":{"name":"Jeremiah, Michael, Synthia Mcmorrow","prec":"P1","voters":3,"levy":62.37},"4209 forrer rd":{"name":"Diane, Wayne Jarrett","prec":"P1","voters":2,"levy":358.45},"4243 forrer rd":{"name":"Tony Sibounheuang","prec":"P1","voters":1,"levy":138.87},"4698 forrer rd":{"name":"Dean, Linda Arnold","prec":"P2","voters":2,"levy":277.15},"4909 forrer rd":{"name":"Paul Haag, Rhonda Upton","prec":"P2","voters":2,"levy":130.03},"5022 forrer rd":{"name":"Susan, Thomas Snader","prec":"P2","voters":2,"levy":163.25},"5065 forrer rd":{"name":"Linden, Sandra Steiner","prec":"P2","voters":2,"levy":248.96},"5102 forrer rd":{"name":"Andrew Rehm","prec":"P2","voters":1,"levy":92.21},"5140 forrer rd":{"name":"Heather Byall","prec":"P2","voters":1,"levy":86.01},"5565 forrer rd":{"name":"William Martin","prec":"P2","voters":1,"levy":113.21},"5772 forrer rd":{"name":"Michael Conrad, Lawrence Davis, Terry Hawk","prec":"P2","voters":3,"levy":207.56},"14500 fosnight rd":{"name":"Kimberly, Quenton Kougher","prec":"P2","voters":2,"levy":106.87},"14525 fosnight rd":{"name":"Lisa, Matthew Mccullough","prec":"P2","voters":2,"levy":116.07},"14557 fosnight rd":{"name":"Georgean, Patrick Gibbons","prec":"P2","voters":2,"levy":201.29},"14566 fosnight rd":{"name":"Cory Schattschneider, Rachel Schattschneider, Mark Sexton, Priscilla Sexton","prec":"P2","voters":4,"levy":198.59},"14657 fosnight rd":{"name":"Natan, Renae, Santiago, Santiago Lizarraga","prec":"P2","voters":4,"levy":90.44},"14696 fosnight rd":{"name":"Davey Higgins, Charlene Higgins Johnston","prec":"P2","voters":2,"levy":80.01},"14720 fosnight rd":{"name":"James Hansen","prec":"P2","voters":1,"levy":114.42},"14733 fosnight rd":{"name":"Cheryl, James Caskey","prec":"P2","voters":2,"levy":147.75},"14756 fosnight rd":{"name":"Raymond, Rita Stephens","prec":"P2","voters":2,"levy":114.42},"14847 fosnight rd":{"name":"Hannah, Jonathan, Sandra, Timothy Caskey","prec":"P2","voters":4,"levy":234.38},"14849 fosnight rd":{"name":"Andrea Caskey, Eric Caskey, Beverly Kobilarcsik","prec":"P2","voters":3,"levy":196.35},"14877 fosnight rd":{"name":"Beulah Caskey","prec":"P2","voters":1,"levy":341.41},"14879 fosnight rd":{"name":"Eric Caskey","prec":"P2","voters":1,"levy":341.41},"14882 fosnight rd":{"name":"Ginna Airwyke, Rodney Airwyke, Krista Kain","prec":"P2","voters":3,"levy":116.77},"14923 fosnight rd":{"name":"Stacey Caskey Coblentz, Oliver Coblentz","prec":"P2","voters":2,"levy":180.63},"14932 fosnight rd":{"name":"Ramona Hicks, Anna Klintworth, Charles Klintworth, Joseph Klintworth, Michelle Klintworth","prec":"P2","voters":5,"levy":195.81},"14968 fosnight rd":{"name":"John Holliday","prec":"P2","voters":1,"levy":113.03},"14994 fosnight rd":{"name":"Rick Keel","prec":"P2","voters":1,"levy":40.48},"15040 fosnight rd":{"name":"Scott Albrecht, Judy Baker, Brandon Hickman","prec":"P2","voters":3,"levy":243.34},"15079 fosnight rd":{"name":"Jonathan, Shelley Staley","prec":"P2","voters":2,"levy":105.01},"12033 fox lake rd":{"name":"Jennifer, John Calame","prec":"P2","voters":2,"levy":229.55},"12042 fox lake rd":{"name":"Brooke Roth","prec":"P2","voters":1,"levy":128.4},"12081 fox lake rd":{"name":"Maria, Matthew Shanlian","prec":"P2","voters":2,"levy":189.58},"12105 fox lake rd":{"name":"Derek, Janeen, Robert Pasho","prec":"P2","voters":3,"levy":216.25},"12123 fox lake rd":{"name":"Adam Archer, Lauren Archer, Rachel Brown","prec":"P2","voters":3,"levy":251.93},"12167 fox lake rd":{"name":"Nancy Miller, Brandon Vonalmen, Rebecca Vonalmen","prec":"P2","voters":3,"levy":251.73},"12303 fox lake rd":{"name":"Amber, Jason Saintenoy","prec":"P2","voters":2,"levy":200.53},"12325 fox lake rd":{"name":"Brian, Debra Stoller","prec":"P2","voters":2,"levy":231.13},"12333 fox lake rd":{"name":"Carrie, Joel Horst","prec":"P2","voters":2,"levy":195.35},"12373 fox lake rd":{"name":"Justin, Whitney Rittenhouse","prec":"P2","voters":2,"levy":224.73},"12580 fox lake rd":{"name":"Amanda, Jeremiah Haines","prec":"P2","voters":2,"levy":137.35},"12628 fox lake rd":{"name":"Andrew Wright","prec":"P2","voters":1,"levy":125.78},"12678 fox lake rd":{"name":"Elizabeth Beadle, Abigail Hartzler, Carla Hartzler","prec":"P2","voters":3,"levy":134.24},"12720 fox lake rd":{"name":"Richard Craver, Joyce Dodson","prec":"P2","voters":2,"levy":145.47},"12762 fox lake rd":{"name":"Gary, Jill Craemer","prec":"P2","voters":2,"levy":173.95},"12850 fox lake rd":{"name":"Adam Hostetler","prec":"P2","voters":1,"levy":142.85},"12876 fox lake rd":{"name":"Amy Caskey, Ricki Hostetler","prec":"P2","voters":2,"levy":72.85},"13581 fox lake rd":{"name":"Carolyn, Kevin, Rodney Forrer","prec":"P2","voters":3,"levy":148.01},"13800 fox lake rd":{"name":"Kim, Michele Galehouse","prec":"P2","voters":2,"levy":131.69},"14314 fox lake rd":{"name":"April, Mitchell Ault","prec":"P2","voters":2,"levy":97.17},"14539 fox lake rd":{"name":"Angela, David, Jeffrey Baer","prec":"P2","voters":3,"levy":194.6},"14708 fox lake rd":{"name":"Beth, Brian Geiser","prec":"P2","voters":2,"levy":179.94},"14981 fox lake rd":{"name":"Sarah Douglass","prec":"P2","voters":1,"levy":1308.16},"15040 fox lake rd":{"name":"Bonnie Stoll","prec":"P2","voters":1,"levy":185.85},"15836 fox lake rd":{"name":"Bobbi Eggeman","prec":"P2","voters":1,"levy":176.84},"16060 fox lake rd":{"name":"Riley Eggeman","prec":"P2","voters":1,"levy":141.83},"16100 fox lake rd":{"name":"John Most","prec":"P2","voters":1,"levy":126.99},"16158 fox lake rd":{"name":"Monica Mellott","prec":"P2","voters":1,"levy":122.79},"16194 fox lake rd":{"name":"Janet Shaffer, Bristol Tope, Dylan Tope, Heidi Tope, Ricky Tope","prec":"P2","voters":5,"levy":77.33},"16482 fox lake rd":{"name":"Catherine Pamer","prec":"P2","voters":1,"levy":143.14},"16556 fox lake rd":{"name":"Toni Collins","prec":"P2","voters":1,"levy":231.82},"16661 fox lake rd":{"name":"Wendy Douglas Zimmerman, Robert Zimmerman","prec":"P2","voters":2,"levy":128.45},"16711 fox lake rd":{"name":"Kaedon, Melody, Rodney Martell","prec":"P2","voters":3,"levy":102.79},"16775 fox lake rd":{"name":"Michael Most","prec":"P2","voters":1,"levy":0.0},"16998 fox lake rd":{"name":"Robert Peppard","prec":"P2","voters":1,"levy":249.37},"12071 fulton rd":{"name":"Bradley, Heidi Carpenter","prec":"P2","voters":2,"levy":145.5},"12155 fulton rd":{"name":"Christopher Bartholic, Amberly Lefler, Christopher Lefler","prec":"P2","voters":3,"levy":102.21},"12225 fulton rd":{"name":"Marty, Orin, Wendy Stoller","prec":"P2","voters":3,"levy":176.59},"12275 fulton rd":{"name":"Benjamin, Kim, Seth Ream","prec":"P2","voters":3,"levy":163.04},"12333 fulton rd":{"name":"Wren Grande","prec":"P2","voters":1,"levy":167.37},"12599 fulton rd":{"name":"Larry Eggeman, Abigail Hostetler, Robyn Hostetler","prec":"P2","voters":3,"levy":0.0},"13061 fulton rd":{"name":"Catherine, Colin, Elizabeth, Matthew Stoll","prec":"P2","voters":4,"levy":94.26},"13189 fulton rd":{"name":"Glenn James","prec":"P2","voters":1,"levy":86.65},"13235 fulton rd":{"name":"Mark Lower","prec":"P2","voters":1,"levy":103.69},"13283 fulton rd":{"name":"Courtney, Micajah Merriman","prec":"P2","voters":2,"levy":119.38},"13337 fulton rd":{"name":"Cheryl Given","prec":"P2","voters":1,"levy":90.8},"13367 fulton rd":{"name":"Brenda, Ronald Danner","prec":"P2","voters":2,"levy":107.65},"13393 fulton rd":{"name":"Kimberly Thompson","prec":"P2","voters":1,"levy":83.88},"14501 fulton rd":{"name":"Paul Kruft","prec":"P2","voters":1,"levy":102.85},"14543 fulton rd":{"name":"David Bodager, Julie Kruft","prec":"P2","voters":2,"levy":112.83},"14559 fulton rd":{"name":"Ricky, William, William Wentsch","prec":"P2","voters":3,"levy":75.83},"14595 fulton rd":{"name":"Barbara Wentsch","prec":"P2","voters":1,"levy":98.4},"14629 fulton rd":{"name":"Dana, Rick Pew","prec":"P2","voters":2,"levy":156.41},"14793 fulton rd":{"name":"Rocky Brillhart","prec":"P2","voters":1,"levy":112.32},"15455 fulton rd":{"name":"Donald, Sharon Brillhart","prec":"P2","voters":2,"levy":118.24},"15493 fulton rd":{"name":"Karen, Paul Binkerd","prec":"P2","voters":2,"levy":106.92},"15707 fulton rd":{"name":"Cari Appugliese, John Wertz, Sharon Wertz","prec":"P2","voters":3,"levy":179.26},"15780 fulton rd":{"name":"Antonio, Brigitte Oliverio","prec":"P2","voters":2,"levy":203.32},"15922 fulton rd":{"name":"Richard Matty, Brittany Mowrer","prec":"P2","voters":2,"levy":94.83},"16104 fulton rd":{"name":"Annette Jundzilo, David Jundzilo, Jaclyn Jundzilo, Talen Jundzilo, Sandra Lusk","prec":"P2","voters":5,"levy":187.02},"16176 fulton rd":{"name":"Adam, Jeni Henico","prec":"P2","voters":2,"levy":169.62},"16221 fulton rd":{"name":"Dean, Kim Scarbrough","prec":"P2","voters":2,"levy":228.52},"16280 fulton rd":{"name":"Jacob, Kacie, Michael Obrien","prec":"P2","voters":3,"levy":235.96},"16372 fulton rd":{"name":"Darrel, Penny Geiser","prec":"P2","voters":2,"levy":239.74},"16422 fulton rd":{"name":"Lois, Richard Smyser","prec":"P2","voters":2,"levy":391.95},"16449 fulton rd":{"name":"Ronald Scarbrough","prec":"P2","voters":1,"levy":138.39},"16498 fulton rd":{"name":"Victoria Mathers","prec":"P2","voters":1,"levy":103.26},"16866 fulton rd":{"name":"Gary, Janet, Louis Johns","prec":"P2","voters":3,"levy":126.6},"16939 fulton rd":{"name":"Margaret, Robert Sniff","prec":"P2","voters":2,"levy":103.15},"16990 fulton rd":{"name":"Joanne Trogdon","prec":"P2","voters":1,"levy":142.5},"17048 fulton rd":{"name":"Alissa, Daniel Varner","prec":"P2","voters":2,"levy":148.36},"17424 fulton rd":{"name":"Carlos, Debra Gonzalez","prec":"P2","voters":2,"levy":92.19},"17512 fulton rd":{"name":"Paul Kruft, Meridith Prinzo","prec":"P2","voters":2,"levy":117.06},"17668 fulton rd":{"name":"Denise, Richard Boss","prec":"P2","voters":2,"levy":279.35},"18078 fulton rd":{"name":"James Lerner","prec":"P2","voters":1,"levy":23.91},"18970 fulton rd":{"name":"Marcia Good","prec":"P2","voters":1,"levy":106.07},"19018 fulton rd":{"name":"Roberta Rosio","prec":"P2","voters":1,"levy":144.87},"19090 fulton rd":{"name":"Craig, Jennifer Semelsberger","prec":"P2","voters":2,"levy":127.22},"19118 fulton rd":{"name":"Lawrence Fye","prec":"P2","voters":1,"levy":142.25},"19154 fulton rd":{"name":"Jamie Leglise","prec":"P2","voters":1,"levy":48.32},"2403 good rd":{"name":"James Jackson, Hailey Stone","prec":"P1","voters":2,"levy":119.61},"2447 good rd":{"name":"Ira Mollohan","prec":"P1","voters":1,"levy":161.87},"2468 good rd":{"name":"Carol, James, Trent Infield","prec":"P1","voters":3,"levy":201.86},"2512 good rd":{"name":"Kerri, Kevin Wile","prec":"P1","voters":2,"levy":123.03},"2560 good rd":{"name":"Cassandra, Timothy Zook","prec":"P1","voters":2,"levy":116.94},"2575 good rd":{"name":"Edward, Laura, Molly Pavkov","prec":"P1","voters":3,"levy":168.85},"2580 good rd":{"name":"Andrew, Julia Hershberger","prec":"P1","voters":2,"levy":137.19},"2619 good rd":{"name":"Katelyn, Nathan Shultz","prec":"P1","voters":2,"levy":176.66},"2657 good rd":{"name":"Loretta, Michael Raff","prec":"P1","voters":2,"levy":199.04},"2701 good rd":{"name":"Arlis Archer","prec":"P1","voters":1,"levy":142.35},"2753 good rd":{"name":"Barbara, John Steiner","prec":"P1","voters":2,"levy":170.63},"2797 good rd":{"name":"John, Sheila Hare","prec":"P1","voters":2,"levy":122.57},"16325 hanover rd":{"name":"Cindy, Todd Hershberger","prec":"P1","voters":2,"levy":213.28},"16334 hanover rd":{"name":"Darby, Rocky Carpenter","prec":"P1","voters":2,"levy":269.3},"16361 hanover rd":{"name":"Melissa, Steven Watkins","prec":"P1","voters":2,"levy":231.78},"16370 hanover rd":{"name":"Michael, Terra Erb","prec":"P1","voters":2,"levy":264.23},"16400 hanover rd":{"name":"Anthony Perna","prec":"P1","voters":1,"levy":198.4},"16429 hanover rd":{"name":"Jaime, Lance Stillings","prec":"P1","voters":2,"levy":180.7},"16450 hanover rd":{"name":"Rachel, Ryan Morgan","prec":"P1","voters":2,"levy":271.12},"16469 hanover rd":{"name":"Jill, Keith, Ryan Miller","prec":"P1","voters":3,"levy":218.34},"16501 hanover rd":{"name":"Asher, Elliana, Emily, Noah Baer","prec":"P1","voters":4,"levy":234.95},"16530 hanover rd":{"name":"Justin, Stacy Butts","prec":"P1","voters":2,"levy":234.97},"16591 hanover rd":{"name":"Christopher, Laura Jones","prec":"P1","voters":2,"levy":323.95},"16615 hanover rd":{"name":"Alan Bostick, April Bostick, Delbert Henderson, Jada Male","prec":"P1","voters":4,"levy":276.28},"17408 huprick rd":{"name":"Dennis Everett","prec":"P2","voters":1,"levy":85.31},"17483 huprick rd":{"name":"Amy, Caleb, Grace, Luke, Mark Greer","prec":"P1","voters":5,"levy":243.9},"17520 huprick rd":{"name":"Tina, William Everett","prec":"P2","voters":2,"levy":208.85},"17562 huprick rd":{"name":"Bryan, Heather Cassill","prec":"P2","voters":2,"levy":193.25},"17602 huprick rd":{"name":"Judith Brillhart","prec":"P2","voters":1,"levy":116.45},"17626 huprick rd":{"name":"David, Wendy Caskey","prec":"P2","voters":2,"levy":155.57},"17716 huprick rd":{"name":"Carol, Lawrence Zimmerman","prec":"P2","voters":2,"levy":138.3},"17771 huprick rd":{"name":"Kristen, Timothy, Trevor Horst","prec":"P1","voters":3,"levy":229.78},"18060 huprick rd":{"name":"Edwin Miller","prec":"P2","voters":1,"levy":254.48},"18068 huprick rd":{"name":"Trevon Hall","prec":"P2","voters":1,"levy":358.66},"18124 huprick rd":{"name":"Carl Craigmyle, Kimberly Craigmyle, Benjamin Osorio","prec":"P2","voters":3,"levy":210.65},"18166 huprick rd":{"name":"Eric Edwards","prec":"P2","voters":1,"levy":156.52},"18273 huprick rd":{"name":"Alvin Troyer","prec":"P1","voters":1,"levy":117.42},"18277 huprick rd":{"name":"Linda, Todd Forrer","prec":"P1","voters":2,"levy":251.21},"18278 huprick rd":{"name":"Timothy Caillet","prec":"P2","voters":1,"levy":169.82},"18390 huprick rd":{"name":"Barbara, Robert Manda","prec":"P2","voters":2,"levy":251.85},"18430 huprick rd":{"name":"Richard Werntz","prec":"P2","voters":1,"levy":119.71},"18484 huprick rd":{"name":"Beth, Jeffrey Liggett","prec":"P1","voters":2,"levy":123.82},"18530 huprick rd":{"name":"Jason, Luke, Stacy Garrett","prec":"P1","voters":3,"levy":146.39},"18698 huprick rd":{"name":"Terry Searles","prec":"P1","voters":1,"levy":173.62},"18725 huprick rd":{"name":"Kyle Bunn","prec":"P2","voters":1,"levy":168.4},"18855 huprick rd":{"name":"Thomas, Vicki, Vivienne Cisar","prec":"P2","voters":3,"levy":167.2},"18969 huprick rd":{"name":"Judith, Paul Schalmo","prec":"P2","voters":2,"levy":167.83},"7355 keck rd":{"name":"Mark, Stephanie Geiser","prec":"P2","voters":2,"levy":119.99},"7372 keck rd":{"name":"Craig, Kristi Grimes","prec":"P2","voters":2,"levy":264.29},"1215 n kohler rd":{"name":"Donald Edwards","prec":"P1","voters":1,"levy":164.98},"1331 n kohler rd":{"name":"Michele Wortman","prec":"P1","voters":1,"levy":163.58},"1441 n kohler rd":{"name":"Marilynn, Richard Willkom","prec":"P1","voters":2,"levy":244.68},"1525 n kohler rd":{"name":"Cheryl, Elaine, John Kirkbride","prec":"P1","voters":3,"levy":233.66},"1585 n kohler rd":{"name":"Christopher, Amanda Johnson","prec":"P1","voters":2,"levy":201.58},"1615 n kohler rd":{"name":"Jacqueline Owen","prec":"P1","voters":1,"levy":224.67},"1645 n kohler rd":{"name":"Ann, David Mcpeek","prec":"P1","voters":2,"levy":185.57},"1675 n kohler rd":{"name":"David Perez","prec":"P1","voters":1,"levy":219.98},"1231 n kohler rd":{"name":"Keith Weiser","prec":"P1","voters":1,"levy":148.94},"1253 n kohler rd":{"name":"Richard Zimmerly","prec":"P1","voters":1,"levy":145.78},"18222 krug rd":{"name":"Connie, Steven Workman","prec":"P1","voters":2,"levy":321.72},"18390 krug rd":{"name":"Mark Bodziony","prec":"P1","voters":1,"levy":217.25},"18420 krug rd":{"name":"Jeffrey Henning","prec":"P1","voters":1,"levy":202.05},"5081 lovers lane rd":{"name":"Donna, Ricky Boggs","prec":"P2","voters":2,"levy":208.06},"5083 lovers lane rd":{"name":"Cary Harper","prec":"P2","voters":1,"levy":126.51},"5115 lovers lane rd":{"name":"John, Kimberly Masters","prec":"P2","voters":2,"levy":244.85},"5121 lovers lane rd":{"name":"Kimberly, Makayla, Matthew Wyatt","prec":"P2","voters":3,"levy":106.12},"5123 lovers lane rd":{"name":"David, Mary, Toby Gingerich","prec":"P2","voters":3,"levy":185.85},"5217 lovers lane rd":{"name":"Charles Jarrett","prec":"P2","voters":1,"levy":202.92},"5335 lovers lane rd":{"name":"Bridget Cain","prec":"P2","voters":1,"levy":0.0},"5355 lovers lane rd":{"name":"Daniel, Felicia Cain","prec":"P2","voters":2,"levy":199.76},"5801 lovers lane rd":{"name":"Taryn Mills","prec":"P2","voters":1,"levy":216.93},"5841 lovers lane rd":{"name":"Deborah, Gary Kosiba","prec":"P2","voters":2,"levy":244.42},"5889 lovers lane rd":{"name":"William Sterner","prec":"P2","voters":1,"levy":186.01},"5913 lovers lane rd":{"name":"Andrea, Thomas Stabosz","prec":"P2","voters":2,"levy":194.41},"5985 lovers lane rd":{"name":"Anna, Brandon, Steven Davis","prec":"P2","voters":3,"levy":173.76},"6075 lovers lane rd":{"name":"Hope, Richard Carr","prec":"P2","voters":2,"levy":0.0},"6085 lovers lane rd":{"name":"Christopher, Tiffany Killinger","prec":"P2","voters":2,"levy":0.0},"6095 lovers lane rd":{"name":"Cole Tomassetti","prec":"P2","voters":1,"levy":122.66},"6101 lovers lane rd":{"name":"John, Lisa Kerner","prec":"P2","voters":2,"levy":135.79},"6180 lovers lane rd":{"name":"Blake Mertic","prec":"P2","voters":1,"levy":0.0},"15441 market st":{"name":"Bradley Rice","prec":"P1","voters":1,"levy":50.2},"15508 market st":{"name":"David Tomblin","prec":"P1","voters":1,"levy":29.58},"15513 market st":{"name":"Matthew Kohler","prec":"P1","voters":1,"levy":42.27},"15545 market st":{"name":"Deborah, James Mollohan","prec":"P1","voters":2,"levy":34.11},"15613 market st":{"name":"Jesse, Marsha Perkins","prec":"P1","voters":2,"levy":42.38},"15639 market st":{"name":"Judith Icenhower","prec":"P1","voters":1,"levy":7.92},"15665 market st":{"name":"Frank, Mary Schultheis","prec":"P1","voters":2,"levy":6.95},"15686 market st":{"name":"Candace Cottrell","prec":"P1","voters":1,"levy":28.46},"3319 misere rd":{"name":"Dennis, Susan Weaver","prec":"P1","voters":2,"levy":112.25},"3357 misere rd":{"name":"Lawrence, Tracy Weaver","prec":"P1","voters":2,"levy":207.02},"3365 misere rd":{"name":"Kevin, Mary Fouts","prec":"P1","voters":2,"levy":160.83},"3375 misere rd":{"name":"Jeffrey Kondik","prec":"P1","voters":1,"levy":31.09},"3382 misere rd":{"name":"Amy, Christopher, Wyatt Shepherd","prec":"P1","voters":3,"levy":137.09},"3388 misere rd":{"name":"Anita Hochstetler, David Hochstetler, Logan Swartzentruber","prec":"P1","voters":3,"levy":200.65},"3395 misere rd":{"name":"Jennifer Mikes","prec":"P1","voters":1,"levy":118.01},"3438 misere rd":{"name":"Deborah Flood","prec":"P1","voters":1,"levy":35.63},"3452 misere rd":{"name":"Edward Perkins","prec":"P1","voters":1,"levy":38.71},"3456 misere rd":{"name":"Andrew, Wilma Holderman","prec":"P1","voters":2,"levy":47.06},"3488 misere rd":{"name":"Kaylene Jones, John Stocker","prec":"P1","voters":2,"levy":69.82},"1613 mt eaton rd":{"name":"Douglas, Emma, Sharla West","prec":"P1","voters":3,"levy":195.64},"1623 mt eaton rd":{"name":"Robert Owen","prec":"P1","voters":1,"levy":195.64},"1774 mt eaton rd":{"name":"Debra, John Diehl","prec":"P1","voters":2,"levy":141.9},"1784 mt eaton rd":{"name":"Catherine, Joseph, Richard Miller","prec":"P1","voters":3,"levy":277.49},"1787 mt eaton rd":{"name":"Eric, Kimberly Dunlevy","prec":"P1","voters":2,"levy":0.0},"1788 mt eaton rd":{"name":"Jeffery, Rebekah Stutzman","prec":"P1","voters":2,"levy":203.56},"1790 mt eaton rd":{"name":"Milan, Sherry Burkholder","prec":"P1","voters":2,"levy":0.0},"2559 mt eaton rd":{"name":"Mindy Graber","prec":"P1","voters":1,"levy":111.79},"2662 mt eaton rd":{"name":"Michael Jackson","prec":"P1","voters":1,"levy":209.52},"2694 mt eaton rd":{"name":"Beverly, Chris Merkle","prec":"P1","voters":2,"levy":176.93},"3298 mt eaton rd":{"name":"Rachel Caldwell","prec":"P1","voters":1,"levy":157.6},"3342 mt eaton rd":{"name":"Laura Adams, Crystal Cousin, Bradley Elliott","prec":"P1","voters":3,"levy":135.47},"3384 mt eaton rd":{"name":"Patricia Becker, Lillian Lopez, Seth Lopez, Tina Sanders","prec":"P1","voters":4,"levy":137.46},"3615 mt eaton rd":{"name":"John Ireland, Kathleen Ireland, Danielle Mateo","prec":"P1","voters":3,"levy":92.12},"3632 mt eaton rd":{"name":"Margaret, Sammy Meeks","prec":"P1","voters":2,"levy":32.21},"3706 mt eaton rd":{"name":"Richard Labuda, Valeria Labuda, Zackery Russell","prec":"P1","voters":3,"levy":43.74},"3722 mt eaton rd":{"name":"Robert Mikel","prec":"P1","voters":1,"levy":34.53},"3727 mt eaton rd":{"name":"Christal, James Bourne","prec":"P1","voters":2,"levy":37.02},"3741 mt eaton rd":{"name":"Jason Hewitt","prec":"P1","voters":1,"levy":41.5},"3745 mt eaton rd":{"name":"Willis Troyer","prec":"P1","voters":1,"levy":102.79},"3903 mt eaton rd":{"name":"Mary Pagano, Gary Sands","prec":"P1","voters":2,"levy":107.93},"3941 mt eaton rd":{"name":"Lexie Ludwig, Amanda Staples, Jered Staples","prec":"P1","voters":3,"levy":60.78},"4024 mt eaton rd":{"name":"Pamela Burgan, Walter Burgan, Brittany Williams","prec":"P1","voters":3,"levy":174.32},"4179 mt eaton rd":{"name":"John, Katherine Workinger","prec":"P2","voters":2,"levy":65.95},"4243 mt eaton rd":{"name":"Annette, Bret, Scot Manly","prec":"P1","voters":3,"levy":102.1},"4278 mt eaton rd":{"name":"Benjamin Greenbank","prec":"P2","voters":1,"levy":69.97},"4301 mt eaton rd":{"name":"Judy Rehm","prec":"P1","voters":1,"levy":79.69},"4461 mt eaton rd":{"name":"Joanna, Kyle Burkholder","prec":"P1","voters":2,"levy":151.46},"4467 mt eaton rd":{"name":"Hailey, Jace, Jenelle, Michael Eberly","prec":"P1","voters":4,"levy":142.33},"4874 mt eaton rd":{"name":"Justin, Kendal Miller","prec":"P2","voters":2,"levy":149.02},"4959 mt eaton rd":{"name":"Brendon, Hannah Meng","prec":"P2","voters":2,"levy":37.25},"5009 mt eaton rd":{"name":"Noah Bair, Billy Plummer, Erica Plummer","prec":"P2","voters":3,"levy":104.23},"5022 mt eaton rd":{"name":"Brandy, Cheyenne, Joseph Carraway","prec":"P2","voters":3,"levy":122.4},"5061 mt eaton rd":{"name":"Nicole Quezadafazio","prec":"P2","voters":1,"levy":112.75},"5107 mt eaton rd":{"name":"Martha, Marvin Byall","prec":"P2","voters":2,"levy":68.78},"5143 mt eaton rd":{"name":"Ronald Lewis","prec":"P2","voters":1,"levy":0.0},"5406 mt eaton rd":{"name":"Debra, George, Philip Mayhew","prec":"P2","voters":3,"levy":206.81},"5419 mt eaton rd":{"name":"Janeen, Todd Bradford","prec":"P2","voters":2,"levy":150.24},"5435 mt eaton rd":{"name":"Melvin Falb","prec":"P2","voters":1,"levy":86.31},"5474 mt eaton rd":{"name":"Aaron, Halee Green","prec":"P2","voters":2,"levy":506.84},"5495 mt eaton rd":{"name":"Julianne Lardas","prec":"P2","voters":1,"levy":150.1},"5524 mt eaton rd":{"name":"Stephen Mccord","prec":"P2","voters":1,"levy":200.77},"5606 mt eaton rd":{"name":"Donna, Douglas Tomak","prec":"P2","voters":2,"levy":198.13},"5687 mt eaton rd":{"name":"Dreena, Victor Camp","prec":"P2","voters":2,"levy":239.68},"5727 mt eaton rd":{"name":"Sarah Bailey, Amber Workman","prec":"P2","voters":2,"levy":239.68},"5973 mt eaton rd":{"name":"Loren, Peggy Steiner","prec":"P2","voters":2,"levy":0.0},"7281 mt eaton rd":{"name":"Branden Gump, Rita Sidel","prec":"P2","voters":2,"levy":69.01},"7493 mt eaton rd":{"name":"Ashley Landsdorf, Gretchan Landsdorf, Jack Yeater","prec":"P2","voters":3,"levy":87.74},"7607 mt eaton rd":{"name":"Judy Brillhart","prec":"P2","voters":1,"levy":167.95},"7677 mt eaton rd":{"name":"Julie, Malcolm Finney","prec":"P2","voters":2,"levy":0.0},"2787 paradise ext st":{"name":"Fonda, Timothy Weeman","prec":"P1","voters":2,"levy":109.84},"2789 paradise ext st":{"name":"Brian, Nicole Lacy","prec":"P1","voters":2,"levy":295.79},"2797 paradise ext st":{"name":"Dawn, Jarrod Brown","prec":"P1","voters":2,"levy":213.25},"2823 paradise ext st":{"name":"Charlie, Melody Duskey","prec":"P1","voters":2,"levy":78.33},"2825 paradise ext st":{"name":"Jacqueline Suppan","prec":"P1","voters":1,"levy":133.35},"2829 paradise ext st":{"name":"Gabriel, Megan Middleton","prec":"P1","voters":2,"levy":195.72},"2833 paradise ext st":{"name":"Bethany, Justin Haislip","prec":"P1","voters":2,"levy":253.03},"13301 rehm rd":{"name":"Jillian, Robert, Waunita Witmer","prec":"P1","voters":3,"levy":227.67},"13619 rehm rd":{"name":"Andrew, Rachel Forrer","prec":"P1","voters":2,"levy":151.62},"13624 rehm rd":{"name":"Julia Welsh","prec":"P2","voters":1,"levy":248.08},"13797 rehm rd":{"name":"Hazel, Howard Calame","prec":"P1","voters":2,"levy":165.24},"13989 rehm rd":{"name":"Debra, Louis Rehm","prec":"P1","voters":2,"levy":154.89},"14654 rehm rd":{"name":"Alexis, Holly, Lillian, Lucas Cowgar","prec":"P2","voters":4,"levy":169.76},"14786 rehm rd":{"name":"David Hahn","prec":"P2","voters":1,"levy":88.93},"14821 rehm rd":{"name":"Penny West","prec":"P1","voters":1,"levy":81.36},"14959 rehm rd":{"name":"Andrew, Lynette Marr","prec":"P1","voters":2,"levy":289.6},"15101 rehm rd":{"name":"Margaret Shaffer","prec":"P1","voters":1,"levy":203.92},"15151 rehm rd":{"name":"Ronald, Tricia Kick","prec":"P1","voters":2,"levy":116.11},"15268 rehm rd":{"name":"Ruth, Terry Dalessandro","prec":"P2","voters":2,"levy":135.06},"15279 rehm rd":{"name":"Dane Kick","prec":"P1","voters":1,"levy":99.91},"15321 rehm rd":{"name":"Judy, Thomas Olechiw","prec":"P1","voters":2,"levy":263.92},"15370 rehm rd":{"name":"Danielle, Joshua Rehm","prec":"P2","voters":2,"levy":177.15},"15431 rehm rd":{"name":"Emily, Kenneth Hunt","prec":"P1","voters":2,"levy":218.78},"15483 rehm rd":{"name":"Dwight Mcintire","prec":"P1","voters":1,"levy":78.29},"15643 rehm rd":{"name":"Crystal Brede, Aaron Longworth","prec":"P1","voters":2,"levy":162.19},"17151 shifferly rd":{"name":"Brenda, Mark Oser","prec":"P2","voters":2,"levy":115.47},"17168 shifferly rd":{"name":"John Stoll","prec":"P2","voters":1,"levy":214.83},"18010 shifferly rd":{"name":"Diana, Philip Simmons","prec":"P2","voters":2,"levy":218.89},"18238 shifferly rd":{"name":"Rebecca, Walter Mullett","prec":"P2","voters":2,"levy":97.63},"18488 shifferly rd":{"name":"Kenneth Miller, Tamara Yurko","prec":"P2","voters":2,"levy":194.25},"18602 shifferly rd":{"name":"Laurie, William Harris","prec":"P2","voters":2,"levy":200.62},"18660 shifferly rd":{"name":"Mason Zollinger","prec":"P2","voters":1,"levy":169.51},"18718 shifferly rd":{"name":"Patricia, Thomas Workinger","prec":"P2","voters":2,"levy":221.95},"18981 shifferly rd":{"name":"Becky Tully","prec":"P2","voters":1,"levy":214.15},"19077 shifferly rd":{"name":"Paul Swansiger","prec":"P2","voters":1,"levy":128.71},"19109 shifferly rd":{"name":"Benjamin, Jacki, Scott Gallagher","prec":"P2","voters":3,"levy":231.22},"1358 tannerville rd":{"name":"Abby Wenger","prec":"P1","voters":1,"levy":0.0},"1487 tannerville rd":{"name":"Dustin Seifert, Jessica Seifert, Ernest Shoup","prec":"P1","voters":3,"levy":96.65},"1817 tannerville rd":{"name":"Angelene Clark","prec":"P1","voters":1,"levy":96.08},"1927 tannerville rd":{"name":"Elizabeth, Matthew Falb","prec":"P1","voters":2,"levy":106.17},"2009 tannerville rd":{"name":"Dana, Ronald Horst","prec":"P1","voters":2,"levy":173.23},"2061 tannerville rd":{"name":"Jessica, Mark Besancon","prec":"P1","voters":2,"levy":157.08},"2268 tannerville rd":{"name":"Bradley, Jessica Horst","prec":"P1","voters":2,"levy":361.36},"2306 tannerville rd":{"name":"Donald, Joann Shoup","prec":"P1","voters":2,"levy":261.46},"2359 tannerville rd":{"name":"Joyce Culbertson, Christopher Green","prec":"P1","voters":2,"levy":145.7},"2360 tannerville rd":{"name":"Alvin, Carol Horst","prec":"P1","voters":2,"levy":613.26},"2392 tannerville rd":{"name":"Abigail, Kelly, Peter Drake","prec":"P1","voters":3,"levy":229.29},"2420 tannerville rd":{"name":"Deanna Domer","prec":"P1","voters":1,"levy":142.41},"2522 tannerville rd":{"name":"Amy Murray","prec":"P1","voters":1,"levy":177.06},"2574 tannerville rd":{"name":"Ellen, John Smucker","prec":"P1","voters":2,"levy":145.16},"2608 tannerville rd":{"name":"Harold, June Steiner","prec":"P1","voters":2,"levy":151.22},"2875 tannerville rd":{"name":"Rex, Sara Martin","prec":"P1","voters":2,"levy":215.08},"2881 tannerville rd":{"name":"Clifford, Judy Martin","prec":"P1","voters":2,"levy":252.23},"2898 tannerville rd":{"name":"Brent, Candace, Shane, Stacey Troyer","prec":"P1","voters":4,"levy":217.15},"2917 tannerville rd":{"name":"Blake, Renee Bohlen","prec":"P1","voters":2,"levy":151.85},"2955 tannerville rd":{"name":"Debra Jackson","prec":"P1","voters":1,"levy":121.93},"3042 tannerville rd":{"name":"Elizabeth Mumaw, Vicky Olis","prec":"P1","voters":2,"levy":122.97},"3056 tannerville rd":{"name":"Karrie, Shawn Boss","prec":"P1","voters":2,"levy":203.26},"3070 tannerville rd":{"name":"Danielle Gochnauer","prec":"P1","voters":1,"levy":145.82},"3194 tannerville rd":{"name":"William Gable, Timothy Wade","prec":"P1","voters":2,"levy":95.44},"3260 tannerville rd":{"name":"Michael Rabung, Amy Rehm","prec":"P1","voters":2,"levy":177.71},"4320 tannerville rd":{"name":"Seth Rabung","prec":"P1","voters":1,"levy":60.12},"4925 tannerville rd":{"name":"Kody Schaefer","prec":"P2","voters":1,"levy":106.49},"4941 tannerville rd":{"name":"Connie, Steven Kasner","prec":"P2","voters":2,"levy":109.83},"4952 tannerville rd":{"name":"David, Heather Stoll","prec":"P2","voters":2,"levy":171.52},"5175 tannerville rd":{"name":"Gerald, Sara Devore","prec":"P2","voters":2,"levy":192.26},"5184 tannerville rd":{"name":"Jason, Shelley Mcafee","prec":"P2","voters":2,"levy":129.23},"5200 tannerville rd":{"name":"Kailey, Shaun Cerny","prec":"P2","voters":2,"levy":80.54},"5220 tannerville rd":{"name":"Jill Hershberger","prec":"P2","voters":1,"levy":70.75},"5310 tannerville rd":{"name":"Sandra Pina","prec":"P2","voters":1,"levy":116.48},"5318 tannerville rd":{"name":"Jenee, Kirk Hilty","prec":"P2","voters":2,"levy":205.33},"5324 tannerville rd":{"name":"Megan Smith","prec":"P2","voters":1,"levy":105.85},"5378 tannerville rd":{"name":"Juanita, Ronald Lowe","prec":"P2","voters":2,"levy":127.15},"1215 wadsworth rd":{"name":"Kelly, Teresa Messenger","prec":"P1","voters":2,"levy":137.0},"1305 wadsworth rd":{"name":"Khankham Luangamath, Sandye Mcintyre","prec":"P1","voters":2,"levy":160.09},"1471 wadsworth rd":{"name":"Jean, John Gindlesberger","prec":"P1","voters":2,"levy":97.26},"1919 wadsworth rd":{"name":"Anthony, Dana, Janet Delagrange","prec":"P1","voters":3,"levy":122.28},"1945 wadsworth rd":{"name":"Gary Gossard","prec":"P1","voters":1,"levy":161.28},"1977 wadsworth rd":{"name":"Brian, Brian, Katelyn Harrison","prec":"P1","voters":3,"levy":149.63},"2003 wadsworth rd":{"name":"Joyce, William Veitch","prec":"P1","voters":2,"levy":151.49},"5933 wadsworth rd":{"name":"Margie, Robert Butzer","prec":"P2","voters":2,"levy":248.03},"6087 wadsworth rd":{"name":"Jan, John Monheim","prec":"P2","voters":2,"levy":357.42},"6239 wadsworth rd":{"name":"Brant Butzer","prec":"P2","voters":1,"levy":215.88},"6547 wadsworth rd":{"name":"Darrel Zehr","prec":"P2","voters":1,"levy":129.94},"6567 wadsworth rd":{"name":"Deborah Markley, Sydney Obenauer","prec":"P2","voters":2,"levy":155.9},"6609 wadsworth rd":{"name":"Debbie, Douglas Specht","prec":"P2","voters":2,"levy":80.93},"6681 wadsworth rd":{"name":"Monica, Sue, Timothy Weber","prec":"P2","voters":3,"levy":138.09},"6689 wadsworth rd":{"name":"Dale, Heather Auxier","prec":"P2","voters":2,"levy":149.84},"6733 wadsworth rd":{"name":"Martha Hostetler","prec":"P2","voters":1,"levy":17.4},"7133 wadsworth rd":{"name":"Dawne, James Andrews","prec":"P2","voters":2,"levy":242.44},"7541 wadsworth rd":{"name":"Haley, Joel Stoller","prec":"P2","voters":2,"levy":430.57},"7705 wadsworth rd":{"name":"Edith Briggs","prec":"P2","voters":1,"levy":104.74},"7821 wadsworth rd":{"name":"Diane, Phillip Shue","prec":"P2","voters":2,"levy":162.84},"7863 wadsworth rd":{"name":"Jarret Furey","prec":"P2","voters":1,"levy":140.5},"7885 wadsworth rd":{"name":"Angela, Brock, David Lance","prec":"P2","voters":3,"levy":161.55},"7919 wadsworth rd":{"name":"Margaret, Robert Winney","prec":"P2","voters":2,"levy":102.34},"7957 wadsworth rd":{"name":"Emily, Keith Baldwin","prec":"P2","voters":2,"levy":157.3},"8109 wadsworth rd":{"name":"Amy, Joseph Spinelli","prec":"P2","voters":2,"levy":242.08},"8139 wadsworth rd":{"name":"Branden Miller","prec":"P2","voters":1,"levy":96.4},"8195 wadsworth rd":{"name":"Aidan, Thomas Griffin","prec":"P2","voters":2,"levy":115.31},"1844 wayne st":{"name":"Chloe, Emelia, Kelly, Nathan Chandler","prec":"P1","voters":4,"levy":104.8},"1884 wayne st":{"name":"John, Meredith, Tammy Lyons","prec":"P1","voters":3,"levy":236.67},"1934 wayne st":{"name":"Aaron, Alexa Nussbaum","prec":"P1","voters":2,"levy":296.68},"2179 wayne st":{"name":"Amy, Elliott Nussbaum","prec":"P1","voters":2,"levy":152.76},"2182 wayne st":{"name":"Robert Evans","prec":"P1","voters":1,"levy":171.01},"2220 wayne st":{"name":"Bonnie, Joseph Mack","prec":"P1","voters":2,"levy":196.0},"2268 wayne st":{"name":"David, Jennifer Kelch","prec":"P1","voters":2,"levy":150.42},"2320 wayne st":{"name":"Elizabeth, Joseph Terry","prec":"P1","voters":2,"levy":191.18},"2325 wayne st":{"name":"James, Lisa Blackford","prec":"P1","voters":2,"levy":245.19},"2375 wayne st":{"name":"Casey Mcgrew","prec":"P1","voters":1,"levy":99.83},"2380 wayne st":{"name":"Sarah Brenneman","prec":"P1","voters":1,"levy":212.83},"2393 wayne st":{"name":"Debra Walmer","prec":"P1","voters":1,"levy":158.17},"2420 wayne st":{"name":"Courtney, Ryan Phillips","prec":"P1","voters":2,"levy":147.84},"2469 wayne st":{"name":"Kay Wade","prec":"P1","voters":1,"levy":111.2},"2535 wayne st":{"name":"Barbara, Steven Weeman","prec":"P1","voters":2,"levy":286.62},"2555 wayne st":{"name":"David, Robin Coppola","prec":"P1","voters":2,"levy":271.03},"2599 wayne st":{"name":"Alan Auble","prec":"P1","voters":1,"levy":232.92},"2631 wayne st":{"name":"James, Susan Ritchie","prec":"P1","voters":2,"levy":404.51},"2785 wayne st":{"name":"Austin Clemens, Lauren Ritchie","prec":"P1","voters":2,"levy":218.13},"2839 wayne st":{"name":"Christopher, Jennifer, Kenna Pauley","prec":"P1","voters":3,"levy":218.58},"1514 wenger rd":{"name":"Joel, Rachael Martin","prec":"P1","voters":2,"levy":118.7},"1241 n west lebanon rd":{"name":"Sean, Tina Myers","prec":"P1","voters":2,"levy":239.55},"1295 n west lebanon rd":{"name":"Alyssa, Bryan, Ely, Ty Hutson","prec":"P1","voters":4,"levy":265.86},"1355 n west lebanon rd":{"name":"Chelsey, Jeremy Fry","prec":"P1","voters":2,"levy":492.65},"1393 n west lebanon rd":{"name":"Karen, Robert Wonsick","prec":"P1","voters":2,"levy":218.65},"2118 n west lebanon rd":{"name":"Audrey, Merlin, Shawn Swartzentruber","prec":"P1","voters":3,"levy":81.13},"2384 n west lebanon rd":{"name":"Levi Amstutz","prec":"P1","voters":1,"levy":181.66},"2507 n west lebanon rd":{"name":"Carol Clark","prec":"P1","voters":1,"levy":144.13},"2518 n west lebanon rd":{"name":"Anna Downs","prec":"P1","voters":1,"levy":244.47},"2705 n west lebanon rd":{"name":"Gregg, Marley Clark","prec":"P1","voters":2,"levy":175.09},"2724 n west lebanon rd":{"name":"Aaron Vacha","prec":"P1","voters":1,"levy":145.51},"2828 n west lebanon rd":{"name":"Craig, Tanya, Tristen Shisler","prec":"P1","voters":3,"levy":180.59},"2921 n west lebanon rd":{"name":"Zachary, Jeffrey Croftcheck, Vogelhuber","prec":"P1","voters":2,"levy":224.3},"2964 n west lebanon rd":{"name":"Abram, Madeline Fuller","prec":"P1","voters":2,"levy":164.67},"2973 n west lebanon rd":{"name":"Leanna, Scott Wentzel","prec":"P1","voters":2,"levy":203.02},"3609 west st":{"name":"Laura, Scott Warner","prec":"P1","voters":2,"levy":164.69},"3616 west st":{"name":"Eldon Calhoun","prec":"P1","voters":1,"levy":54.27},"3635 west st":{"name":"Frank Schultheis","prec":"P1","voters":1,"levy":0.0},"3088 york rd":{"name":"Danielle, Scott Sinick","prec":"P1","voters":2,"levy":169.66},"3103 york rd":{"name":"Sue Henry","prec":"P1","voters":1,"levy":224.52},"3131 york rd":{"name":"Amber, Joel Beichler","prec":"P1","voters":2,"levy":336.33},"3144 york rd":{"name":"Kurt Parker","prec":"P1","voters":1,"levy":0.0},"3165 york rd":{"name":"Bethany, Jacob Rufener","prec":"P1","voters":2,"levy":320.26},"3187 york rd":{"name":"Thomas Beichler, Ronel Falk","prec":"P1","voters":2,"levy":291.51},"3191 york rd":{"name":"Kiley, Michael Ventling","prec":"P1","voters":2,"levy":425.71},"3202 york rd":{"name":"Debora, Dennis Forgues","prec":"P1","voters":2,"levy":0.0},"3215 york rd":{"name":"Michele Awad Morris, Joshua Morris","prec":"P1","voters":2,"levy":326.25},"3232 york rd":{"name":"Kyle Nussbaum, Tessa Suriano","prec":"P1","voters":2,"levy":199.24},"3259 york rd":{"name":"Cody, Kelli Weaver","prec":"P1","voters":2,"levy":225.59},"3266 york rd":{"name":"Benjamin, Elizabeth, Marissa, Scott Crawford","prec":"P1","voters":4,"levy":201.56},"3289 york rd":{"name":"David, Shelley Ramsdell","prec":"P1","voters":2,"levy":250.9},"3325 york rd":{"name":"Caden, Chadwic, Christine Schmeltzer","prec":"P1","voters":3,"levy":316.26},"3330 york rd":{"name":"David, Pamela Swanson","prec":"P1","voters":2,"levy":257.17},"3374 york rd":{"name":"Aaron, Jamie Yonts","prec":"P1","voters":2,"levy":204.46},"3401 york rd":{"name":"Leonard, Roxanne Fish","prec":"P1","voters":2,"levy":253.45},"3404 york rd":{"name":"Carrie, Michael Nettle","prec":"P1","voters":2,"levy":223.1},"3434 york rd":{"name":"Lori Schrop","prec":"P1","voters":1,"levy":243.48},"3445 york rd":{"name":"Denise, Joseph, Patrick Turchiano","prec":"P1","voters":3,"levy":166.02},"3465 york rd":{"name":"Scott, Susan Burnett","prec":"P1","voters":2,"levy":198.42},"3485 york rd":{"name":"Christine Chizmadia Dreher, Rachel Dreher, Todd Dreher","prec":"P1","voters":3,"levy":245.97},"3505 york rd":{"name":"Jill, Joseph Rubino","prec":"P1","voters":2,"levy":207.51},"3524 york rd":{"name":"James, Loralee Romano","prec":"P1","voters":2,"levy":214.09},"3525 york rd":{"name":"Michael Carpenter","prec":"P1","voters":1,"levy":217.28},"3555 york rd":{"name":"Barbara, David Newton","prec":"P1","voters":2,"levy":193.77},"3556 york rd":{"name":"Benjamin, Hannah, Joshua, Kathryn Gerber","prec":"P1","voters":4,"levy":195.13},"3585 york rd":{"name":"Barbara, Jeffery Ellis","prec":"P1","voters":2,"levy":222.94},"3615 york rd":{"name":"Jillayne, Steven Case","prec":"P1","voters":2,"levy":296.3},"3645 york rd":{"name":"Drew, Laura, William Davidson","prec":"P1","voters":3,"levy":221.07},"3654 york rd":{"name":"Jesse, Kristin Willig","prec":"P1","voters":2,"levy":212.54},"3655 york rd":{"name":"Cameron, Laura, Richard Monroe","prec":"P1","voters":3,"levy":249.1},"3664 york rd":{"name":"Jason, Jennifer Cunningham","prec":"P1","voters":2,"levy":231.7},"3665 york rd":{"name":"John Rutter","prec":"P1","voters":1,"levy":310.91}};
 
 function normalizeStreet(s) {
@@ -384,7 +277,6 @@ function normalizeAddress(addr) {
   if (m && /^\d/.test(m[1])) return m[1] + ' ' + normalizeStreet(m[2]);
   return normalizeStreet(addr);
 }
-
 function normalizeResp(raw) {
   if (!raw) return 'Not Visited';
   var lo = raw.trim().toLowerCase();
@@ -392,8 +284,7 @@ function normalizeResp(raw) {
   if (lo === 'no'  || lo === 'n')                           return 'No';
   if (lo === 'not home' || lo === 'nothome' || lo === 'nh') return 'Not Home';
   if (lo === 'undecided' || lo === 'u' || lo === 'unsure')  return 'Undecided';
-  if (lo === 'not visited' || lo === 'nv' || lo === '')     return 'Not Visited';
-  return raw.trim();
+  return 'Not Visited';
 }
 
 var addrIndex = {};
@@ -401,174 +292,196 @@ var currentStreet = '';
 var currentFilter = 'all';
 
 function loadData() {
-  setSyncState('loading','Loading data…');
-  fetch(BIN_URL+'/latest',{headers:{'X-Master-Key':JB_API_KEY}})
-    .then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
-    .then(function(data){
-      var rows=Array.isArray((data.record||{}).rows)?data.record.rows:[];
-      buildIndex(rows);
-      setSyncState('ok',rows.length+' households loaded');
+  setSyncState('loading', 'Loading...');
+  fetch(BIN_URL + '/latest', { headers: { 'X-Master-Key': JB_API_KEY } })
+    .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(data) {
+      var rows = Array.isArray((data.record || {}).rows) ? data.record.rows : [];
+      addrIndex = {};
+      rows.forEach(function(row) {
+        if (!row.address) return;
+        var key  = normalizeAddress(row.address).toLowerCase().trim();
+        var resp = normalizeResp(row.resp);
+        if (!addrIndex[key] || addrIndex[key].resp === 'Not Visited')
+          addrIndex[key] = { resp: resp, notes: row.notes || '' };
+      });
+      setSyncState('ok', rows.length + ' households loaded');
       hideError();
-      if(currentStreet)renderTable();
+      if (currentStreet) renderTable();
     })
-    .catch(function(e){setSyncState('err','Could not load');showError('Could not load data: '+e.message);});
+    .catch(function(e) { setSyncState('err', 'Could not load'); showError('Could not load: ' + e.message); });
 }
 
-function buildIndex(rows) {
-  addrIndex={};
-  rows.forEach(function(row){
-    if(!row.address)return;
-    var key=normalizeAddress(row.address).toLowerCase().trim();
-    var resp=normalizeResp(row.resp);
-    if(!addrIndex[key]||addrIndex[key].resp==='Not Visited')
-      addrIndex[key]={resp:resp,notes:row.notes||''};
+function buildStreetList() {
+  var streets = {};
+  Object.keys(VOTER_DATA).forEach(function(addr) {
+    var p = addr.split(' ');
+    if (p.length < 2) return;
+    var s = p.slice(1).join(' ');
+    streets[s] = (streets[s] || 0) + 1;
   });
-}
-
-function refreshData(){loadData();showToast('⟳ Refreshing…');}
-
-function buildStreetList(){
-  var streets={};
-  Object.keys(VOTER_DATA).forEach(function(addr){
-    var p=addr.split(' ');if(p.length<2)return;
-    var s=p.slice(1).join(' ');streets[s]=(streets[s]||0)+1;
-  });
-  var picker=document.getElementById('streetPicker');
-  Object.keys(streets).sort().forEach(function(s){
-    var o=document.createElement('option');
-    o.value=s;o.textContent=tc(s)+'  ('+streets[s]+' addresses)';
+  var picker = document.getElementById('streetPicker');
+  Object.keys(streets).sort().forEach(function(s) {
+    var o = document.createElement('option');
+    o.value = s;
+    o.textContent = tc(s) + '  (' + streets[s] + ' addresses)';
     picker.appendChild(o);
   });
 }
 
-function loadStreet(street){
-  currentStreet=street;currentFilter='all';resetFilters('all');
-  var on=!!street;
-  document.getElementById('statsRow').style.display    =on?'flex':'none';
-  document.getElementById('progWrap').style.display    =on?'block':'none';
-  document.getElementById('tableToolbar').style.display=on?'flex':'none';
-  document.getElementById('legend').style.display      =on?'flex':'none';
-  if(!on){
-    document.getElementById('alertBanner').style.display='none';
-    document.getElementById('tableBody').innerHTML=
-      '<div class="empty-state"><span class="ei">🗺️</span>'+
-      '<h3>Choose a street above to get started</h3></div>';
+function applyFilter(f) {
+  currentFilter = f;
+  document.querySelectorAll('.pill').forEach(function(p) { p.classList.remove('active'); });
+  var pm = { all:'pill-all', unvisited:'pill-unvisited', nothome:'pill-nothome', yes:'pill-yes', no:'pill-no', undecided:'pill-undecided' };
+  var ap = document.getElementById(pm[f]);
+  if (ap) ap.classList.add('active');
+  document.querySelectorAll('.flt').forEach(function(b) {
+    if (b.dataset.filter === f) b.classList.add('active');
+    else b.classList.remove('active');
+  });
+  renderTable();
+}
+
+function loadStreet(street) {
+  currentStreet = street;
+  applyFilter('all');
+  var on = !!street;
+  document.getElementById('statsRow').style.display     = on ? 'flex'  : 'none';
+  document.getElementById('progWrap').style.display     = on ? 'block' : 'none';
+  document.getElementById('tableToolbar').style.display = on ? 'flex'  : 'none';
+  document.getElementById('legend').style.display       = on ? 'flex'  : 'none';
+  document.getElementById('pillsHint').style.display    = on ? 'block' : 'none';
+  if (!on) {
+    document.getElementById('alertBanner').style.display = 'none';
+    document.getElementById('tableBody').innerHTML = '<div class="empty-state"><span class="ei">&#x1F5FA;</span><h3>Choose a street above</h3></div>';
     return;
   }
   renderTable();
 }
 
-function getEntry(key){return addrIndex[key]||{resp:'Not Visited',notes:''};}
-
-function getRespClass(resp){
-  if(resp==='Yes')return'yes';if(resp==='No')return'no';
-  if(resp==='Not Home')return'nothome';if(resp==='Undecided')return'undecided';
-  return'unvisited';
+function getEntry(key)      { return addrIndex[key] || { resp: 'Not Visited', notes: '' }; }
+function getRespClass(resp) {
+  if (resp === 'Yes')      return 'yes';
+  if (resp === 'No')       return 'no';
+  if (resp === 'Not Home') return 'nothome';
+  if (resp === 'Undecided')return 'undecided';
+  return 'unvisited';
+}
+function getRespBadge(resp) {
+  var m = { 'Not Visited':'rb-unvisited','Not Home':'rb-nothome','Yes':'rb-yes','No':'rb-no','Undecided':'rb-undecided' };
+  return '<span class="resp-badge ' + (m[resp]||'rb-unvisited') + '">' + eh(resp||'Not Visited') + '</span>';
 }
 
-function getRespBadge(resp){
-  var cls={'Not Visited':'rb-unvisited','Not Home':'rb-nothome','Yes':'rb-yes','No':'rb-no','Undecided':'rb-undecided'}[resp]||'rb-unvisited';
-  return'<span class="resp-badge '+cls+'">'+eh(resp||'Not Visited')+'</span>';
-}
-
-function renderTable(){
-  var street=currentStreet;
-  var addrs=Object.keys(VOTER_DATA)
-    .filter(function(a){var p=a.split(' ');return p.length>=2&&p.slice(1).join(' ')===street;})
-    .sort(function(a,b){return parseInt(a)-parseInt(b);});
+function renderTable() {
+  var street = currentStreet;
+  var addrs = Object.keys(VOTER_DATA)
+    .filter(function(a) { var p=a.split(' '); return p.length>=2 && p.slice(1).join(' ')===street; })
+    .sort(function(a,b) { return parseInt(a)-parseInt(b); });
 
   var cU=0,cN=0,cY=0,cNo=0,cUnd=0;
-  addrs.forEach(function(addr){
-    var cls=getRespClass(getEntry(addr).resp);
-    if(cls==='unvisited')cU++;else if(cls==='nothome')cN++;
-    else if(cls==='yes')cY++;else if(cls==='no')cNo++;else if(cls==='undecided')cUnd++;
+  addrs.forEach(function(addr) {
+    var cls = getRespClass(getEntry(addr).resp);
+    if      (cls==='unvisited') cU++;
+    else if (cls==='nothome')   cN++;
+    else if (cls==='yes')       cY++;
+    else if (cls==='no')        cNo++;
+    else if (cls==='undecided') cUnd++;
   });
-  var cVisited=addrs.length-cU;
-  var pct=addrs.length?Math.round(cVisited/addrs.length*100):0;
-  var needs=cU+cN;
+  var cVisited=addrs.length-cU, pct=addrs.length?Math.round(cVisited/addrs.length*100):0, needs=cU+cN;
 
-  document.getElementById('pTotal').textContent    =addrs.length+' total';
-  document.getElementById('pUnvisited').textContent=cU+' not visited';
-  document.getElementById('pNothome').textContent  =cN+' not home';
-  document.getElementById('pYes').textContent      =cY+' yes';
-  document.getElementById('pNo').textContent       =cNo+' no';
-  document.getElementById('pUndecided').textContent=cUnd+' undecided';
-  document.getElementById('progFill').style.width  =pct+'%';
-  document.getElementById('progPct').textContent   =pct+'% canvassed';
-  document.getElementById('toolbarTitle').textContent=tc(street);
-  var banner=document.getElementById('alertBanner');
-  banner.style.display=needs>0?'block':'none';
-  if(needs>0)document.getElementById('alertCount').textContent=needs+' address'+(needs!==1?'es':'');
+  document.getElementById('pTotal').textContent     = addrs.length + ' total';
+  document.getElementById('pUnvisited').textContent = cU   + ' not visited';
+  document.getElementById('pNothome').textContent   = cN   + ' not home';
+  document.getElementById('pYes').textContent       = cY   + ' yes';
+  document.getElementById('pNo').textContent        = cNo  + ' no';
+  document.getElementById('pUndecided').textContent = cUnd + ' undecided';
+  document.getElementById('progFill').style.width   = pct + '%';
+  document.getElementById('progPct').textContent    = pct + '% canvassed';
+  document.getElementById('toolbarTitle').textContent = tc(street);
+  var banner = document.getElementById('alertBanner');
+  banner.style.display = needs>0 ? 'block' : 'none';
+  if (needs>0) document.getElementById('alertCount').textContent = needs+' address'+(needs!==1?'es':'');
 
-  var show=addrs.filter(function(addr){
-    var cls=getRespClass(getEntry(addr).resp);
-    if(currentFilter==='all')       return true;
-    if(currentFilter==='unvisited')  return cls==='unvisited';
-    if(currentFilter==='nothome')    return cls==='nothome';
-    if(currentFilter==='yes')        return cls==='yes';
-    if(currentFilter==='no')         return cls==='no';
-    if(currentFilter==='undecided')  return cls==='undecided';
+  var show = addrs.filter(function(addr) {
+    var cls = getRespClass(getEntry(addr).resp);
+    if (currentFilter==='all')       return true;
+    if (currentFilter==='unvisited') return cls==='unvisited';
+    if (currentFilter==='nothome')   return cls==='nothome';
+    if (currentFilter==='yes')       return cls==='yes';
+    if (currentFilter==='no')        return cls==='no';
+    if (currentFilter==='undecided') return cls==='undecided';
     return true;
   });
 
-  if(!show.length){
-    document.getElementById('tableBody').innerHTML=
-      '<div class="empty-state"><span class="ei">✅</span>'+
-      '<h3>'+(currentFilter==='all'?'No addresses found':'None in this category')+'</h3>'+
-      '<p>'+(currentFilter!=='all'?'Try pressing "All" above.':'')+'</p></div>';
+  if (!show.length) {
+    document.getElementById('tableBody').innerHTML =
+      '<div class="empty-state"><span class="ei">&#x2705;</span><h3>' +
+      (currentFilter==='all'?'No addresses found':'None in this category') +
+      '</h3><p>'+(currentFilter!=='all'?'Try a different filter.':'')+'</p></div>';
     return;
   }
 
-  var rows=show.map(function(addr){
-    var info=VOTER_DATA[addr];
-    var entry=getEntry(addr);
-    var cls=getRespClass(entry.resp);
-    var noteEl=entry.notes?'<div class="td-notes-inline">📝 '+eh(entry.notes)+'</div>':'';
-    return'<tr class="r-'+cls+'">'+
-      '<td class="td-addr">'+fmtAddr(addr)+'</td>'+
-      '<td class="td-name">'+eh(info.name)+noteEl+'</td>'+
-      '<td class="td-voters"><span class="v-badge">'+info.voters+'</span></td>'+
-      '<td class="td-prec">'+info.prec+'</td>'+
-      '<td class="td-resp">'+getRespBadge(entry.resp)+'</td>'+
-      '<td class="td-notes-col">'+eh(entry.notes)+'</td>'+
-      '</tr>';
+  var rows = show.map(function(addr) {
+    var info=VOTER_DATA[addr], entry=getEntry(addr), cls=getRespClass(entry.resp);
+    var noteEl=entry.notes?'<div class="td-notes-inline">'+eh(entry.notes)+'</div>':'';
+    return '<tr class="r-'+cls+'"><td class="td-addr">'+fmtAddr(addr)+'</td>' +
+      '<td class="td-name">'+eh(info.name)+noteEl+'</td>' +
+      '<td class="td-voters"><span class="v-badge">'+info.voters+'</span></td>' +
+      '<td class="td-prec">'+info.prec+'</td>' +
+      '<td class="td-resp">'+getRespBadge(entry.resp)+'</td>' +
+      '<td class="td-notes-col">'+eh(entry.notes)+'</td></tr>';
   }).join('');
 
-  document.getElementById('tableBody').innerHTML=
-    '<table><thead><tr>'+
-    '<th>Address</th><th>Residents</th>'+
-    '<th class="tc">Voters</th><th class="tc td-prec">Prec.</th>'+
-    '<th class="tc">Response</th><th>Notes</th>'+
-    '</tr></thead><tbody>'+rows+'</tbody></table>';
+  document.getElementById('tableBody').innerHTML =
+    '<table><thead><tr><th>Address</th><th>Residents</th>' +
+    '<th class="tc">Voters</th><th class="tc td-prec">Prec.</th>' +
+    '<th class="tc">Response</th><th>Notes</th></tr></thead><tbody>'+rows+'</tbody></table>';
 }
 
-function setFilter(f){currentFilter=f;resetFilters(f);renderTable();}
-function resetFilters(f){
-  document.querySelectorAll('.flt').forEach(function(b){
-    b.className='flt';if(b.dataset.f===f)b.classList.add('on-'+f);
-  });
-}
-function setSyncState(s,l){
-  document.getElementById('syncDot').className='sync-dot '+s;
-  document.getElementById('syncLabel').textContent=l;
-}
+function setSyncState(s,l){document.getElementById('syncDot').className='sync-dot '+s;document.getElementById('syncLabel').textContent=l;}
 function showError(m){var e=document.getElementById('errBanner');e.innerHTML=m;e.style.display='block';}
 function hideError(){document.getElementById('errBanner').style.display='none';}
 var toastT;
-function showToast(m){
-  var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');
-  clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('show');},2600);
-}
-function tc(s){return s.replace(/\b\w/g,function(c){return c.toUpperCase();});}
-function fmtAddr(a){
-  return a.split(' ').map(function(w,i){return i===0?w:w.charAt(0).toUpperCase()+w.slice(1);}).join(' ');
-}
-function eh(s){
-  return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('show');},2600);}
+function tc(s){return(s||'').replace(/\w/g,function(c){return c.toUpperCase();});}
+function fmtAddr(a){return a.split(' ').map(function(w,i){return i===0?w:w.charAt(0).toUpperCase()+w.slice(1);}).join(' ');}
+function eh(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
-buildStreetList();
-loadData();
+// Wire up all interactions — NO onclick attributes used anywhere
+document.addEventListener('DOMContentLoaded', function() {
+  // Password gate
+  var PW = atob('V2luMjAyNiQ=');
+  function unlock() { var o=document.getElementById('pg-overlay'); if(o)o.style.display='none'; document.body.style.overflow=''; }
+  document.getElementById('pg-btn').addEventListener('click', function() {
+    var inp=document.getElementById('pg-inp'), err=document.getElementById('pg-err');
+    if (inp.value===PW) { try{sessionStorage.setItem('pg_unlocked','1');}catch(x){} unlock(); }
+    else { err.textContent='Incorrect password. Try again.'; inp.value=''; inp.style.borderColor='#e74c3c'; setTimeout(function(){inp.style.borderColor='rgba(255,255,255,.2)';},1500); inp.focus(); }
+  });
+  document.getElementById('pg-inp').addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('pg-btn').click(); });
+  var ok=false; try{ok=sessionStorage.getItem('pg_unlocked')==='1';}catch(x){}
+  if (ok) { unlock(); } else { var o=document.getElementById('pg-overlay'); if(o)o.style.display='flex'; document.body.style.overflow='hidden'; setTimeout(function(){document.getElementById('pg-inp').focus();},100); }
+
+  // Street picker
+  document.getElementById('streetPicker').addEventListener('change', function() { loadStreet(this.value); });
+
+  // Refresh
+  document.getElementById('refreshBtn').addEventListener('click', function() { loadData(); showToast('Refreshing...'); });
+
+  // Pills
+  var pillMap = { 'pill-all':'all','pill-unvisited':'unvisited','pill-nothome':'nothome','pill-yes':'yes','pill-no':'no','pill-undecided':'undecided' };
+  Object.keys(pillMap).forEach(function(id) {
+    var el=document.getElementById(id);
+    if (el) el.addEventListener('click', function() { applyFilter(pillMap[id]); });
+  });
+
+  // Filter buttons in toolbar
+  document.querySelectorAll('.flt').forEach(function(btn) {
+    btn.addEventListener('click', function() { applyFilter(this.dataset.filter); });
+  });
+
+  buildStreetList();
+  loadData();
+});
 </script>
 </body>
 </html>
