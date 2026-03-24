@@ -4073,34 +4073,35 @@ document.addEventListener('DOMContentLoaded', function() {
       <div id="admin-pw-error" style="font-size:.78rem;color:#f87171;min-height:18px"></div>
     </div>
     <div id="admin-actions" style="display:none">
-      <div style="background:#0d1117;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:12px 14px;margin-bottom:14px;font-size:.82rem;line-height:1.6" id="admin-data-status"></div>
+
+      <!-- ★ JSONBin Cloud Sync — TOP PRIORITY SECTION ★ -->
+      <div style="background:#0a1a2a;border:2px solid #2980b9;border-radius:10px;padding:14px 16px;margin-bottom:14px">
+        <div style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#aee2ff;margin-bottom:8px">☁️ JSONBin Cloud Sync</div>
+        <div style="font-size:.73rem;color:#7a9ab8;margin-bottom:10px;line-height:1.5">Paste your <strong style="color:#aee2ff">JSONBin Master Key</strong> below to load canvass data from the cloud.</div>
+        <div style="font-size:.67rem;color:#556677;margin-bottom:8px;font-family:monospace;background:#050a10;padding:5px 9px;border-radius:4px;border:1px solid #21262d">
+          Bin: <span style="color:#58a6ff">69b85326c3097a1dd52eccfa</span>
+        </div>
+        <input id="admin-jb-key" type="password" placeholder="Paste Master Key ($2a$10$...)"
+          style="width:100%;background:#0d1117;border:1.5px solid #2980b9;border-radius:6px;padding:10px 12px;color:#f0f6fc;font-size:.82rem;outline:none;box-sizing:border-box;margin-bottom:8px;font-family:monospace">
+        <div id="admin-bin-row" style="display:none;margin-bottom:8px">
+          <input id="admin-bin-id" type="text" placeholder="Bin ID (auto-set)"
+            style="width:100%;background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:8px 11px;color:#aee2ff;font-size:.78rem;outline:none;box-sizing:border-box;font-family:monospace">
+        </div>
+        <button onclick="adminSaveCloudConfig()"
+          style="width:100%;background:linear-gradient(135deg,#1a3a5c,#1a2d40);color:#aee2ff;border:1.5px solid #2980b9;border-radius:8px;padding:11px;font-family:'Oswald',sans-serif;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;margin-bottom:6px">
+          💾 Save Key &amp; Enable Cloud Sync
+        </button>
+        <button onclick="adminTestFetch()"
+          style="width:100%;background:#050a10;color:#74c69d;border:1.5px solid rgba(39,174,96,.4);border-radius:8px;padding:9px;font-family:'Oswald',sans-serif;font-size:.73rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer">
+          🔄 Pull Latest Data from Cloud Now
+        </button>
+        <div id="admin-cloud-status" style="font-size:.72rem;margin-top:7px;min-height:16px;color:#556677"></div>
+      </div>
 
       <!-- Cloud status indicator -->
       <div id="cloud-status" style="display:none"></div>
 
-      <!-- JSONBin Cloud Config -->
-      <div style="background:#0d1117;border:1px solid rgba(46,134,193,.3);border-radius:8px;padding:12px 14px;margin-bottom:14px">
-        <div style="font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#aee2ff;margin-bottom:6px">☁️ JSONBin Cloud Sync</div>
-        <div style="font-size:.75rem;color:#556677;margin-bottom:10px;line-height:1.5">Enter your JSONBin Master Key to enable live sync across all devices. The Bin ID is already configured.</div>
-        <div style="font-size:.68rem;color:#8a9bb0;margin-bottom:8px;font-family:monospace;background:#0a0e14;padding:6px 10px;border-radius:4px;border:1px solid #21262d">
-          Bin ID: <span style="color:#aee2ff">69b85326c3097a1dd52eccfa</span>
-        </div>
-        <input id="admin-jb-key" type="password" placeholder="Paste your JSONBin Master Key here..."
-          style="width:100%;background:#161b22;border:1px solid #30363d;border-radius:6px;padding:9px 11px;color:#f0f6fc;font-size:.8rem;outline:none;box-sizing:border-box;margin-bottom:8px;font-family:monospace">
-        <div id="admin-bin-row" style="display:none;margin-bottom:8px">
-          <input id="admin-bin-id" type="text" placeholder="Bin ID"
-            style="width:100%;background:#161b22;border:1px solid #30363d;border-radius:6px;padding:9px 11px;color:#aee2ff;font-size:.8rem;outline:none;box-sizing:border-box;font-family:monospace">
-        </div>
-        <button onclick="adminSaveCloudConfig()"
-          style="width:100%;background:#1a2d40;color:#aee2ff;border:1.5px solid rgba(46,134,193,.45);border-radius:8px;padding:10px;font-family:'Oswald',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;margin-bottom:6px">
-          💾 Save &amp; Enable Cloud Sync
-        </button>
-        <button onclick="adminTestFetch()"
-          style="width:100%;background:#0d1117;color:#74c69d;border:1.5px solid rgba(39,174,96,.3);border-radius:8px;padding:8px;font-family:'Oswald',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer">
-          🔄 Pull Latest Data from Cloud Now
-        </button>
-        <div id="admin-cloud-status" style="font-size:.72rem;margin-top:6px;min-height:16px;color:#556677"></div>
-      </div>
+      <div style="background:#0d1117;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:12px 14px;margin-bottom:14px;font-size:.82rem;line-height:1.6" id="admin-data-status"></div>
 
       <!-- Backup & Restore -->
       <div style="background:#0d1117;border:1px solid rgba(39,174,96,.2);border-radius:8px;padding:12px 14px;margin-bottom:14px">
