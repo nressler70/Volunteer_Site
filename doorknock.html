@@ -265,13 +265,14 @@ td{padding:12px 18px;vertical-align:middle}
       </select>
     </div>
     <div class="stats-row" id="statsRow">
-      <span class="pill p-total">    <span class="pill-dot"></span><span id="pTotal">—</span></span>
-      <span class="pill p-unvisited"><span class="pill-dot"></span><span id="pUnvisited">—</span></span>
-      <span class="pill p-nothome">  <span class="pill-dot"></span><span id="pNothome">—</span></span>
-      <span class="pill p-yes">      <span class="pill-dot"></span><span id="pYes">—</span></span>
-      <span class="pill p-no">       <span class="pill-dot"></span><span id="pNo">—</span></span>
-      <span class="pill p-undecided"><span class="pill-dot"></span><span id="pUndecided">—</span></span>
+      <span class="pill p-total"    title="Show all" onclick="setFilter('all')"       style="cursor:pointer"><span class="pill-dot"></span><span id="pTotal">—</span></span>
+      <span class="pill p-unvisited" title="Filter: Not Visited" onclick="setFilter('unvisited')" style="cursor:pointer"><span class="pill-dot"></span><span id="pUnvisited">—</span></span>
+      <span class="pill p-nothome"   title="Filter: Not Home"    onclick="setFilter('nothome')"   style="cursor:pointer"><span class="pill-dot"></span><span id="pNothome">—</span></span>
+      <span class="pill p-yes"       title="Filter: Yes"         onclick="setFilter('yes')"       style="cursor:pointer"><span class="pill-dot"></span><span id="pYes">—</span></span>
+      <span class="pill p-no"        title="Filter: No"          onclick="setFilter('no')"        style="cursor:pointer"><span class="pill-dot"></span><span id="pNo">—</span></span>
+      <span class="pill p-undecided" title="Filter: Undecided"   onclick="setFilter('undecided')" style="cursor:pointer"><span class="pill-dot"></span><span id="pUndecided">—</span></span>
     </div>
+    <div style="font-size:.75rem;color:#6a8aa0;margin-top:10px">💡 Click any pill above to filter the list below</div>
   </div>
 
   <div class="prog-wrap" id="progWrap">
