@@ -106,6 +106,16 @@ td{padding:12px 18px;vertical-align:middle}
 .toast{position:fixed;bottom:24px;right:24px;background:#1c2d40;border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:12px 20px;font-size:.88rem;color:#d8e8f4;box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:3000;transform:translateY(60px);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
 .toast.show{transform:translateY(0);opacity:1}
 @media(max-width:680px){.td-prec,.td-notes-col{display:none}td{padding:10px 12px}}
+@media print{
+  @page{size:letter;margin:.5in}
+  nav,.page-hero,.select-card,.prog-wrap,.alert-banner,.table-toolbar,.legend,.toast{display:none!important}
+  .main{padding:0;max-width:100%}
+  .table-card{border:none;border-radius:0;box-shadow:none}
+  table{font-size:9pt}
+  thead th{background:#243d58!important;color:white!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  tbody tr.r-nothome{background:rgba(200,80,70,.1)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  tbody tr.r-yes{background:rgba(50,170,100,.1)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
 </style>
 </head>
 <body>
@@ -151,6 +161,7 @@ td{padding:12px 18px;vertical-align:middle}
         <span id="syncLabel">Loading&#x2026;</span>
       </div>
       <button class="btn-refresh" id="refreshBtn">&#x21BA; Refresh</button>
+      <button class="btn-refresh" id="printBtn" style="background:var(--gold);color:var(--navy);border-color:var(--gold)">&#x1F5A8; Print / Save PDF</button>
     </div>
   </div>
 </div>
@@ -466,6 +477,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Refresh
   document.getElementById('refreshBtn').addEventListener('click', function() { loadData(); showToast('Refreshing...'); });
+  document.getElementById('printBtn').addEventListener('click', function() { window.print(); });
 
   // Pills
   var pillMap = { 'pill-all':'all','pill-unvisited':'unvisited','pill-nothome':'nothome','pill-yes':'yes','pill-no':'no','pill-undecided':'undecided' };
