@@ -1,67 +1,26 @@
-// reports-patch.js — injects Door-Knock and Walk Sheet into Reports dropdown
+// reports-patch.js — adds Door-Knock and Walk Sheet links to the nav bar
 (function() {
-  function injectButtons() {
-    if (document.getElementById('rpt-doorknock-btn')) return;
+  function addNavLinks() {
+    // Find the nav links list
+    var navLinks = document.querySelector('nav .nav-links');
+    if (!navLinks) return;
 
-    var dropdown = document.getElementById('nav-rpt-dropdown');
-    if (!dropdown) return;
+    // Don't add twice
+    if (document.getElementById('nav-doorknock')) return;
 
-    // Find the GA button and insert after it
-    var gaBtn = null;
-    dropdown.querySelectorAll('.rpt-item').forEach(function(btn) {
-      if (btn.textContent.indexOf('GA') !== -1 && btn.textContent.indexOf('Analytics') !== -1) {
-        gaBtn = btn;
-      }
-    });
-    if (!gaBtn) return;
+    var dk = document.createElement('li');
+    dk.innerHTML = '<a href="doorknock.html" id="nav-doorknock" style="color:#f4a460;font-weight:700">🏘️ Door-Knock</a>';
 
-    // Build Door-Knock button
-    var dk = document.createElement('button');
-    dk.id = 'rpt-doorknock-btn';
-    dk.className = 'rpt-item';
-    dk.setAttribute('role', 'menuitem');
-    dk.innerHTML =
-      '<span class="rpt-icon">&#x1F3D8;</span>' +
-      '<span class="rpt-text">' +
-        '<span class="rpt-title">Door-Knock Street Report</span>' +
-        '<span class="rpt-desc">View canvass responses street by street</span>' +
-      '</span>' +
-      '<span class="rpt-badge rpt-badge-view">VIEW</span>';
-    dk.addEventListener('click', function() {
-      if (typeof closeReportsDropdown === 'function') closeReportsDropdown();
-      window.location.href = 'doorknock.html';
-    });
+    var ws = document.createElement('li');
+    ws.innerHTML = '<a href="walksheet.html" id="nav-walksheet" style="color:#74c69d;font-weight:700">🖨️ Walk Sheet</a>';
 
-    // Build Walk Sheet button
-    var ws = document.createElement('button');
-    ws.id = 'rpt-walksheet-btn';
-    ws.className = 'rpt-item';
-    ws.setAttribute('role', 'menuitem');
-    ws.innerHTML =
-      '<span class="rpt-icon">&#x1F5A8;</span>' +
-      '<span class="rpt-text">' +
-        '<span class="rpt-title">Walk Sheet &#x2014; Needs Visit</span>' +
-        '<span class="rpt-desc">Printable walk sheet for unvisited &amp; not-home addresses</span>' +
-      '</span>' +
-      '<span class="rpt-badge rpt-badge-pdf">PDF</span>';
-    ws.addEventListener('click', function() {
-      if (typeof closeReportsDropdown === 'function') closeReportsDropdown();
-      window.location.href = 'walksheet.html';
-    });
-
-    // Insert after the GA button
-    gaBtn.insertAdjacentElement('afterend', ws);
-    gaBtn.insertAdjacentElement('afterend', dk);
+    navLinks.appendChild(dk);
+    navLinks.appendChild(ws);
   }
 
-  // Try immediately, then keep retrying every 500ms until it works
-  // This handles the password gate delay
-  var attempts = 0;
-  var timer = setInterval(function() {
-    injectButtons();
-    attempts++;
-    if (document.getElementById('rpt-doorknock-btn') || attempts > 20) {
-      clearInterval(timer);
-    }
-  }, 500);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', addNavLinks);
+  } else {
+    addNavLinks();
+  }
 })();
