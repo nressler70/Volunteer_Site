@@ -297,7 +297,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 .nav-reports-btn:hover{color:var(--cream);background:rgba(255,255,255,.07)}
 .nav-reports-btn .rpt-arrow{font-size:.6rem;transition:transform .2s;display:inline-block}
 .nav-reports-wrap.open .rpt-arrow{transform:rotate(180deg)}
-.reports-dropdown{position:absolute;top:calc(100% + 6px);right:0;min-width:280px;background:var(--navy-mid);border:1px solid rgba(201,150,42,.35);border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,.55);z-index:9999;opacity:0;visibility:hidden;transform:translateY(-8px);transition:opacity .18s,transform .18s,visibility .18s;overflow:hidden}
+.reports-dropdown{position:absolute;top:calc(100% + 6px);right:0;min-width:280px;background:var(--navy-mid);border:1px solid rgba(201,150,42,.35);border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,.55);z-index:9999;opacity:0;visibility:hidden;transform:translateY(-8px);transition:opacity .18s,transform .18s,visibility .18s;overflow-y:auto;overflow-x:hidden;max-height:calc(100vh - 80px)}
 .nav-reports-wrap.open .reports-dropdown{opacity:1;visibility:visible;transform:translateY(0)}
 .rpt-header{padding:12px 18px 8px;border-bottom:1px solid rgba(255,255,255,.08);font-family:'Oswald',sans-serif;font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:8px}
 .rpt-section-label{padding:8px 18px 4px;font-family:'Oswald',sans-serif;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:#445566}
