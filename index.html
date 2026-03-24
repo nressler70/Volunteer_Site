@@ -1363,10 +1363,8 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 </div>
 
 <!-- Floating Admin Button — always visible, pinned bottom-left -->
-<button onclick="openAdminPanel()" title="Open Admin Panel" aria-label="Admin Panel"
-  style="position:fixed;bottom:70px;left:16px;z-index:9998;background:rgba(14,20,30,.92);color:#c9962a;border:1.5px solid rgba(201,150,42,.55);border-radius:10px;padding:9px 16px;font-family:'Oswald',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,.5);backdrop-filter:blur(8px);transition:all .2s;white-space:nowrap"
-  onmouseover="this.style.background='rgba(201,150,42,.2)';this.style.borderColor='rgba(201,150,42,.9)'"
-  onmouseout="this.style.background='rgba(14,20,30,.92)';this.style.borderColor='rgba(201,150,42,.55)'">
+<button onclick="openAdminPanel()" title="Open Admin Panel"
+  style="position:fixed;bottom:70px;left:16px;z-index:9998;background:rgba(14,20,30,.92);color:#c9962a;border:1.5px solid rgba(201,150,42,.55);border-radius:10px;padding:9px 16px;font-family:'Oswald',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,.5);backdrop-filter:blur(8px);white-space:nowrap">
   ⚙️ Admin
 </button>
 
@@ -3389,7 +3387,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   <div style="margin-top:44px;padding:26px 30px;background:var(--navy-mid);border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center">
     <p style="font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--cream);font-style:italic;line-height:1.8;max-width:680px;margin:0 auto">"You don't need to convince everyone. You need to find the neighbors who already believe in protecting this community — and make sure they vote. Early voting starting April 7 makes that easier than ever."</p>
     <p style="font-size:.78rem;color:var(--gray);margin-top:10px;letter-spacing:.07em;text-transform:uppercase">— Baughman Township Fire &amp; EMS Levy Campaign</p>
-  <a onclick="openAdminPanel()" href="javascript:void(0)" style="display:inline-block;margin-top:12px;font-size:.75rem;font-weight:700;font-family:'Oswald',sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#c9962a;text-decoration:none;border:1.5px solid rgba(201,150,42,.5);border-radius:6px;padding:6px 14px;cursor:pointer;background:rgba(201,150,42,.1);transition:all .2s" onmouseover="this.style.background='rgba(201,150,42,.25)'" onmouseout="this.style.background='rgba(201,150,42,.1)'">⚙️ Admin</a>
+  <a onclick="openAdminPanel()" href="javascript:void(0)" style="display:inline-block;margin-top:12px;font-size:.75rem;font-weight:700;font-family:'Oswald',sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#c9962a;text-decoration:none;border:1.5px solid rgba(201,150,42,.5);border-radius:6px;padding:6px 14px;cursor:pointer;background:rgba(201,150,42,.1)">⚙️ Admin</a>
 
   </div>
 </div></section>
@@ -3794,7 +3792,48 @@ function refreshAdminStatus() {
   }
 }
 
-// adminSaveCloudConfig removed — remote sync disabled.
+// adminSaveCloudConfig — saves API key + bin ID to localStorage and re-enables cloud sync
+window.adminSaveCloudConfig = function() {
+  var statusEl = document.getElementById('admin-cloud-status');
+  var keyEl    = document.getElementById('admin-jb-key');
+  var key      = keyEl ? keyEl.value.trim() : '';
+  if (!key) {
+    if (statusEl) { statusEl.style.color='#f87171'; statusEl.textContent='⚠️ Please enter your JSONBin Master Key first.'; }
+    return;
+  }
+  try { localStorage.setItem('baughman_jb_key', key); } catch(e) {}
+  // Always use the hardcoded bin ID
+  var binId = JB_BIN_ID || '69b85326c3097a1dd52eccfa';
+  try { localStorage.setItem('baughman_jb_bin', binId); } catch(e) {}
+  // Show the bin row pre-filled
+  var binRow = document.getElementById('admin-bin-row');
+  var binEl  = document.getElementById('admin-bin-id');
+  if (binRow) binRow.style.display = 'block';
+  if (binEl)  binEl.value = binId;
+  if (statusEl) { statusEl.style.color='#74c69d'; statusEl.textContent='✅ Key saved! Cloud sync enabled. Click "Pull Latest Data" to load results.'; }
+  // Immediately try a fetch
+  if (typeof jsonbinFetch === 'function') jsonbinFetch();
+};
+
+// adminTestFetch — manually trigger a cloud pull
+window.adminTestFetch = function() {
+  var statusEl = document.getElementById('admin-cloud-status');
+  var key = '';
+  try { key = localStorage.getItem('baughman_jb_key') || ''; } catch(e) {}
+  if (!key) {
+    if (statusEl) { statusEl.style.color='#f87171'; statusEl.textContent='⚠️ No API key saved yet. Enter key and save first.'; }
+    return;
+  }
+  if (statusEl) { statusEl.style.color='#aee2ff'; statusEl.textContent='⏳ Pulling from cloud…'; }
+  if (typeof jsonbinFetch === 'function') {
+    jsonbinFetch();
+    setTimeout(function() {
+      if (statusEl && statusEl.textContent.includes('Pulling')) {
+        statusEl.style.color='#74c69d'; statusEl.textContent='✅ Done — check the Results section.';
+      }
+    }, 3000);
+  }
+};
 
 
 window.adminBackupData = function() {
@@ -4039,10 +4078,28 @@ document.addEventListener('DOMContentLoaded', function() {
       <!-- Cloud status indicator -->
       <div id="cloud-status" style="display:none"></div>
 
-      <!-- Data Policy Notice -->
-      <div style="background:#0d1117;border:1px solid rgba(201,150,42,.2);border-radius:8px;padding:12px 14px;margin-bottom:14px">
-        <div style="font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-light);margin-bottom:6px">📋 Data Policy — File Upload Only</div>
-        <div style="font-size:.75rem;color:#7a9ab8;line-height:1.6">Remote cloud sync is <strong style="color:#ff8a7a">disabled</strong>. Results are loaded exclusively by the campaign coordinator uploading an exported .xlsx or .csv file from the field app. Field devices cannot push data directly to this site.</div>
+      <!-- JSONBin Cloud Config -->
+      <div style="background:#0d1117;border:1px solid rgba(46,134,193,.3);border-radius:8px;padding:12px 14px;margin-bottom:14px">
+        <div style="font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#aee2ff;margin-bottom:6px">☁️ JSONBin Cloud Sync</div>
+        <div style="font-size:.75rem;color:#556677;margin-bottom:10px;line-height:1.5">Enter your JSONBin Master Key to enable live sync across all devices. The Bin ID is already configured.</div>
+        <div style="font-size:.68rem;color:#8a9bb0;margin-bottom:8px;font-family:monospace;background:#0a0e14;padding:6px 10px;border-radius:4px;border:1px solid #21262d">
+          Bin ID: <span style="color:#aee2ff">69b85326c3097a1dd52eccfa</span>
+        </div>
+        <input id="admin-jb-key" type="password" placeholder="Paste your JSONBin Master Key here..."
+          style="width:100%;background:#161b22;border:1px solid #30363d;border-radius:6px;padding:9px 11px;color:#f0f6fc;font-size:.8rem;outline:none;box-sizing:border-box;margin-bottom:8px;font-family:monospace">
+        <div id="admin-bin-row" style="display:none;margin-bottom:8px">
+          <input id="admin-bin-id" type="text" placeholder="Bin ID"
+            style="width:100%;background:#161b22;border:1px solid #30363d;border-radius:6px;padding:9px 11px;color:#aee2ff;font-size:.8rem;outline:none;box-sizing:border-box;font-family:monospace">
+        </div>
+        <button onclick="adminSaveCloudConfig()"
+          style="width:100%;background:#1a2d40;color:#aee2ff;border:1.5px solid rgba(46,134,193,.45);border-radius:8px;padding:10px;font-family:'Oswald',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;margin-bottom:6px">
+          💾 Save &amp; Enable Cloud Sync
+        </button>
+        <button onclick="adminTestFetch()"
+          style="width:100%;background:#0d1117;color:#74c69d;border:1.5px solid rgba(39,174,96,.3);border-radius:8px;padding:8px;font-family:'Oswald',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer">
+          🔄 Pull Latest Data from Cloud Now
+        </button>
+        <div id="admin-cloud-status" style="font-size:.72rem;margin-top:6px;min-height:16px;color:#556677"></div>
       </div>
 
       <!-- Backup & Restore -->
