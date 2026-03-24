@@ -501,8 +501,13 @@ function renderTable(){
 
   var show=addrs.filter(function(addr){
     var cls=getRespClass(getEntry(addr).resp);
-    if(currentFilter==='all')return true;
-    return cls===currentFilter||(currentFilter==='nothome'&&cls==='nothome');
+    if(currentFilter==='all')       return true;
+    if(currentFilter==='unvisited')  return cls==='unvisited';
+    if(currentFilter==='nothome')    return cls==='nothome';
+    if(currentFilter==='yes')        return cls==='yes';
+    if(currentFilter==='no')         return cls==='no';
+    if(currentFilter==='undecided')  return cls==='undecided';
+    return true;
   });
 
   if(!show.length){
