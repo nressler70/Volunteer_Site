@@ -376,7 +376,7 @@ function generateSheet() {
     var isNH   = entry.resp === 'Not Home';
     var levy   = info.levy && info.levy > 0 ? '$' + info.levy.toFixed(2) + '/yr' : '&mdash;';
     var nhTag  = isNH ? '<span class="nothome-tag">Not Home</span>' :
-                 '<span class="tag-notvisited">Not Visited</span>';
+                 '<span class="status-tag tag-notvisited">Not Visited</span>';
     var rowCls = isNH ? 'nothome-row' : (like === 'LIKELY' ? 'likely-row' : 'possible-row');
     var likeHtml = like === 'LIKELY'
       ? '<span class="likely-tag">&#x2605; LIKELY</span>'
