@@ -5245,6 +5245,7 @@ window.toggleAdminEdit = function() {
     if (btn) { btn.textContent = '🔒 Admin Edit'; btn.classList.remove('active'); }
     if (tbl) tbl.classList.remove('edit-active');
   }
+  if (typeof window.renderDetail === 'function') window.renderDetail();
 };
 
 window.adminResetRow = function(addr) {
