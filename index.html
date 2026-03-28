@@ -6136,7 +6136,17 @@ window.submitManualEntry = function() {
     var filtered = rows.filter(function(r) {
       if (filterType === 'all')      return true;
       if (filterType === 'followup') return r.resp === 'Undecided' || r.resp === 'Not Home';
-      if (filterType === 'sign')     return r.sign === true;
+      if (filterType === 'sign') {
+        // Only include rows where a sign was requested...
+        if (!r.sign) return false;
+        // ...BUT exclude if notes say "sign placed" (sign already delivered)
+        var n = (r.notes || '').toLowerCase();
+        if (n.indexOf('sign placed') >= 0) return false;
+        // ...AND exclude if notes contain any date (mm/dd/yy, mm-dd-yyyy, etc.)
+        // A date in the notes means the sign has already been placed on that date
+        if (/\b\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}\b/.test(n)) return false;
+        return true;
+      }
       if (filterType === 'newSigns') {
         // "New" = sign requested within the last 7 days
         if (!r.sign) return false;
