@@ -4253,6 +4253,50 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 // ── LIVE EARLY VOTING COUNTER STRIP ──
 // This runs a separate live countdown specifically for the early voting strip
 // displayed between the top banner and the navigation bar.
+// ── One-time data migration: fix bad resp values already in localStorage ──────
+// Runs immediately on page load, before anything renders.
+// Converts any raw/typo resp values (NotHome, NH, Unsure, Y, N, etc.)
+// into the canonical labels the rest of the app expects.
+(function migrateStoredRespValues() {
+  var KEY = 'baughman_rows_v2';
+  var BAD_RESP = {
+    'NH':       'Not Home',
+    'NotHome':  'Not Home',
+    'Not-Home': 'Not Home',
+    'nothome':  'Not Home',
+    'not home': 'Not Home',   // lower-case variant
+    'Unsure':   'Undecided',
+    'U':        'Undecided',
+    'Y':        'Yes',
+    'N':        'No'
+  };
+  try {
+    var raw = JSON.parse(localStorage.getItem(KEY) || '[]');
+    if (!Array.isArray(raw) || raw.length === 0) return;
+
+    var changed = 0;
+    raw.forEach(function(row) {
+      if (!row || !row.resp) return;
+      var trimmed = String(row.resp).trim();
+      // Check exact match first, then case-insensitive fallback
+      if (BAD_RESP[trimmed]) {
+        row.resp = BAD_RESP[trimmed];
+        changed++;
+      } else if (BAD_RESP[trimmed.toLowerCase()]) {
+        row.resp = BAD_RESP[trimmed.toLowerCase()];
+        changed++;
+      }
+    });
+
+    if (changed > 0) {
+      localStorage.setItem(KEY, JSON.stringify(raw));
+      console.log('[Migration] Fixed ' + changed + ' bad resp value(s) in localStorage.');
+    }
+  } catch(e) {
+    console.warn('[Migration] Could not clean stored data:', e);
+  }
+})();
+
 document.addEventListener('DOMContentLoaded', function() {
 
   // The three key dates for early voting
@@ -4443,12 +4487,33 @@ function jsonbinFetch() {
     return r.json();
   })
   .then(function(data) {
-    var record = data.record || {};
-    var rows  = Array.isArray(record.rows)  ? enrichRows(record.rows)  : [];
-    var files = Array.isArray(record.files) ? record.files : [];
+    var record  = data.record || {};
+    var rawRows = Array.isArray(record.rows)  ? record.rows  : [];
+    var files   = Array.isArray(record.files) ? record.files : [];
+
+    // ── Clean bad resp values coming from JSONBin ──────────────────────────
+    var BAD_RESP = {
+      'NH':'Not Home', 'NotHome':'Not Home', 'Not-Home':'Not Home',
+      'nothome':'Not Home', 'not home':'Not Home',
+      'Unsure':'Undecided', 'U':'Undecided', 'Y':'Yes', 'N':'No'
+    };
+    var cloudFixed = 0;
+    rawRows.forEach(function(row) {
+      if (!row || !row.resp) return;
+      var t = String(row.resp).trim();
+      if      (BAD_RESP[t])               { row.resp = BAD_RESP[t];               cloudFixed++; }
+      else if (BAD_RESP[t.toLowerCase()]) { row.resp = BAD_RESP[t.toLowerCase()]; cloudFixed++; }
+    });
+    if (cloudFixed > 0) {
+      console.log('[Migration] Fixed ' + cloudFixed + ' bad resp value(s) from JSONBin — pushing cleaned data back.');
+      window.jsonbinPush(rawRows, files);  // write corrected data back to cloud
+    }
+    // ──────────────────────────────────────────────────────────────────────
+
+    var rows = enrichRows(rawRows);
     // Cache to localStorage so offline visits still work
-    try { localStorage.setItem(ROWS_KEY,  JSON.stringify(rows));  } catch(e) {}
-    try { localStorage.setItem(FILES_KEY, JSON.stringify(files)); } catch(e) {}
+    try { localStorage.setItem(ROWS_KEY,  JSON.stringify(rawRows)); } catch(e) {}
+    try { localStorage.setItem(FILES_KEY, JSON.stringify(files));   } catch(e) {}
     if (rows.length && typeof window._restoreRows === 'function') {
       var label = 'Cloud Results (' + rows.length + ' household'
         + (rows.length !== 1 ? 's' : '') + ', '
