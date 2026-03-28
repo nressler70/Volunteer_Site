@@ -2858,6 +2858,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
               <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 12px;text-align:center">Response</th>
               <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);padding:9px 12px;text-align:left">Notes</th>
               <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-light);padding:9px 8px;text-align:center">🪧 Sign</th>
+              <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#aee2ff;padding:9px 8px;text-align:center;white-space:nowrap">📅 Sign Date</th>
               <th class="edit-col" style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#ff8a7a;padding:9px 8px;text-align:center">Reset</th>
             </tr></thead>
             <tbody id="detail-tbody"></tbody>
@@ -3448,6 +3449,14 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     }, 80);
   };
 
+  // ── Format an ISO timestamp as M/D/YY for the Sign Date column ───────────
+  function fmtSignDate(iso) {
+    if (!iso) return '';
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    return (d.getMonth() + 1) + '/' + d.getDate() + '/' + String(d.getFullYear()).slice(2);
+  }
+
   window.renderDetail = function() {
     var q = (document.getElementById('det-search').value || '').toLowerCase();
     var filtered = rows.filter(function(r){
@@ -3520,6 +3529,9 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
             'border-radius:5px;padding:3px 8px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:\'Oswald\',sans-serif;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap">'+
             (r.sign ? '🪧 Yes' : '🪧 —')+
           '</button>'+
+        '</td>'+
+        '<td class="sign-date-cell" data-addr="'+addrEsc+'" style="padding:4px 8px;text-align:center;font-size:.72rem;color:#aee2ff;white-space:nowrap;min-width:70px">'+
+          (r.signAddedAt ? fmtSignDate(r.signAddedAt) : '')+
         '</td>'+
         '<td class="edit-col" style="padding:4px 8px;text-align:center"><button class="reset-btn" data-addr="'+addrEsc+'" title="Reset to Not Visited and clear notes">↺ Reset</button></td>'+
       '</tr>';
@@ -3771,7 +3783,14 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     var map = loadSignMap();
     r.forEach(function(row) {
       var k = (row.address||'').toLowerCase().trim();
-      if (map[k]) row.sign = true;
+      if (map[k]) {
+        row.sign = true;
+        // If the map value is an ISO date string (set by toggleSign), use it as signAddedAt
+        // but don't overwrite an existing signAddedAt that came from the CSV upload
+        if (!row.signAddedAt && typeof map[k] === 'string' && map[k].length > 4) {
+          row.signAddedAt = map[k];
+        }
+      }
       // also preserve if already true from CSV
     });
     return r;
@@ -5299,13 +5318,24 @@ window.toggleSign = function(addr, btn) {
   var map = {};
   try { map = JSON.parse(localStorage.getItem('baughman_signs_v1') || '{}'); } catch(e) {}
   var newSign = !map[key];
-  if (newSign) { map[key] = true; } else { delete map[key]; }
+  var nowISO  = new Date().toISOString();
+  if (newSign) {
+    // Store the ISO timestamp so the Sign Date column can display it
+    map[key] = nowISO;
+  } else {
+    delete map[key];
+  }
   try { localStorage.setItem('baughman_signs_v1', JSON.stringify(map)); } catch(e) {}
 
-  // Update in-memory rows (inside closure) without re-render
-  if (typeof window._updateRowData === 'function') window._updateRowData(key, { sign: newSign });
+  // Update in-memory rows — include signAddedAt so the date column refreshes on next render
+  if (typeof window._updateRowData === 'function') {
+    window._updateRowData(key, newSign
+      ? { sign: true,  signAddedAt: nowISO }
+      : { sign: false, signAddedAt: '' }
+    );
+  }
 
-  // Update just the button — NO table rebuild, NO scroll jump
+  // Update just the sign button — NO table rebuild, NO scroll jump
   if (btn) {
     if (newSign) {
       btn.style.background = 'rgba(244,164,96,.25)';
@@ -5317,6 +5347,17 @@ window.toggleSign = function(addr, btn) {
       btn.style.border     = '1.5px solid rgba(255,255,255,.12)';
       btn.style.color      = '#445566';
       btn.textContent      = '🪧 —';
+    }
+  }
+
+  // Update the Sign Date cell next to this row's button — without re-rendering the table
+  var dateCell = document.querySelector('.sign-date-cell[data-addr="' + addr + '"]');
+  if (dateCell) {
+    if (newSign) {
+      var d = new Date(nowISO);
+      dateCell.textContent = (d.getMonth()+1) + '/' + d.getDate() + '/' + String(d.getFullYear()).slice(2);
+    } else {
+      dateCell.textContent = '';
     }
   }
 
@@ -6136,24 +6177,7 @@ window.submitManualEntry = function() {
     var filtered = rows.filter(function(r) {
       if (filterType === 'all')      return true;
       if (filterType === 'followup') return r.resp === 'Undecided' || r.resp === 'Not Home';
-      if (filterType === 'sign') {
-        // Must have sign requested
-        if (!r.sign) return false;
-        var n = (r.notes || '').toLowerCase();
-
-        // EXCLUDE if notes contain any date like 3/18  or  03/18  or  3/18/26
-        // (month/day with OR without a year — the old regex required a full year)
-        if (/\b\d{1,2}\/\d{1,2}(\/\d{2,4})?\b/.test(n)) return false;
-
-        // EXCLUDE based on phrases canvassers actually write when a sign is placed:
-        if (/\bplaced\b/.test(n))         return false; // "Suzi placed", "has placed", "signs placed"
-        if (n.indexOf('will place') >= 0) return false; // "Susie has signs and will place"
-        if (n.indexOf('put sign') >= 0)   return false; // "John put sign 3/21"
-        if (n.indexOf('has signs') >= 0)  return false; // "Matt has signs and will place"
-        if (n.indexOf('put a') >= 0 && n.indexOf('sign') >= 0) return false; // "put a 4x4 sign"
-
-        return true;
-      }
+      if (filterType === 'sign')     return r.sign === true;
       if (filterType === 'newSigns') {
         // "New" = sign requested within the last 7 days
         if (!r.sign) return false;
