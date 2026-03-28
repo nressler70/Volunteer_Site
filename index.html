@@ -3518,9 +3518,11 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
           }).join('')+
         '</div>'+
       '</td>'+
-        '<td class="notes-cell" data-addr="'+addrEsc+'" style="padding:4px 8px;min-width:160px;cursor:pointer" title="Click to edit notes">'+
-          '<div class="notes-display" style="font-size:.78rem;font-style:'+(r.notes?'normal':'italic')+';color:'+(r.notes?'#c0ccdd':'#556677')+';padding:3px 6px;border-radius:4px;border:1px dashed rgba(255,255,255,.08)">'+
-            esc(r.notes||'✏ add note')+
+        '<td class="notes-cell" data-addr="'+addrEsc+'" '+
+          'title="'+(window._adminEditMode ? 'Click to edit notes' : '🔒 Admin login required to edit notes')+'" '+
+          'style="padding:4px 8px;min-width:160px;cursor:'+(window._adminEditMode?'pointer':'default')+'">'+
+          '<div class="notes-display" style="font-size:.78rem;font-style:'+(r.notes?'normal':'italic')+';color:'+(r.notes?'#c0ccdd':'#556677')+';padding:3px 6px;border-radius:4px;border:1px dashed rgba(255,255,255,'+(window._adminEditMode?'.18':'.08')+');opacity:'+(window._adminEditMode?'1':'0.6')+ '">'+
+            esc(r.notes || (window._adminEditMode ? '✏ add note' : '— no note —'))+
           '</div>'+
         '</td>'+
         '<td style="padding:4px 8px;text-align:center">'+
@@ -3654,6 +3656,18 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       // Notes cell - open editor
       var cell = e.target.closest('.notes-cell');
       if (cell && !cell.querySelector('textarea')) {
+        if (!window._adminEditMode) {
+          var pw = prompt('Admin login required to edit notes:\n\nEnter admin password:');
+          if (pw === null) return;
+          if (pw !== atob('QWRtaW4yMDI2JA==')) { alert('Incorrect password.'); return; }
+          window._adminEditMode = true;
+          var btn3 = document.getElementById('admin-edit-btn');
+          var tbl3 = document.getElementById('detail-table');
+          if (btn3) { btn3.textContent = '\ud83d\udd13 Edit Mode ON'; btn3.classList.add('active'); }
+          if (tbl3) tbl3.classList.add('edit-active');
+          window.renderDetail();
+          return;
+        }
         var addr = cell.getAttribute('data-addr');
         var row  = rows.find(function(r) { return esc(r.address||'') === addr; });
         var current = row ? (row.notes || '') : '';
