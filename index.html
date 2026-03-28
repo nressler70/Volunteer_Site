@@ -6137,14 +6137,21 @@ window.submitManualEntry = function() {
       if (filterType === 'all')      return true;
       if (filterType === 'followup') return r.resp === 'Undecided' || r.resp === 'Not Home';
       if (filterType === 'sign') {
-        // Only include rows where a sign was requested...
+        // Must have sign requested
         if (!r.sign) return false;
-        // ...BUT exclude if notes say "sign placed" (sign already delivered)
         var n = (r.notes || '').toLowerCase();
-        if (n.indexOf('sign placed') >= 0) return false;
-        // ...AND exclude if notes contain any date (mm/dd/yy, mm-dd-yyyy, etc.)
-        // A date in the notes means the sign has already been placed on that date
-        if (/\b\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}\b/.test(n)) return false;
+
+        // EXCLUDE if notes contain any date like 3/18  or  03/18  or  3/18/26
+        // (month/day with OR without a year — the old regex required a full year)
+        if (/\b\d{1,2}\/\d{1,2}(\/\d{2,4})?\b/.test(n)) return false;
+
+        // EXCLUDE based on phrases canvassers actually write when a sign is placed:
+        if (/\bplaced\b/.test(n))         return false; // "Suzi placed", "has placed", "signs placed"
+        if (n.indexOf('will place') >= 0) return false; // "Susie has signs and will place"
+        if (n.indexOf('put sign') >= 0)   return false; // "John put sign 3/21"
+        if (n.indexOf('has signs') >= 0)  return false; // "Matt has signs and will place"
+        if (n.indexOf('put a') >= 0 && n.indexOf('sign') >= 0) return false; // "put a 4x4 sign"
+
         return true;
       }
       if (filterType === 'newSigns') {
