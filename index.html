@@ -3033,7 +3033,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       if (v === 'Unsure' || v === 'U')  return 'Undecided';
       if (v === 'Y')                    return 'Yes';
       if (v === 'N')                    return 'No';
-      if (v === 'NH')                   return 'Not Home';
+      if (v === 'NH' || v === 'NotHome' || v === 'Not-Home' || v.toLowerCase() === 'nothome') return 'Not Home';
       if (v === '')                     return 'Not Visited';
       return v;
     }
@@ -3455,7 +3455,12 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
                  : currentFilter === 'followup' ? (r.resp==='Undecided'||r.resp==='Not Home')
                  : currentFilter === 'sign'     ? r.sign === true
                  : r.resp === currentFilter;
-      var matchQ = !q || (r.name||'').toLowerCase().indexOf(q)>=0 || (r.address||'').toLowerCase().indexOf(q)>=0;
+      // ── FIX: also match against r.street so clicking a street in the
+      //         Street Summary table filters the detail table correctly.
+      var matchQ = !q
+                 || (r.name    ||'').toLowerCase().indexOf(q) >= 0
+                 || (r.address ||'').toLowerCase().indexOf(q) >= 0
+                 || (r.street  ||'').toLowerCase().indexOf(q) >= 0;
       return matchF && matchQ;
     });
 
@@ -3603,7 +3608,12 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
                  : currentFilter === 'followup' ? (r.resp==='Undecided'||r.resp==='Not Home')
                  : currentFilter === 'sign'     ? r.sign === true
                  : r.resp === currentFilter;
-      var matchQ = !q || r.name.toLowerCase().indexOf(q)>=0 || r.address.toLowerCase().indexOf(q)>=0;
+      // ── FIX: also match against r.street so clicking a street row in the
+      //         Street Summary table correctly filters the CSV export.
+      var matchQ = !q
+                 || (r.name    ||'').toLowerCase().indexOf(q) >= 0
+                 || (r.address ||'').toLowerCase().indexOf(q) >= 0
+                 || (r.street  ||'').toLowerCase().indexOf(q) >= 0;
       return matchF && matchQ;
     });
     var lines = [['Name','Address','Street','Precinct','Voters','Levy/Yr','Likelihood','Response','Sign Needed','Notes']];
@@ -3616,7 +3626,15 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     var blob = new Blob([csv],{type:'text/csv'});
     var a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    var fname = 'canvass_' + (currentFilter==='all'?'all':currentFilter.replace(/ /g,'_')) + '_' + new Date().toISOString().slice(0,10) + '.csv';
+    // ── FIX: when a street is being searched, name the file after that street
+    //         so you can tell at a glance which street the export contains.
+    var streetSlug = q ? q.replace(/\s+/g,'_').replace(/[^a-z0-9_]/gi,'') : '';
+    var filterSlug = currentFilter === 'all' ? 'all' : currentFilter.replace(/ /g,'_');
+    var fname = 'canvass_'
+              + (streetSlug ? streetSlug + '_' : '')
+              + filterSlug + '_'
+              + new Date().toISOString().slice(0,10)
+              + '.csv';
     a.download = fname;
     document.body.appendChild(a);
     a.click();
