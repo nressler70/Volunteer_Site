@@ -5101,6 +5101,16 @@ document.addEventListener('DOMContentLoaded', function() {
         <div id="admin-dupe-list" style="margin-top:8px"></div>
       </div>
 
+      <!-- Fill Sign Dates from Notes -->
+      <div style="background:#0d1117;border:1px solid rgba(174,226,255,.2);border-radius:8px;padding:12px 14px;margin-bottom:14px">
+        <div style="font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#aee2ff;margin-bottom:6px">🨧 Fill Sign Dates from Notes</div>
+        <div style="font-size:.75rem;color:#556677;margin-bottom:10px;line-height:1.5">Scans each sign row's notes for a date and copies it into the Sign Date column automatically.</div>
+        <button onclick="adminFillDatesFromNotes()" style="width:100%;background:#1a2a3a;color:#aee2ff;border:1.5px solid rgba(46,134,193,.35);border-radius:8px;padding:10px;font-family:'Oswald',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;margin-bottom:6px">
+          📅 Auto-Fill Dates from Notes
+        </button>
+        <div id="admin-fill-dates-status" style="font-size:.72rem;margin-top:4px;min-height:16px;color:#556677"></div>
+      </div>
+
       <button onclick="adminDeleteResults()" style="width:100%;background:#3d1a1a;color:#f87171;border:1.5px solid #6b1a1a;border-radius:10px;padding:14px;font-family:'Oswald',sans-serif;font-size:.82rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;margin-bottom:8px">
         &#x1F5D1; Delete All Saved Results
       </button>
@@ -5426,6 +5436,82 @@ window.toggleSign = function(addr, btn) {
   if (typeof window._refreshDashboard === 'function') window._refreshDashboard();
 };
 
+
+// ── Admin: auto-fill sign dates from notes field ────────────────────────────
+window.adminFillDatesFromNotes = function() {
+  var statusEl = document.getElementById('admin-fill-dates-status');
+  if (statusEl) { statusEl.style.color = '#aee2ff'; statusEl.textContent = 'Scanning notes...'; }
+
+  // Parse a date from a free-text note string.
+  // Handles: 3/28/26, 3/28/2026, 3-28-26, Mar 28, March 28 2026, 03/28/26, etc.
+  function extractDate(notes) {
+    if (!notes) return null;
+    var s = notes.trim();
+
+    // Pattern 1: M/D/YY or M/D/YYYY or M-D-YY or M-D-YYYY
+    var m = s.match(/(\d{1,2})[\/-](\d{1,2})[\/-](\d{2,4})/);
+    if (m) {
+      var mo = parseInt(m[1]), dy = parseInt(m[2]), yr = parseInt(m[3]);
+      if (yr < 100) yr += 2000;
+      if (mo >= 1 && mo <= 12 && dy >= 1 && dy <= 31) {
+        var d = new Date(yr, mo - 1, dy, 12, 0, 0);
+        if (!isNaN(d.getTime())) return d.toISOString();
+      }
+    }
+
+    // Pattern 2: Month name DD, YYYY  or  Month DD  (e.g. "March 28" or "Mar 28, 2026")
+    var MONTHS = { jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12 };
+    var m2 = s.match(/([A-Za-z]{3,9})\s+(\d{1,2})(?:[,\s]+(\d{2,4}))?/);
+    if (m2) {
+      var moName = m2[1].toLowerCase().slice(0, 3);
+      if (MONTHS[moName]) {
+        var mo2 = MONTHS[moName], dy2 = parseInt(m2[2]);
+        var yr2 = m2[3] ? parseInt(m2[3]) : 2026;
+        if (yr2 < 100) yr2 += 2000;
+        var d2 = new Date(yr2, mo2 - 1, dy2, 12, 0, 0);
+        if (!isNaN(d2.getTime())) return d2.toISOString();
+      }
+    }
+    return null;
+  }
+
+  var stored = [];
+  try { stored = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]'); } catch(e) {}
+  var signMap = {};
+  try { signMap = JSON.parse(localStorage.getItem('baughman_signs_v1') || '{}'); } catch(e) {}
+
+  var filled = 0, skipped = 0, noDate = 0;
+  stored.forEach(function(r) {
+    if (!r.sign) return;  // only process sign rows
+    if (r.signAddedAt) { skipped++; return; }  // already has a date — leave it alone
+    var iso = extractDate(r.notes || '');
+    if (!iso) { noDate++; return; }
+    r.signAddedAt = iso;
+    var key = (r.address || '').toLowerCase().trim();
+    signMap[key] = iso;
+    filled++;
+  });
+
+  // Save back
+  try { localStorage.setItem('baughman_rows_v2', JSON.stringify(stored)); } catch(e) {}
+  try { localStorage.setItem('baughman_signs_v1', JSON.stringify(signMap)); } catch(e) {}
+
+  // Push to cloud
+  var fileList = [];
+  try { fileList = JSON.parse(localStorage.getItem('baughman_files_v2') || '[]'); } catch(e) {}
+  if (typeof window.jsonbinPush === 'function') window.jsonbinPush(stored, fileList);
+
+  // Re-render so the date column updates
+  if (typeof window._restoreRows === 'function') {
+    var label = 'Combined Results (' + stored.length + ' households)';
+    window._restoreRows(stored, label);
+  }
+
+  var msg = filled + ' date' + (filled !== 1 ? 's' : '') + ' filled from notes';
+  if (skipped) msg += ' · ' + skipped + ' already had a date (kept)';
+  if (noDate)  msg += ' · ' + noDate  + ' sign row' + (noDate !== 1 ? 's' : '') + ' had no date in notes';
+  if (statusEl) { statusEl.style.color = filled ? '#5ce08a' : '#f4c460'; statusEl.textContent = msg; }
+};
 
 // ── Admin: manually set sign delivery date ─────────────────────────────────
 window.saveSignDate = function(addr, dateVal) {
