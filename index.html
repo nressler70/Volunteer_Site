@@ -3123,7 +3123,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
           if (r.notes && r.notes !== ex.notes) {
             ex.notes = ex.notes ? ex.notes + ' | ' + r.notes : r.notes;
           }
-          if (r.sign) { if (!ex.sign) { ex.sign = true; ex.signAddedAt = window._currentUploadTime || new Date().toISOString(); } }
+          if (r.sign) { if (!ex.sign) { ex.sign = true; } }   // do NOT set signAddedAt — that is the physical placement date, set only by admin
         if (r.party && r.party !== 'Unknown') ex.party = r.party;
         if (r.party && r.party !== 'Unknown') ex.party = r.party;
           // Write the normalized forms back
@@ -3163,7 +3163,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
         if (r.notes && r.notes !== ex.notes) {
           ex.notes = ex.notes ? ex.notes + ' | ' + r.notes : r.notes;
         }
-        if (r.sign) { if (!ex.sign) { ex.sign = true; ex.signAddedAt = window._currentUploadTime || new Date().toISOString(); } }
+        if (r.sign) { if (!ex.sign) { ex.sign = true; } }   // placement date set only by admin
         if (r.party && r.party !== 'Unknown') ex.party = r.party;
       } else {
         stored.push(r); sidx[k] = stored.length - 1; nAdded++;
@@ -3239,7 +3239,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     var total = rows.length;
     var yes = count('Yes'), no = count('No'), und = count('Undecided');
     var nh = count('Not Home'), nv = count('Not Visited');
-    var signCount = rows.filter(function(r) { return r.sign; }).length;
+    var signCount = rows.filter(function(r) { return r.sign && !r.signAddedAt; }).length;
     var visited = total - nv;
     var pct = total ? Math.round(visited / total * 100) : 0;
     var yPct = total ? Math.round(yes / total * 100) : 0;
@@ -3918,7 +3918,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
             var ex = out[seen[k]];
             if (r.resp && r.resp !== 'Not Visited' && (ex.resp === 'Not Visited' || !ex.resp)) ex.resp = r.resp;
             if (r.notes && r.notes !== ex.notes) ex.notes = ex.notes ? ex.notes + ' | ' + r.notes : r.notes;
-            if (r.sign) { if (!ex.sign) { ex.sign = true; ex.signAddedAt = ex.signAddedAt || new Date().toISOString(); } }
+            if (r.sign) { if (!ex.sign) { ex.sign = true; } }   // preserve existing signAddedAt (placement date); never auto-stamp
         if (r.party && r.party !== 'Unknown') ex.party = r.party;
             ex.address = normalizeAddress(ex.address || r.address);
             ex.street  = normalizeStreet(ex.street  || r.street);
