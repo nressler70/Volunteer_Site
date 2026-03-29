@@ -3691,7 +3691,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       var filtered = data.filter(function(r) {
         var matchF = currentFilter === 'all'      ? true
                    : currentFilter === 'followup' ? (r.resp === 'Undecided' || r.resp === 'Not Home')
-                   : currentFilter === 'sign'     ? r.sign === true
+                   : currentFilter === 'sign'     ? (r.sign === true && !r.signAddedAt)
                    : r.resp === currentFilter;
         // Match name, address, OR street so clicking a street row
         // in the Street Summary table filters the export correctly.
