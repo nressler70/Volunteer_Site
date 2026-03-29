@@ -3856,7 +3856,11 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   window._applySignsToRows = applySignsToRows;
 
   window._restoreRows = function(savedRows, label) {
-    rows = enrichRows(applySignsToRows(savedRows));
+    var goodRows = (savedRows || []).filter(function(r) {
+      var addr = (r.address || '').trim();
+      return !(/^No\.?\s*\d+\s*$/i.test(addr) || /^\d+\s*$/.test(addr));
+    });
+    rows = enrichRows(applySignsToRows(goodRows));
     renderReport(label, '', true);  // preserve active filter on sync
     updateStopCounts(rows);
   };
@@ -3906,7 +3910,12 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 
   function doRestore() {
     try {
-      var raw    = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]');
+      var rawAll = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]');
+      // Strip malformed "No X" or bare-number addresses before anything else
+      var raw = rawAll.filter(function(r) {
+        var addr = (r.address || '').trim();
+        return !(/^No\.?\s*\d+\s*$/i.test(addr) || /^\d+\s*$/.test(addr));
+      });
       // Dedup using the same normalizeAddress key — fixes splits from before normalization
       var deduped = (function(arr) {
         var seen = {}, out = [];
@@ -3929,11 +3938,6 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
         });
         return out;
       })(raw);
-      // Remove malformed "No X" address entries (e.g. "No 17", "No 15") — bare house numbers with no street name
-      var deduped = deduped.filter(function(r) {
-        var addr = (r.address || '').trim();
-        return !(/^No\s+\d+$/i.test(addr) || /^\d+$/.test(addr));
-      });
       // Write cleaned data back to localStorage if anything changed
       // Always write cleaned data back — normalizes addresses even when count stays the same
       try { localStorage.setItem('baughman_rows_v2', JSON.stringify(deduped)); } catch(e2) {}
@@ -7325,6 +7329,19 @@ function buildAgeReport() {
     '<td style="text-align:center;font-family:\'JetBrains Mono\',monospace;font-size:.75rem;color:#8a9bb0">$168</td>';
   tbody.appendChild(tot);
 }
+  // ── Startup cleanup: remove malformed "No X" addresses from localStorage ──
+  (function() {
+    try {
+      var stored = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]');
+      var cleaned = stored.filter(function(r) {
+        var addr = (r.address || '').trim();
+        return !(/^No\.?\s*\d+\s*$/i.test(addr) || /^\d+\s*$/.test(addr));
+      });
+      if (cleaned.length !== stored.length) {
+        localStorage.setItem('baughman_rows_v2', JSON.stringify(cleaned));
+      }
+    } catch(e) {}
+  })();
 </script>
 </body>
 </html>
