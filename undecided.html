@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Undecided Voters Walk Sheet — Baughman Township Fire/EMS Levy</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:#0f1928; --navy-mid:#1a2e44; --navy-light:#243d58;
+  --gold:#c9962a; --gold-light:#f4a460;
+  --cream:#f5f0e8; --cream-dark:#e8e0d0;
+  --green:#1e7a4a; --green-light:#27ae60;
+  --orange:#d35400; --orange-light:#e67e22;
+  --blue:#1a5276; --blue-light:#2e86c1;
+  --red:#c0392b; --gray:#8a9bb0;
+  --border: rgba(255,255,255,.08);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Source Sans 3',sans-serif;background:var(--navy);color:var(--cream);min-height:100vh}
+
+/* ── Top bar ── */
+.top-bar{background:var(--navy-mid);border-bottom:3px solid var(--orange);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;position:sticky;top:0;z-index:100}
+.top-bar-left{display:flex;align-items:center;gap:14px}
+.back-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:var(--cream);font-family:'Source Sans 3',sans-serif;font-size:.82rem;font-weight:600;padding:6px 14px;border-radius:5px;cursor:pointer;text-decoration:none;transition:background .15s}
+.back-btn:hover{background:rgba(255,255,255,.14)}
+.page-title{font-family:'Oswald',sans-serif;font-size:1.05rem;font-weight:700;letter-spacing:.04em;color:var(--gold-light)}
+.page-subtitle{font-size:.78rem;color:var(--gray);margin-top:1px}
+.top-bar-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.btn{border:none;border-radius:5px;padding:7px 16px;font-family:'Source Sans 3',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;transition:opacity .15s;letter-spacing:.02em}
+.btn:hover{opacity:.85}
+.btn-print{background:var(--blue-light);color:white}
+.btn-sort{background:rgba(255,255,255,.08);color:var(--cream);border:1px solid rgba(255,255,255,.15)}
+.btn-sort.active{background:rgba(201,150,42,.2);color:var(--gold-light);border-color:rgba(201,150,42,.4)}
+
+/* ── Summary strip ── */
+.summary-strip{background:var(--navy-mid);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;gap:20px;flex-wrap:wrap;align-items:center}
+.stat-pill{display:flex;align-items:center;gap:8px}
+.stat-pill .num{font-family:'Oswald',sans-serif;font-size:1.5rem;font-weight:700;line-height:1}
+.stat-pill .lbl{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--gray);line-height:1.3}
+.stat-pill.orange .num{color:var(--orange-light)}
+.stat-pill.green  .num{color:#74c69d}
+.stat-pill.blue   .num{color:#aee2ff}
+.divider-pill{width:1px;height:32px;background:rgba(255,255,255,.1)}
+.legend{margin-left:auto;display:flex;gap:14px;font-size:.78rem;align-items:center;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:5px}
+.leg-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+
+/* ── Search / filter bar ── */
+.filter-bar{padding:12px 24px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--border)}
+.search-wrap{position:relative;flex:1;min-width:200px;max-width:360px}
+.search-wrap input{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:5px;padding:7px 10px 7px 34px;color:var(--cream);font-size:.85rem;font-family:'Source Sans 3',sans-serif}
+.search-wrap input::placeholder{color:var(--gray)}
+.search-wrap input:focus{outline:none;border-color:rgba(201,150,42,.5);background:rgba(255,255,255,.09)}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:.9rem;opacity:.5}
+.filter-chip{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:5px 12px;font-size:.78rem;color:var(--gray);cursor:pointer;transition:all .15s;font-family:'Source Sans 3',sans-serif}
+.filter-chip:hover{background:rgba(255,255,255,.1)}
+.filter-chip.active-all{background:rgba(201,150,42,.15);border-color:rgba(201,150,42,.4);color:var(--gold-light)}
+.filter-chip.active-likely{background:rgba(39,174,96,.15);border-color:rgba(39,174,96,.4);color:#74c69d}
+.filter-chip.active-possible{background:rgba(211,84,0,.15);border-color:rgba(211,84,0,.4);color:var(--orange-light)}
+.result-count{margin-left:auto;font-size:.78rem;color:var(--gray)}
+
+/* ── Main content ── */
+.main{padding:20px 24px 60px}
+
+/* ── Street section ── */
+.street-section{margin-bottom:28px}
+.street-header{background:linear-gradient(90deg, var(--navy-mid) 0%, rgba(26,46,68,.6) 100%);border-left:4px solid var(--gold);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-radius:0 6px 6px 0;margin-bottom:0}
+.street-name{font-family:'Oswald',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.05em;color:var(--gold-light)}
+.street-meta{font-size:.75rem;color:var(--gray);display:flex;gap:14px}
+.street-meta span{display:flex;align-items:center;gap:4px}
+
+/* ── Table ── */
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-top:none;border-radius:0 0 6px 6px}
+table{width:100%;border-collapse:collapse;font-size:.83rem}
+thead th{background:rgba(255,255,255,.04);padding:8px 12px;text-align:left;font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);border-bottom:1px solid var(--border);white-space:nowrap}
+thead th.center{text-align:center}
+tbody tr{border-bottom:1px solid rgba(255,255,255,.04);transition:background .12s}
+tbody tr:hover{background:rgba(255,255,255,.03)}
+tbody tr:last-child{border-bottom:none}
+tbody tr.likely-row{border-left:3px solid rgba(39,174,96,.35)}
+tbody tr.possible-row{border-left:3px solid rgba(211,84,0,.3)}
+td{padding:9px 12px;vertical-align:top}
+td.center{text-align:center}
+
+.addr{font-weight:700;color:var(--cream);font-size:.85rem;line-height:1.3}
+.name{color:var(--gray);font-size:.78rem;margin-top:2px;line-height:1.4}
+.voters-num{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#aee2ff;font-weight:600}
+.levy-amt{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:#74c69d;font-weight:600}
+.party-badge{display:inline-block;font-family:'Oswald',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.08em;padding:2px 6px;border-radius:3px;text-transform:uppercase}
+.party-REP{background:rgba(192,57,43,.25);color:#ff8a7a;border:1px solid rgba(192,57,43,.3)}
+.party-DEM{background:rgba(46,134,193,.2);color:#aee2ff;border:1px solid rgba(46,134,193,.3)}
+.party-UNA{background:rgba(255,255,255,.07);color:#8a9bb0;border:1px solid rgba(255,255,255,.1)}
+.party-MIX{background:rgba(201,150,42,.2);color:var(--gold-light);border:1px solid rgba(201,150,42,.3)}
+
+.like-badge{display:inline-block;font-family:'Oswald',sans-serif;font-size:.62rem;font-weight:700;letter-spacing:.06em;padding:3px 8px;border-radius:3px;text-transform:uppercase}
+.like-LIKELY{background:rgba(39,174,96,.2);color:#74c69d;border:1px solid rgba(39,174,96,.3)}
+.like-POSSIBLE{background:rgba(211,84,0,.15);color:var(--orange-light);border:1px solid rgba(211,84,0,.25)}
+
+.notes-cell{font-size:.78rem;color:#8a9bb0;font-style:italic;max-width:260px;line-height:1.45}
+.notes-cell.has-note{color:#c0ccdd;font-style:normal}
+.sign-badge{display:inline-block;font-size:.65rem;background:rgba(201,150,42,.2);color:var(--gold-light);border:1px solid rgba(201,150,42,.35);border-radius:3px;padding:1px 5px;margin-left:6px;vertical-align:middle}
+
+/* Result boxes */
+.result-cell{white-space:nowrap;font-size:.78rem;color:var(--gray)}
+.result-box{display:inline-flex;align-items:center;gap:3px;margin-right:4px}
+.result-box input[type=checkbox]{width:13px;height:13px;accent-color:var(--gold);cursor:pointer}
+.result-box label{font-size:.7rem;color:var(--gray);cursor:pointer;user-select:none}
+
+/* ── Empty / loading states ── */
+.empty-state{text-align:center;padding:60px 24px;color:var(--gray)}
+.empty-state h3{font-family:'Oswald',sans-serif;font-size:1.1rem;color:var(--gray);margin-bottom:8px}
+
+/* ── No-data banner ── */
+.no-data-banner{background:rgba(201,150,42,.1);border:1px solid rgba(201,150,42,.25);border-radius:8px;padding:16px 20px;margin:20px 24px;font-size:.88rem;color:var(--gold-light)}
+.no-data-banner strong{display:block;margin-bottom:4px;font-size:.95rem}
+
+/* ── Print ── */
+@media print {
+  .top-bar,.filter-bar,.btn,.back-btn,.legend,.filter-chip,.result-count{display:none!important}
+  .summary-strip{border:1px solid #ccc;margin-bottom:12pt}
+  body{background:white;color:#1a2940}
+  .street-header{background:#1a2e44!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .street-name{color:#f4a460!important}
+  table{font-size:8pt}
+  thead th{background:#e8ecf0!important;color:#3d3d3d!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .addr{color:#1a2940!important}
+  .name,.notes-cell{color:#5a5a5a!important}
+  .levy-amt{color:#1e7a4a!important}
+  .voters-num{color:#1a5276!important}
+  .street-section{page-break-inside:avoid}
+  tbody tr.likely-row{border-left:3px solid #27ae60!important}
+  tbody tr.possible-row{border-left:3px solid #d35400!important}
+  .result-box input[type=checkbox]{border:1px solid #999}
+  @page{margin:0.6in}
+}
+</style>
+</head>
+<body>
+
+<!-- ── Top bar ── -->
+<div class="top-bar">
+  <div class="top-bar-left">
+    <a href="index.html" class="back-btn">← Back</a>
+    <div>
+      <div class="page-title">🚪 Undecided Voters Walk Sheet — Wave 2</div>
+      <div class="page-subtitle">Baughman Township Fire/EMS Levy · Door-knock targets only</div>
+    </div>
+  </div>
+  <div class="top-bar-right">
+    <button class="btn btn-sort active" id="sort-street-btn" onclick="setSortOrder('street')">By Street</button>
+    <button class="btn btn-sort" id="sort-likely-btn" onclick="setSortOrder('likely')">Likely First</button>
+    <button class="btn btn-print" onclick="window.print()">🖨️ Print</button>
+  </div>
+</div>
+
+<!-- ── Summary strip ── -->
+<div class="summary-strip" id="summary-strip">
+  <div class="stat-pill orange">
+    <div>
+      <span class="num" id="stat-stops">—</span>
+      <div class="lbl">Total Stops</div>
+    </div>
+  </div>
+  <div class="divider-pill"></div>
+  <div class="stat-pill blue">
+    <div>
+      <span class="num" id="stat-voters">—</span>
+      <div class="lbl">Reg. Voters</div>
+    </div>
+  </div>
+  <div class="divider-pill"></div>
+  <div class="stat-pill green">
+    <div>
+      <span class="num" id="stat-likely">—</span>
+      <div class="lbl">Likely Yes</div>
+    </div>
+  </div>
+  <div class="divider-pill"></div>
+  <div class="stat-pill orange">
+    <div>
+      <span class="num" id="stat-possible">—</span>
+      <div class="lbl">Possible Yes</div>
+    </div>
+  </div>
+  <div class="divider-pill"></div>
+  <div class="stat-pill">
+    <div>
+      <span class="num" id="stat-streets" style="color:var(--gold-light)">—</span>
+      <div class="lbl">Streets</div>
+    </div>
+  </div>
+  <div class="legend">
+    <div class="legend-item"><div class="leg-dot" style="background:rgba(39,174,96,.6)"></div><span style="color:#74c69d;font-size:.75rem">LIKELY Yes</span></div>
+    <div class="legend-item"><div class="leg-dot" style="background:rgba(211,84,0,.5)"></div><span style="color:var(--orange-light);font-size:.75rem">POSSIBLE Yes</span></div>
+    <div style="font-size:.72rem;color:var(--gray)">Door codes: Y · N · U · NH</div>
+  </div>
+</div>
+
+<!-- ── Filter bar ── -->
+<div class="filter-bar">
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="search-input" placeholder="Search address or name…" oninput="renderAll()">
+  </div>
+  <button class="filter-chip active-all" id="chip-all"      onclick="setFilter('all')">All (—)</button>
+  <button class="filter-chip"            id="chip-likely"   onclick="setFilter('LIKELY')">Likely (—)</button>
+  <button class="filter-chip"            id="chip-possible" onclick="setFilter('POSSIBLE')">Possible (—)</button>
+  <span class="result-count" id="result-count"></span>
+</div>
+
+<!-- ── Main ── -->
+<div class="main" id="main-content">
+  <div class="empty-state"><h3>Loading canvass data…</h3></div>
+</div>
+
+<script>
+// ── Load data from localStorage ───────────────────────────────────────────────
+var KEY = 'baughman_rows_v2';
+var allRows = [];
+var sortOrder = 'street';
+var activeFilter = 'all';
+
+function loadData() {
+  try {
+    var raw = localStorage.getItem(KEY);
+    if (!raw) return [];
+    var rows = JSON.parse(raw);
+    return rows.filter(function(r) {
+      var resp = (r.resp || '').toLowerCase();
+      return resp === 'undecided' || resp === 'unsure';
+    });
+  } catch(e) {
+    return [];
+  }
+}
+
+// ── Normalise street name ─────────────────────────────────────────────────────
+function normStreet(s) {
+  if (!s) return '';
+  return s.trim()
+    .replace(/\bRoad\b/gi,'Rd').replace(/\bStreet\b/gi,'St')
+    .replace(/\bAvenue\b/gi,'Ave').replace(/\bDrive\b/gi,'Dr')
+    .replace(/\bLane\b/gi,'Ln').replace(/\bCourt\b/gi,'Ct')
+    .replace(/\bBoulevard\b/gi,'Blvd').replace(/\bPike\b/gi,'Pike');
+}
+
+// ── Filters & sort ────────────────────────────────────────────────────────────
+function setFilter(f) {
+  activeFilter = f;
+  ['all','likely','possible'].forEach(function(id) {
+    var el = document.getElementById('chip-' + id.toLowerCase());
+    el.className = 'filter-chip';
+    if ((f === 'all' && id === 'all') ||
+        (f === 'LIKELY' && id === 'likely') ||
+        (f === 'POSSIBLE' && id === 'possible')) {
+      el.className = 'filter-chip active-' + id;
+    }
+  });
+  renderAll();
+}
+
+function setSortOrder(order) {
+  sortOrder = order;
+  document.getElementById('sort-street-btn').className = 'btn btn-sort' + (order === 'street' ? ' active' : '');
+  document.getElementById('sort-likely-btn').className  = 'btn btn-sort' + (order === 'likely' ? ' active' : '');
+  renderAll();
+}
+
+function getFiltered() {
+  var q = (document.getElementById('search-input').value || '').toLowerCase();
+  return allRows.filter(function(r) {
+    if (activeFilter !== 'all' && r.like !== activeFilter) return false;
+    if (q) {
+      var haystack = ((r.address||'') + ' ' + (r.name||'')).toLowerCase();
+      if (!haystack.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+// ── Group by street ───────────────────────────────────────────────────────────
+function groupByStreet(rows) {
+  var map = {};
+  var order = [];
+  rows.forEach(function(r) {
+    var s = normStreet(r.street || r._st || r.address.replace(/^\d+\s+/,''));
+    if (!map[s]) { map[s] = []; order.push(s); }
+    map[s].push(r);
+  });
+  order.sort();
+  return { map: map, order: order };
+}
+
+// ── Render ─────────────────────────────────────────────────────────────────────
+function renderAll() {
+  var rows = getFiltered();
+
+  // Update counts
+  document.getElementById('result-count').textContent =
+    rows.length + ' stop' + (rows.length !== 1 ? 's' : '') + ' shown';
+
+  var main = document.getElementById('main-content');
+
+  if (!rows.length) {
+    main.innerHTML = '<div class="empty-state"><h3>No stops match your filter</h3><p style="font-size:.88rem;color:#556677;margin-top:6px">Try changing the filter or search term above.</p></div>';
+    return;
+  }
+
+  // Sort rows if needed
+  var sorted = rows.slice();
+  if (sortOrder === 'likely') {
+    sorted.sort(function(a, b) {
+      var la = a.like === 'LIKELY' ? 0 : 1;
+      var lb = b.like === 'LIKELY' ? 0 : 1;
+      if (la !== lb) return la - lb;
+      return normStreet(a.street || a._st || '').localeCompare(normStreet(b.street || b._st || ''));
+    });
+  }
+
+  var grp = groupByStreet(sorted);
+  var html = '';
+
+  grp.order.forEach(function(street) {
+    var streetRows = grp.map[street];
+    var totalVoters = streetRows.reduce(function(s, r) { return s + (r.voters || 0); }, 0);
+    var likelyCount = streetRows.filter(function(r) { return r.like === 'LIKELY'; }).length;
+
+    html += '<div class="street-section">';
+    html += '<div class="street-header">';
+    html += '<span class="street-name">' + escHtml(street) + '</span>';
+    html += '<span class="street-meta">';
+    html += '<span>🏠 ' + streetRows.length + ' stop' + (streetRows.length !== 1 ? 's' : '') + '</span>';
+    html += '<span>👥 ' + totalVoters + ' voters</span>';
+    if (likelyCount) html += '<span style="color:#74c69d">✓ ' + likelyCount + ' likely</span>';
+    html += '</span></div>';
+
+    html += '<div class="table-wrap"><table>';
+    html += '<thead><tr>' +
+      '<th>Address &amp; Residents</th>' +
+      '<th class="center">Vtr</th>' +
+      '<th class="center">Levy/yr</th>' +
+      '<th class="center">Party</th>' +
+      '<th class="center">Likely?</th>' +
+      '<th>Previous Visit Notes</th>' +
+      '<th class="center">Result</th>' +
+      '</tr></thead><tbody>';
+
+    streetRows.forEach(function(r) {
+      var levyStr = r.levy > 0 ? '$' + Math.round(r.levy) : '—';
+      var party = (r.party || 'UNA').toUpperCase();
+      var like  = (r.like  || 'POSSIBLE').toUpperCase();
+      var rowClass = like === 'LIKELY' ? 'likely-row' : 'possible-row';
+      var notes = (r.notes || '').trim();
+      var noteClass = notes ? 'notes-cell has-note' : 'notes-cell';
+      var noteDisplay = notes || '<span style="opacity:.35">—</span>';
+      var signBadge = r.sign ? '<span class="sign-badge">🪧 sign</span>' : '';
+
+      html += '<tr class="' + rowClass + '">';
+      html += '<td><div class="addr">' + escHtml(r.address) + signBadge + '</div><div class="name">' + escHtml(r.name || '') + '</div></td>';
+      html += '<td class="center"><span class="voters-num">' + (r.voters || '—') + '</span></td>';
+      html += '<td class="center"><span class="levy-amt">' + levyStr + '</span></td>';
+      html += '<td class="center"><span class="party-badge party-' + party + '">' + party + '</span></td>';
+      html += '<td class="center"><span class="like-badge like-' + like + '">' + like + '</span></td>';
+      html += '<td><span class="' + noteClass + '">' + escHtml(noteDisplay) + '</span></td>';
+      html += '<td class="center"><span class="result-cell">' +
+              '<span class="result-box"><input type="checkbox" id="y-' + r.address + '"><label for="y-' + r.address + '">Y</label></span>' +
+              '<span class="result-box"><input type="checkbox" id="n-' + r.address + '"><label for="n-' + r.address + '">N</label></span>' +
+              '<span class="result-box"><input type="checkbox" id="u-' + r.address + '"><label for="u-' + r.address + '">U</label></span>' +
+              '<span class="result-box"><input type="checkbox" id="nh-' + r.address + '"><label for="nh-' + r.address + '">NH</label></span>' +
+              '</span></td>';
+      html += '</tr>';
+    });
+
+    html += '</tbody></table></div></div>';
+  });
+
+  main.innerHTML = html;
+}
+
+function escHtml(str) {
+  if (!str || typeof str !== 'string') return '';
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Update summary strip ──────────────────────────────────────────────────────
+function updateSummary() {
+  var rows = allRows;
+  var totalVoters = rows.reduce(function(s, r) { return s + (r.voters || 0); }, 0);
+  var likelyCnt   = rows.filter(function(r) { return r.like === 'LIKELY'; }).length;
+  var possibleCnt = rows.filter(function(r) { return r.like === 'POSSIBLE'; }).length;
+  var streets     = Object.keys(groupByStreet(rows).map).length;
+
+  document.getElementById('stat-stops').textContent    = rows.length;
+  document.getElementById('stat-voters').textContent   = totalVoters;
+  document.getElementById('stat-likely').textContent   = likelyCnt;
+  document.getElementById('stat-possible').textContent = possibleCnt;
+  document.getElementById('stat-streets').textContent  = streets;
+
+  document.getElementById('chip-all').textContent      = 'All (' + rows.length + ')';
+  document.getElementById('chip-likely').textContent   = 'Likely (' + likelyCnt + ')';
+  document.getElementById('chip-possible').textContent = 'Possible (' + possibleCnt + ')';
+}
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+(function init() {
+  allRows = loadData();
+
+  if (!allRows.length) {
+    document.getElementById('main-content').innerHTML =
+      '<div class="no-data-banner">' +
+      '<strong>⚠️ No canvass data found in this browser</strong>' +
+      'Canvass data is stored locally in the browser where the app is used. ' +
+      'Open this page in the same browser you use for canvassing to see the undecided voter list.' +
+      '</div>';
+    // Update summary to zeros
+    ['stat-stops','stat-voters','stat-likely','stat-possible','stat-streets']
+      .forEach(function(id) { document.getElementById(id).textContent = '0'; });
+    ['chip-all','chip-likely','chip-possible']
+      .forEach(function(id) { document.getElementById(id).textContent = id.replace('chip-','').replace(/^\w/,function(c){return c.charAt(0).toUpperCase()+c.slice(1)}) + ' (0)'; });
+    return;
+  }
+
+  updateSummary();
+  renderAll();
+})();
+</script>
+</body>
+</html>
