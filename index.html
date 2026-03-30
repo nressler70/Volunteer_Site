@@ -1978,6 +1978,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 <button class="rpt-item" onclick="closeReportsDropdown();openAgeReport();" role="menuitem"><span class="rpt-icon">📊</span><span class="rpt-text"><span class="rpt-title">Age &amp; Support Analysis</span><span class="rpt-desc">Levy support by household age group — 445 matched households</span></span><span class="rpt-badge rpt-badge-view">CHART</span></button>
 <button class="rpt-item" onclick="closeReportsDropdown();openAnalytics();" role="menuitem"><span class="rpt-icon">📈</span><span class="rpt-text"><span class="rpt-title">Site Analytics</span><span class="rpt-desc">Visitor counts &amp; device breakdown</span></span><span class="rpt-badge rpt-badge-view">GA</span></button>
 <button class="rpt-item" onclick="closeReportsDropdown();window.location.href='doorknock.html';" role="menuitem"><span class="rpt-icon">🏘️</span><span class="rpt-text"><span class="rpt-title">Door-Knock Street Report</span><span class="rpt-desc">View canvass responses street by street</span></span><span class="rpt-badge rpt-badge-view">VIEW</span></button>
+<button class="rpt-item" onclick="closeReportsDropdown();window.location.href='undecided.html';" role="menuitem"><span class="rpt-icon">🚪</span><span class="rpt-text"><span class="rpt-title">Undecided Voters Walk Sheet</span><span class="rpt-desc">Wave 2 door-knock list — undecided households by street</span></span><span class="rpt-badge rpt-badge-view">VIEW</span></button>
 <button class="rpt-item" onclick="closeReportsDropdown();window.location.href='walksheet.html';" role="menuitem"><span class="rpt-icon">🖨️</span><span class="rpt-text"><span class="rpt-title">Walk Sheet — Needs Visit</span><span class="rpt-desc">Printable walk sheet for unvisited &amp; not-home addresses</span></span><span class="rpt-badge rpt-badge-pdf">PDF</span></button>
 <div class="rpt-divider"></div><div class="rpt-section-label">Campaign Views</div><button class="rpt-item" onclick="closeReportsDropdown();scrollToSection('tally');" role="menuitem"><span class="rpt-icon">📊</span><span class="rpt-text"><span class="rpt-title">Live Results Dashboard</span><span class="rpt-desc">Real-time canvass progress &amp; stats</span></span><span class="rpt-badge rpt-badge-view">VIEW</span></button><button class="rpt-item" onclick="closeReportsDropdown();scrollToSection('teams');" role="menuitem"><span class="rpt-icon">🗺️</span><span class="rpt-text"><span class="rpt-title">Canvasser Route Summary</span><span class="rpt-desc">All team assignments &amp; territories</span></span><span class="rpt-badge rpt-badge-view">VIEW</span></button><div class="rpt-divider"></div><button class="rpt-item" onclick="closeReportsDropdown();window.print();" role="menuitem"><span class="rpt-icon">🖨️</span><span class="rpt-text"><span class="rpt-title">Print Full Campaign Plan</span><span class="rpt-desc">Complete site as printable document</span></span><span class="rpt-badge rpt-badge-print">PRINT</span></button><div class="rpt-data-note">CSV &amp; PDF reports require canvass data to be uploaded first.</div></div></div></div></nav>
 
@@ -3079,7 +3080,6 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       var street = normalizeStreet(String(r[cStreet] || '').trim());
       if (!street || street.toLowerCase() === 'street') continue;
       if (street.toLowerCase() === 'summary') continue;
-      if (/^\d+$/.test(street.trim())) continue;  // skip bare-number summary rows
 
       var house  = cHouse >= 0 ? String(r[cHouse] || '').replace(/\.0$/, '').trim() : '';
       // If no house column, try to use the full Address column directly
@@ -3188,10 +3188,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
         if (r.voters) ex.voters = r.voters;
         if (r.levy)   ex.levy   = r.levy;
         if (r.like)   ex.like   = r.like;
-        // Response priority: Yes/No(4) > Not Home(3) > Undecided(2) > Not Visited(1)
-    // Only overwrite the stored response when the new one is equal or stronger.
-    var _RPRI = {'Yes':4,'No':4,'Not Home':3,'Undecided':2,'Not Visited':1};
-    if (r.resp && (_RPRI[r.resp]||0) >= (_RPRI[ex.resp]||0)) { ex.resp = r.resp; nUpdated++; }
+        if (r.resp && r.resp !== 'Not Visited') { ex.resp = r.resp; nUpdated++; }
         if (r.notes && r.notes !== ex.notes) {
           ex.notes = ex.notes ? ex.notes + ' | ' + r.notes : r.notes;
         }
@@ -3214,7 +3211,6 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     var mergedLabel = 'Combined Results (' + stored.length + ' households, '
       + fileList.length + ' upload' + (fileList.length > 1 ? 's' : '') + ')';
     renderReport(mergedLabel, exportedAt);
-    window._freshUpload = true; // Fix 3: block cloud overwrite this session
 
     // Update debug bar
     if (typeof window._updateDebug === 'function') window._updateDebug();
@@ -4694,7 +4690,7 @@ function jsonbinFetch() {
     var rows = enrichRows(rawRows);
     try { localStorage.setItem(ROWS_KEY,  JSON.stringify(rawRows)); } catch(e) {}
     try { localStorage.setItem(FILES_KEY, JSON.stringify(files));   } catch(e) {}
-    if (!window._freshUpload && rows.length && typeof window._restoreRows === 'function') {
+    if (rows.length && typeof window._restoreRows === 'function') {
       var label = 'Cloud Results (' + rows.length + ' household'
         + (rows.length !== 1 ? 's' : '') + ', '
         + files.length + ' upload' + (files.length !== 1 ? 's' : '') + ')';
@@ -4947,8 +4943,7 @@ window.adminRestoreData = function(input) {
         if (k in sidx) {
           // Already exists — only fill in if currently Not Visited
           var ex = stored[sidx[k]];
-          var _RP = {'Yes':4,'No':4,'Not Home':3,'Undecided':2,'Not Visited':1};
-          if ((_RP[r.resp]||0) > (_RP[ex.resp]||0)) {
+          if ((!ex.resp || ex.resp === 'Not Visited') && r.resp && r.resp !== 'Not Visited') {
             ex.resp = r.resp;
           }
           if (r.notes && !ex.notes) ex.notes = r.notes;
@@ -4977,8 +4972,7 @@ window.adminRestoreData = function(input) {
 
       // Re-render
       if (typeof window._restoreRows === 'function') {
-        window._freshUpload = true; // restore
-    var label = 'Restored Results (' + stored.length + ' households)';
+        var label = 'Restored Results (' + stored.length + ' households)';
         window._restoreRows(stored, label);
       }
       if (typeof window.jsonbinPush === 'function') window.jsonbinPush(stored, existingFiles);
