@@ -3214,6 +3214,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     var mergedLabel = 'Combined Results (' + stored.length + ' households, '
       + fileList.length + ' upload' + (fileList.length > 1 ? 's' : '') + ')';
     renderReport(mergedLabel, exportedAt);
+    window._freshUpload = true; // Fix 3: block cloud overwrite this session
 
     // Update debug bar
     if (typeof window._updateDebug === 'function') window._updateDebug();
@@ -4693,7 +4694,7 @@ function jsonbinFetch() {
     var rows = enrichRows(rawRows);
     try { localStorage.setItem(ROWS_KEY,  JSON.stringify(rawRows)); } catch(e) {}
     try { localStorage.setItem(FILES_KEY, JSON.stringify(files));   } catch(e) {}
-    if (rows.length && typeof window._restoreRows === 'function') {
+    if (!window._freshUpload && rows.length && typeof window._restoreRows === 'function') {
       var label = 'Cloud Results (' + rows.length + ' household'
         + (rows.length !== 1 ? 's' : '') + ', '
         + files.length + ' upload' + (files.length !== 1 ? 's' : '') + ')';
