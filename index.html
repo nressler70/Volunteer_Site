@@ -3059,6 +3059,8 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       var street = normalizeStreet(String(r[cStreet] || '').trim());
       if (!street || street.toLowerCase() === 'street') continue;
       if (street.toLowerCase() === 'summary') continue;
+      // Skip rows where the "street" is just a bare number or "No X" — malformed address data
+      if (/^No\.?\s*\d+\s*$/i.test(street) || /^\d+\s*$/.test(street)) continue;
 
       var house  = cHouse  >= 0 ? String(r[cHouse]  || '').replace(/\.0$/, '').trim() : '';
       var fullAddr = (house ? house + ' ' : '') + street;
@@ -3911,7 +3913,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   function doRestore() {
     try {
       var rawAll = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]');
-      // Strip malformed "No X" or bare-number addresses before anything else
+      // Strip malformed "No X" or bare-number addresses before dedup
       var raw = rawAll.filter(function(r) {
         var addr = (r.address || '').trim();
         return !(/^No\.?\s*\d+\s*$/i.test(addr) || /^\d+\s*$/.test(addr));
@@ -7329,7 +7331,7 @@ function buildAgeReport() {
     '<td style="text-align:center;font-family:\'JetBrains Mono\',monospace;font-size:.75rem;color:#8a9bb0">$168</td>';
   tbody.appendChild(tot);
 }
-  // ── Startup cleanup: remove malformed "No X" addresses from localStorage ──
+  // Startup scrub: remove malformed "No X" addresses from localStorage immediately
   (function() {
     try {
       var stored = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]');
