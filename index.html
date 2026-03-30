@@ -3079,6 +3079,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       var street = normalizeStreet(String(r[cStreet] || '').trim());
       if (!street || street.toLowerCase() === 'street') continue;
       if (street.toLowerCase() === 'summary') continue;
+      if (/^\d+$/.test(street.trim())) continue;  // skip bare-number summary rows
 
       var house  = cHouse >= 0 ? String(r[cHouse] || '').replace(/\.0$/, '').trim() : '';
       // If no house column, try to use the full Address column directly
