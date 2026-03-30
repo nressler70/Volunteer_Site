@@ -7330,30 +7330,13 @@ function buildAgeReport() {
 
       var before = stored.length;
 
-      // Specific addresses to always remove
-      var REMOVE_LIST = [
-        '3577 deerfield ave',
-        'deerfield'
-      ];
-
-      // STEP 1 — Remove malformed addresses + specific unwanted entries
+      // STEP 1 — Remove malformed "No X" and bare-number addresses
       var cleaned = stored.filter(function(r) {
         var addr = (r.address || '').trim();
-        var addrLow = addr.toLowerCase();
-
-        // Remove exact entries from the remove list
-        if (REMOVE_LIST.indexOf(addrLow) >= 0) return false;
-
-        // Remove "No X" and bare-number addresses
-        if (/^No\.?\s*\d+\s*$/i.test(addr) || /^\d+\s*$/.test(addr)) return false;
-
-        // Remove bare street names (no leading house number)
-        if (addr && !/^\d/.test(addr)) return false;
-
-        return true;
+        return !(/^No\.?\s*\d+\s*$/i.test(addr) || /^\d+\s*$/.test(addr));
       });
 
-      // STEP 2 — Fix split address e.g. "4948" + street → "4948 Coal Bank Rd"
+      // STEP 2 — Fix split address "4948" + street → "4948 Coal Bank Rd"
       cleaned = cleaned.map(function(r) {
         var addr = (r.address || '').trim();
         var street = (r.street || '').trim();
@@ -7363,7 +7346,7 @@ function buildAgeReport() {
         return r;
       });
 
-      // STEP 3 — Deduplicate addresses (merge notes, keep best response)
+      // STEP 3 — Deduplicate addresses (keep entry with most data, merge notes)
       var seen = {}, out = [];
       cleaned.forEach(function(r) {
         var key = (r.address || '').toLowerCase().trim();
