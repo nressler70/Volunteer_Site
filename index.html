@@ -3188,7 +3188,10 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
         if (r.voters) ex.voters = r.voters;
         if (r.levy)   ex.levy   = r.levy;
         if (r.like)   ex.like   = r.like;
-        if (r.resp && r.resp !== 'Not Visited') { ex.resp = r.resp; nUpdated++; }
+        // Response priority: Yes/No(4) > Not Home(3) > Undecided(2) > Not Visited(1)
+    // Only overwrite the stored response when the new one is equal or stronger.
+    var _RPRI = {'Yes':4,'No':4,'Not Home':3,'Undecided':2,'Not Visited':1};
+    if (r.resp && (_RPRI[r.resp]||0) >= (_RPRI[ex.resp]||0)) { ex.resp = r.resp; nUpdated++; }
         if (r.notes && r.notes !== ex.notes) {
           ex.notes = ex.notes ? ex.notes + ' | ' + r.notes : r.notes;
         }
