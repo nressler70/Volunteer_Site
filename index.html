@@ -3260,9 +3260,9 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   function renderDashboard() {
     var total = rows.length;
     var yes = count('Yes'), no = count('No'), und = count('Undecided');
-    var nh = count('Not Home'), nv = 0;  // Not Visited filtered from display
+    var nh = count('Not Home'), nv = count('Not Visited');
     var signCount = rows.filter(function(r) { return r.sign && !r.signAddedAt; }).length;
-    var visited = total;
+    var visited = total - nv;
     var pct = total ? Math.round(visited / total * 100) : 0;
     var yPct = total ? Math.round(yes / total * 100) : 0;
 
@@ -3330,7 +3330,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       {col:'#ff8a7a', label:'No', val:no},
       {col:'#f4c460', label:'Undecided', val:und},
       {col:'#aee2ff', label:'Not Home', val:nh},
-      {col:'rgba(255,255,255,.3)', label:'Not Visited', val:0}
+      {col:'rgba(255,255,255,.3)', label:'Not Visited', val:nv}
     ];
     var legend = LEGS.filter(function(l) { return l.val > 0; }).map(function(l) {
       var lp = total ? Math.round(l.val / total * 100) : 0;
@@ -3881,13 +3881,13 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     var goodRows = (savedRows || []).filter(function(r) {
       var addr = (r.address || '').trim();
       var addrLow = addr.toLowerCase();
-      if (/^No\.?\s*\d+\s*$/i.test(addr)) return false;  // "No 17" etc
-      if (/^\d+\s*$/.test(addr)) return false;              // bare numbers "17"
+      if (/^No\.?\s*\d+\s*$/i.test(addr)) return false;
+      if (/^\d+\s*$/.test(addr)) return false;
       if (addrLow === 'deerfield' || addrLow === '3577 deerfield ave') return false;
       return true;
     });
     rows = enrichRows(applySignsToRows(goodRows));
-    renderReport(label, '', true);  // preserve active filter on sync
+    renderReport(label, '', true);
     updateStopCounts(rows);
   };
 
@@ -4671,8 +4671,8 @@ function jsonbinFetch() {
     var cleanedRows = rawRows.filter(function(r) {
       var addr = (r.address || '').trim();
       var addrLow = addr.toLowerCase();
-      if (/^No\.?\s*\d+\s*$/i.test(addr)) return false;  // "No 17" etc
-      if (/^\d+\s*$/.test(addr)) return false;              // bare numbers "17"
+      if (/^No\.?\s*\d+\s*$/i.test(addr)) return false;
+      if (/^\d+\s*$/.test(addr)) return false;
       if (addrLow === 'deerfield' || addrLow === '3577 deerfield ave') return false;
       return true;
     });
@@ -4682,7 +4682,6 @@ function jsonbinFetch() {
       rawRows = cleanedRows;
     }
     var rows = enrichRows(rawRows);
-    // Cache to localStorage so offline visits still work
     try { localStorage.setItem(ROWS_KEY,  JSON.stringify(rawRows)); } catch(e) {}
     try { localStorage.setItem(FILES_KEY, JSON.stringify(files));   } catch(e) {}
     if (rows.length && typeof window._restoreRows === 'function') {
