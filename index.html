@@ -4947,7 +4947,8 @@ window.adminRestoreData = function(input) {
         if (k in sidx) {
           // Already exists — only fill in if currently Not Visited
           var ex = stored[sidx[k]];
-          if ((!ex.resp || ex.resp === 'Not Visited') && r.resp && r.resp !== 'Not Visited') {
+          var _RP = {'Yes':4,'No':4,'Not Home':3,'Undecided':2,'Not Visited':1};
+          if ((_RP[r.resp]||0) > (_RP[ex.resp]||0)) {
             ex.resp = r.resp;
           }
           if (r.notes && !ex.notes) ex.notes = r.notes;
