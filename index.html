@@ -4976,7 +4976,8 @@ window.adminRestoreData = function(input) {
 
       // Re-render
       if (typeof window._restoreRows === 'function') {
-        var label = 'Restored Results (' + stored.length + ' households)';
+        window._freshUpload = true; // restore
+    var label = 'Restored Results (' + stored.length + ' households)';
         window._restoreRows(stored, label);
       }
       if (typeof window.jsonbinPush === 'function') window.jsonbinPush(stored, existingFiles);
