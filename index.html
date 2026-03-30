@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
 <script>
-// ── EARLY localStorage CLEANUP ───────────────────────────────────────────────
 (function() {
   try {
     var KEY = 'baughman_rows_v2';
@@ -18,8 +17,7 @@
       return true;
     });
     localStorage.setItem(KEY, JSON.stringify(out));
-    if (before !== out.length)
-      console.log('[Cleanup] localStorage: ' + before + ' → ' + out.length + ' rows');
+    if (before !== out.length) console.log('[Cleanup] localStorage: ' + before + ' → ' + out.length + ' rows');
   } catch(e) {}
 })();
 </script>
@@ -3082,8 +3080,16 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       if (!street || street.toLowerCase() === 'street') continue;
       if (street.toLowerCase() === 'summary') continue;
 
-      var house  = cHouse  >= 0 ? String(r[cHouse]  || '').replace(/\.0$/, '').trim() : '';
-      var fullAddr = (house ? house + ' ' : '') + street;
+      var house  = cHouse >= 0 ? String(r[cHouse] || '').replace(/\.0$/, '').trim() : '';
+      // If no house column, try to use the full Address column directly
+      var fullAddr;
+      if (house) {
+        fullAddr = house + ' ' + street;
+      } else if (cAddr >= 0 && String(r[cAddr] || '').trim() && /^\d/.test(String(r[cAddr]).trim())) {
+        fullAddr = normalizeAddress(String(r[cAddr]).trim());
+      } else {
+        fullAddr = street;
+      }
       // Look up ALL voter data from the embedded Excel table — no CSV column parsing needed
       var vd     = getVoterData(fullAddr);
       var name   = (vd && vd.name)   ? vd.name   : '';
@@ -4677,7 +4683,6 @@ function jsonbinFetch() {
       return true;
     });
     if (cleanedRows.length !== rawRows.length) {
-      console.log('[Cleanup] Cloud: ' + rawRows.length + ' → ' + cleanedRows.length + ' rows. Pushing clean data back.');
       window.jsonbinPush(cleanedRows, files);
       rawRows = cleanedRows;
     }
