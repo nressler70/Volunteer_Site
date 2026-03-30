@@ -3059,8 +3059,6 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       var street = normalizeStreet(String(r[cStreet] || '').trim());
       if (!street || street.toLowerCase() === 'street') continue;
       if (street.toLowerCase() === 'summary') continue;
-      // Skip rows where the "street" is just a bare number or "No X" — malformed address data
-      if (/^No\.?\s*\d+\s*$/i.test(street) || /^\d+\s*$/.test(street)) continue;
 
       var house  = cHouse  >= 0 ? String(r[cHouse]  || '').replace(/\.0$/, '').trim() : '';
       var fullAddr = (house ? house + ' ' : '') + street;
@@ -3858,11 +3856,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   window._applySignsToRows = applySignsToRows;
 
   window._restoreRows = function(savedRows, label) {
-    var goodRows = (savedRows || []).filter(function(r) {
-      var addr = (r.address || '').trim();
-      return !(/^No\.?\s*\d+\s*$/i.test(addr) || /^\d+\s*$/.test(addr));
-    });
-    rows = enrichRows(applySignsToRows(goodRows));
+    rows = enrichRows(applySignsToRows(savedRows));
     renderReport(label, '', true);  // preserve active filter on sync
     updateStopCounts(rows);
   };
@@ -3912,12 +3906,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 
   function doRestore() {
     try {
-      var rawAll = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]');
-      // Strip malformed "No X" or bare-number addresses before dedup
-      var raw = rawAll.filter(function(r) {
-        var addr = (r.address || '').trim();
-        return !(/^No\.?\s*\d+\s*$/i.test(addr) || /^\d+\s*$/.test(addr));
-      });
+      var raw    = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]');
       // Dedup using the same normalizeAddress key — fixes splits from before normalization
       var deduped = (function(arr) {
         var seen = {}, out = [];
@@ -7331,19 +7320,83 @@ function buildAgeReport() {
     '<td style="text-align:center;font-family:\'JetBrains Mono\',monospace;font-size:.75rem;color:#8a9bb0">$168</td>';
   tbody.appendChild(tot);
 }
-  // Startup scrub: remove malformed "No X" addresses from localStorage immediately
-  (function() {
+
+  // ── ONE-TIME DATA CLEANUP (runs on every load, safe to run repeatedly) ──────
+  (function cleanupLocalStorage() {
     try {
-      var stored = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]');
+      var KEY = 'baughman_rows_v2';
+      var stored = JSON.parse(localStorage.getItem(KEY) || '[]');
+      if (!stored.length) return;
+
+      var before = stored.length;
+
+      // STEP 1 — Remove malformed "No X" and bare-number addresses
       var cleaned = stored.filter(function(r) {
         var addr = (r.address || '').trim();
         return !(/^No\.?\s*\d+\s*$/i.test(addr) || /^\d+\s*$/.test(addr));
       });
-      if (cleaned.length !== stored.length) {
-        localStorage.setItem('baughman_rows_v2', JSON.stringify(cleaned));
+
+      // STEP 2 — Fix split address "4948" + street → "4948 Coal Bank Rd"
+      cleaned = cleaned.map(function(r) {
+        var addr = (r.address || '').trim();
+        var street = (r.street || '').trim();
+        if (/^\d+$/.test(addr) && street) {
+          r = Object.assign({}, r, { address: addr + ' ' + street });
+        }
+        return r;
+      });
+
+      // STEP 3 — Deduplicate addresses (keep entry with most data, merge notes)
+      var seen = {}, out = [];
+      cleaned.forEach(function(r) {
+        var key = (r.address || '').toLowerCase().trim();
+        if (key in seen) {
+          var ex = out[seen[key]];
+          // Merge notes — append only if not already present
+          if (r.notes && r.notes !== ex.notes) {
+            if (!ex.notes) {
+              ex.notes = r.notes;
+            } else if (ex.notes.indexOf(r.notes) < 0) {
+              ex.notes = ex.notes + ' | ' + r.notes;
+            }
+          }
+          // Keep the better response (non-Not-Visited wins)
+          if ((!ex.resp || ex.resp === 'Not Visited') && r.resp && r.resp !== 'Not Visited') {
+            ex.resp = r.resp;
+          }
+        } else {
+          seen[key] = out.length;
+          out.push(Object.assign({}, r));
+        }
+      });
+
+      // STEP 4 — Remove duplicate segments within the notes field
+      out = out.map(function(r) {
+        if (r.notes && r.notes.indexOf(' | ') >= 0) {
+          var parts = r.notes.split(' | ').map(function(p) { return p.trim(); });
+          // Remove exact duplicates, preserve order
+          var seen2 = {}, unique = [];
+          parts.forEach(function(p) {
+            if (p && !(p in seen2)) { seen2[p] = true; unique.push(p); }
+          });
+          r = Object.assign({}, r, { notes: unique.join(' | ') });
+        }
+        return r;
+      });
+
+      var after = out.length;
+      localStorage.setItem(KEY, JSON.stringify(out));
+
+      if (before !== after) {
+        console.log('[Cleanup] localStorage cleaned: ' + before + ' → ' + after + ' rows (' + (before - after) + ' removed/merged)');
+      } else {
+        console.log('[Cleanup] localStorage checked — no changes needed (' + after + ' rows)');
       }
-    } catch(e) {}
+    } catch(e) {
+      console.warn('[Cleanup] Error during localStorage cleanup:', e);
+    }
   })();
+  // ── END CLEANUP ──────────────────────────────────────────────────────────────
 </script>
 </body>
 </html>
