@@ -5,353 +5,148 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Undecided Voter Walk Sheet — Wave 3</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#eae4d8;font-family:'Source Sans 3',sans-serif;color:#1a2e44;min-height:100vh;}
 
-  :root {
-    --bg-dark:    #1a2235;
-    --bg-card:    #232f45;
-    --bg-row-alt: #1e2a3e;
-    --orange:     #e87722;
-    --teal:       #2db6c8;
-    --green:      #2ec27e;
-    --text-light: #e8edf5;
-    --text-muted: #7a8bab;
-    --border:     #2e3f5c;
-    --divider:    #e87722;
-  }
+/* ── TOP NAV ── */
+.topbar{background:#1a2e44;padding:10px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.btn-back{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);color:#f5f0e8;font-size:12px;font-weight:600;padding:6px 13px;border-radius:4px;cursor:pointer;display:flex;align-items:center;gap:5px;font-family:'Source Sans 3',sans-serif;}
+.btn-back:hover{background:rgba(255,255,255,.18);}
+.topbar-title{color:#f4a460;font-family:'Oswald',sans-serif;font-size:17px;font-weight:600;letter-spacing:.4px;}
+.topbar-sub{color:#8a9bb0;font-size:11.5px;margin-left:auto;}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+/* ── LEGEND ── */
+.legend{background:#f5f0e8;border-bottom:2px solid #d4c9b0;padding:7px 20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;font-size:11.5px;}
+.leg-item{display:flex;align-items:center;gap:5px;}
+.leg-box{width:13px;height:13px;border:1.5px solid #666;border-radius:2px;flex-shrink:0;}
+.leg-filled{background:#1a2e44;}
+.badge-likely{background:#27ae60;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;font-family:'Oswald',sans-serif;letter-spacing:.5px;}
+.badge-possible{background:#e9b84a;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;font-family:'Oswald',sans-serif;letter-spacing:.5px;}
+.badge-nh-leg{background:#c0392b;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;font-family:'Oswald',sans-serif;letter-spacing:.4px;}
+.leg-text{color:#3a3a3a;}
+.leg-sep{color:#ccc;margin:0 4px;}
 
-  body {
-    background: var(--bg-dark);
-    font-family: 'Barlow', sans-serif;
-    color: var(--text-light);
-    min-height: 100vh;
-  }
+/* ── CONTROLS ── */
+.controls{background:#f5f0e8;border-bottom:2px solid #d4c9b0;padding:12px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.controls label{font-size:12px;font-weight:700;color:#556;text-transform:uppercase;letter-spacing:.7px;white-space:nowrap;}
+select{background:#fff;border:1.5px solid #bbb;color:#1a2e44;font-family:'Source Sans 3',sans-serif;font-size:13.5px;padding:7px 12px;border-radius:4px;cursor:pointer;min-width:250px;}
+select:focus{outline:none;border-color:#c9962a;}
+.btn-print{background:#c9962a;border:none;color:#fff;font-family:'Oswald',sans-serif;font-size:14px;font-weight:600;letter-spacing:.5px;padding:7px 18px;border-radius:4px;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.btn-print:hover{background:#b07820;}
+.btn-all{background:#1a5276;color:#fff;}
+.btn-all:hover{background:#154360;}
+.stop-count{margin-left:auto;font-size:12px;color:#778;font-weight:600;}
 
-  /* ── HEADER ── */
-  .header {
-    background: var(--bg-card);
-    border-bottom: 3px solid var(--divider);
-    padding: 14px 24px;
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    flex-wrap: wrap;
-  }
+/* ── STREET BLOCK ── */
+.sheet-container{padding:20px;}
+.no-data{text-align:center;padding:60px 20px;color:#778;font-size:15px;}
 
-  .btn-back {
-    background: var(--bg-dark);
-    border: 1.5px solid var(--border);
-    color: var(--text-light);
-    font-family: 'Barlow', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    padding: 7px 14px;
-    border-radius: 5px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: background 0.15s;
-    white-space: nowrap;
-  }
-  .btn-back:hover { background: #2a3650; }
+.street-block{margin-bottom:32px;}
+.street-hdr{background:#1a2e44;color:#fff;padding:10px 16px;display:flex;align-items:center;gap:18px;border-radius:4px 4px 0 0;}
+.street-hdr h2{font-family:'Oswald',sans-serif;font-size:20px;font-weight:600;letter-spacing:.5px;text-transform:capitalize;}
+.hdr-stat{font-size:12px;font-weight:600;color:#aee2ff;}
+.hdr-stat span{color:#f4a460;font-family:'Oswald',sans-serif;font-size:15px;font-weight:700;margin-right:3px;}
+.hdr-dot{color:#445;margin:0 2px;}
+.hdr-likely  span{color:#74c69d!important;}
+.hdr-possible span{color:#f4a460!important;}
+.hdr-nh      span{color:#ff8a7a!important;}
 
-  .header-title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .header-icon { font-size: 22px; }
-  .header-text h1 {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--orange);
-    letter-spacing: 0.3px;
-    line-height: 1.1;
-  }
-  .header-text p {
-    font-size: 12.5px;
-    color: var(--text-muted);
-    margin-top: 2px;
-  }
+/* ── TABLE ── */
+table{width:100%;border-collapse:collapse;background:#fff;border:1px solid #c8bfa8;border-top:none;}
+thead tr{background:#2c3e55;}
+thead th{color:#d4c9b0;font-family:'Oswald',sans-serif;font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;padding:8px 10px;text-align:left;white-space:nowrap;border-right:1px solid #3a4f6a;}
+thead th:last-child{border-right:none;}
+tbody tr{border-bottom:1px solid #e0d8cc;}
+tbody tr:nth-child(even){background:#faf7f2;}
+tbody tr:hover{background:#f0ebe0;}
+tbody td{padding:8px 10px;vertical-align:middle;border-right:1px solid #e8e0d4;}
+tbody td:last-child{border-right:none;}
 
-  /* ── STATS BAR ── */
-  .stats-bar {
-    background: var(--bg-card);
-    display: flex;
-    align-items: stretch;
-    border-bottom: 1px solid var(--border);
-    flex-wrap: wrap;
-  }
-  .stat {
-    flex: 1;
-    min-width: 100px;
-    padding: 16px 20px;
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-  }
-  .stat:last-child { border-right: none; }
-  .stat-num {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 30px;
-    font-weight: 800;
-    line-height: 1;
-  }
-  .stat-label {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    color: var(--text-muted);
-    text-transform: uppercase;
-  }
-  .c-orange { color: var(--orange); }
-  .c-teal   { color: var(--teal); }
-  .c-green  { color: var(--green); }
+.td-check{width:28px;text-align:center;}
+.td-check input[type=checkbox]{width:15px;height:15px;cursor:pointer;accent-color:#1a2e44;}
+.td-house{font-family:'Oswald',sans-serif;font-size:17px;font-weight:700;color:#1a2e44;white-space:nowrap;}
+.td-name{font-weight:600;font-size:13.5px;}
+.badge-nh{display:inline-block;background:#e74c3c;color:#fff;font-size:9.5px;font-weight:700;padding:1px 6px;border-radius:3px;margin-left:6px;vertical-align:middle;font-family:'Oswald',sans-serif;letter-spacing:.4px;white-space:nowrap;}
+.td-voters{text-align:center;font-size:13px;font-weight:600;color:#334;}
+.like-likely{display:inline-block;background:#27ae60;color:#fff;font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:3px;font-family:'Oswald',sans-serif;letter-spacing:.4px;white-space:nowrap;}
+.like-possible{display:inline-block;background:#e9b84a;color:#fff;font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:3px;font-family:'Oswald',sans-serif;letter-spacing:.4px;white-space:nowrap;}
+.td-levy{font-size:12.5px;color:#3a3a3a;white-space:nowrap;font-family:'Courier New',monospace;}
+.td-yn{width:30px;text-align:center;}
+.td-yn input[type=checkbox]{width:15px;height:15px;cursor:pointer;}
+.td-yn input.y-box{accent-color:#27ae60;}
+.td-yn input.n-box{accent-color:#c0392b;}
+.td-yn input.u-box{accent-color:#e9b84a;}
+.notes-input{background:transparent;border:none;border-bottom:1.5px solid #bbb;color:#1a2e44;font-family:'Source Sans 3',sans-serif;font-size:12px;padding:2px 4px;width:100%;min-width:120px;}
+.notes-input:focus{outline:none;border-bottom-color:#c9962a;}
 
-  /* ── CONTROLS TOOLBAR ── */
-  .toolbar {
-    padding: 16px 24px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-    border-bottom: 1px solid var(--border);
-  }
-  .toolbar label {
-    font-size: 12.5px;
-    font-weight: 600;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    white-space: nowrap;
-  }
-
-  select {
-    background: var(--bg-card);
-    border: 1.5px solid var(--border);
-    color: var(--text-light);
-    font-family: 'Barlow', sans-serif;
-    font-size: 14px;
-    padding: 8px 12px;
-    border-radius: 5px;
-    cursor: pointer;
-    min-width: 220px;
-    transition: border-color 0.15s;
-  }
-  select:focus { outline: none; border-color: var(--orange); }
-  select option { background: #1a2235; }
-
-  .btn-print {
-    background: var(--orange);
-    border: none;
-    color: #fff;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    padding: 8px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    transition: background 0.15s;
-    white-space: nowrap;
-  }
-  .btn-print:hover { background: #d0661a; }
-  .btn-print-all {
-    background: var(--teal);
-    color: #fff;
-  }
-  .btn-print-all:hover { background: #229fb0; }
-
-  .street-count {
-    margin-left: auto;
-    font-size: 12.5px;
-    color: var(--text-muted);
-    font-weight: 600;
-    white-space: nowrap;
-  }
-
-  /* ── WALK SHEET TABLE ── */
-  .sheet-container {
-    padding: 20px 24px;
-  }
-
-  .street-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 12px;
-  }
-  .street-header h2 {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--teal);
-    letter-spacing: 0.3px;
-  }
-  .badge {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--text-muted);
-    padding: 3px 8px;
-    border-radius: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13.5px;
-  }
-  thead th {
-    background: var(--bg-card);
-    color: var(--text-muted);
-    font-size: 10.5px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.9px;
-    padding: 10px 14px;
-    text-align: left;
-    border-bottom: 2px solid var(--border);
-    white-space: nowrap;
-  }
-  tbody tr {
-    border-bottom: 1px solid var(--border);
-    transition: background 0.1s;
-  }
-  tbody tr:nth-child(even) { background: var(--bg-row-alt); }
-  tbody tr:hover { background: #2a3a55; }
-  tbody td {
-    padding: 10px 14px;
-    vertical-align: middle;
-  }
-  .td-num  { color: var(--orange); font-weight: 700; font-family: 'Barlow Condensed', sans-serif; font-size: 15px; }
-  .td-name { font-weight: 600; }
-  .td-addr { color: var(--text-muted); font-size: 12.5px; }
-
-  .result-cell {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
-  .chip {
-    border: 1.5px solid var(--border);
-    background: transparent;
-    color: var(--text-muted);
-    font-size: 11px;
-    font-weight: 700;
-    padding: 3px 9px;
-    border-radius: 3px;
-    cursor: pointer;
-    transition: all 0.12s;
-    font-family: 'Barlow Condensed', sans-serif;
-    letter-spacing: 0.5px;
-  }
-  .chip:hover { border-color: var(--orange); color: var(--orange); }
-  .chip.yes   { border-color: var(--green); color: var(--green); }
-  .chip.no    { border-color: #e05252; color: #e05252; }
-  .chip.maybe { border-color: var(--teal); color: var(--teal); }
-
-  .notes-input {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text-light);
-    font-family: 'Barlow', sans-serif;
-    font-size: 12px;
-    padding: 4px 8px;
-    border-radius: 4px;
-    width: 140px;
-    transition: border-color 0.15s;
-  }
-  .notes-input:focus { outline: none; border-color: var(--teal); }
-
-  .no-data {
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--text-muted);
-    font-size: 15px;
-  }
-  .no-data span { font-size: 32px; display: block; margin-bottom: 10px; }
-
-  /* ── PRINT STYLES ── */
-  @media print {
-    body { background: #fff; color: #000; font-size: 12px; }
-    .header, .toolbar, .btn-back, .btn-print, .chip, .notes-input { display: none !important; }
-    .stats-bar { background: #f0f0f0; border: 1px solid #ccc; }
-    .stat-num { color: #000 !important; }
-    .stat-label { color: #555 !important; }
-    .sheet-container { padding: 10px; }
-    table { font-size: 11px; }
-    thead th { background: #ddd; color: #333; }
-    tbody tr:nth-child(even) { background: #f8f8f8; }
-    tbody tr:hover { background: transparent; }
-    .td-num  { color: #c05a00 !important; }
-    .td-addr { color: #555 !important; }
-    .street-header h2 { color: #007a8a !important; }
-    .print-result-col { display: table-cell !important; }
-    .notes-col { display: table-cell !important; }
-  }
+/* ── PRINT ── */
+@media print{
+  .topbar,.controls,.btn-back,.btn-print{display:none!important;}
+  body{background:#fff;}
+  .legend{border-bottom:1px solid #ccc;padding:5px 10px;}
+  .street-hdr{background:#1a2e44!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  thead tr{background:#2c3e55!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .badge-nh{background:#e74c3c!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .like-likely{background:#27ae60!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .like-possible{background:#e9b84a!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .street-block{page-break-inside:avoid;}
+  tbody tr{page-break-inside:avoid;}
+}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
-<div class="header">
+<!-- TOP NAV -->
+<div class="topbar">
   <button class="btn-back" onclick="history.back()">← Back</button>
-  <div class="header-title">
-    <span class="header-icon">🧡</span>
-    <div class="header-text">
-      <h1>Undecided Voter Walk Sheet — Wave 3</h1>
-      <p>Baughman Township Fire/EMS Levy · Door-knock targets only</p>
-    </div>
-  </div>
+  <span class="topbar-title">🧡 Undecided Voter Walk Sheet — Wave 3</span>
+  <span class="topbar-sub">Baughman Township Fire/EMS Levy · Door-knock targets only</span>
 </div>
 
-<!-- STATS BAR -->
-<div class="stats-bar">
-  <div class="stat"><span class="stat-num c-orange" id="stat-stops">0</span><span class="stat-label">Total Stops</span></div>
-  <div class="stat"><span class="stat-num c-teal"   id="stat-voters">0</span><span class="stat-label">Reg. Voters</span></div>
-  <div class="stat"><span class="stat-num c-green"  id="stat-likely">0</span><span class="stat-label">Likely Yes</span></div>
-  <div class="stat"><span class="stat-num c-orange" id="stat-possible">0</span><span class="stat-label">Possible Yes</span></div>
-  <div class="stat"><span class="stat-num c-teal"   id="stat-streets">35</span><span class="stat-label">Streets</span></div>
+<!-- LEGEND -->
+<div class="legend">
+  <div class="leg-item"><span class="leg-box leg-filled"></span><span class="leg-box"></span>&nbsp;<span class="badge-likely">★ LIKELY</span>&nbsp;<span class="leg-text">= Strong Yes supporter</span></div>
+  <span class="leg-sep">|</span>
+  <div class="leg-item"><span class="leg-box"></span><span class="leg-box"></span>&nbsp;<span class="badge-possible">POSSIBLE</span>&nbsp;<span class="leg-text">= Persuadable voter</span></div>
+  <span class="leg-sep">|</span>
+  <div class="leg-item"><span class="leg-text"><strong>#V</strong> = Number of registered voters</span></div>
+  <span class="leg-sep">|</span>
+  <div class="leg-item"><span class="badge-nh-leg">NOT HOME</span>&nbsp;<span class="leg-text" style="color:#c0392b;font-weight:700">= Previously knocked, no answer — please try again</span></div>
 </div>
 
-<!-- TOOLBAR -->
-<div class="toolbar">
+<!-- CONTROLS -->
+<div class="controls">
   <label for="street-select">Select Street:</label>
   <select id="street-select" onchange="loadStreet()">
-    <option value="">— All Streets —</option>
+    <option value="">— Choose a Street —</option>
   </select>
-
-  <button class="btn-print" onclick="printCurrent()">
-    🖨 Print Walk Sheet
-  </button>
-  <button class="btn-print btn-print-all" onclick="printAll()">
-    📄 Print All Streets
-  </button>
-
-  <span class="street-count" id="street-count-label"></span>
+  <button class="btn-print" onclick="printCurrent()">🖨 Print Walk Sheet</button>
+  <button class="btn-print btn-all" onclick="printAll()">📄 Print All Streets</button>
+  <span class="stop-count" id="stop-count-label"></span>
 </div>
 
 <!-- WALK SHEET -->
 <div class="sheet-container" id="sheet-container">
-  <div class="no-data"><span>🗺️</span>Select a street above to view the walk sheet.</div>
+  <div class="no-data">Select a street above to view the walk sheet.</div>
 </div>
 
 <script>
-// ─────────────────────────────────────────────
-//  BAUGHMAN TOWNSHIP VOTER DATA
-// ─────────────────────────────────────────────
+// ── CANVASS DATA FROM LOCALSTORAGE ──────────────────────────────
+// Reads previously canvassed results to show NOT HOME / LIKELY badges
+function getCanvassMap() {
+  try {
+    var rows = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]');
+    var map = {};
+    rows.forEach(function(r) {
+      var addr = (r.address || '').trim().toLowerCase();
+      map[addr] = r;
+    });
+    return map;
+  } catch(e) { return {}; }
+}
+
+// ── VOTER DATA ───────────────────────────────────────────────────
 const streetData = {
   "ault rd": [
     {"stop":1,"address":"7724 ault rd","name":"John, Lois Douglass","voters":2,"levy":232.7,"prec":"P2","result":"","notes":""},
@@ -1223,326 +1018,115 @@ const streetData = {
   ],
 };
 
-// ─────────────────────────────────────────────
-//  BUILD DROPDOWN
-// ─────────────────────────────────────────────
-const sel = document.getElementById("street-select");
-Object.keys(streetData).sort().forEach(street => {
-  const opt = document.createElement("option");
+
+// ── BUILD DROPDOWN ───────────────────────────────────────────────
+var sel = document.getElementById('street-select');
+Object.keys(streetData).sort().forEach(function(street) {
+  var opt = document.createElement('option');
   opt.value = street;
-  opt.textContent = `${street}  (${streetData[street].length} stops)`;
+  var display = street.split(' ').map(function(w){ return w.charAt(0).toUpperCase()+w.slice(1); }).join(' ');
+  opt.textContent = display + '  (' + streetData[street].length + ' stops)';
   sel.appendChild(opt);
 });
 
-updateStats();
-
-// ─────────────────────────────────────────────
-//  UPDATE STATS
-// ─────────────────────────────────────────────
-function updateStats() {
-  let totalStops = 0, totalVoters = 0, likelyYes = 0, possibleYes = 0;
-  Object.values(streetData).forEach(stops => {
-    stops.forEach(s => {
-      totalStops++;
-      totalVoters += s.voters;
-      if (s.result === "yes")   likelyYes++;
-      if (s.result === "maybe") possibleYes++;
-    });
-  });
-  document.getElementById("stat-stops").textContent    = totalStops;
-  document.getElementById("stat-voters").textContent   = totalVoters;
-  document.getElementById("stat-likely").textContent   = likelyYes;
-  document.getElementById("stat-possible").textContent = possibleYes;
+function cap(str) {
+  return str.split(' ').map(function(w){ return w.charAt(0).toUpperCase()+w.slice(1); }).join(' ');
 }
 
-// ─────────────────────────────────────────────
-//  LOAD / RENDER A STREET
-// ─────────────────────────────────────────────
 function loadStreet() {
-  const street = sel.value;
-  const container = document.getElementById("sheet-container");
-
+  var street = sel.value;
+  var container = document.getElementById('sheet-container');
+  document.getElementById('stop-count-label').textContent = '';
   if (!street) {
-    container.innerHTML = '<div class="no-data"><span>🗺️</span>Select a street above to view the walk sheet.</div>';
-    document.getElementById("street-count-label").textContent = "";
+    container.innerHTML = '<div class="no-data">Select a street above to view the walk sheet.</div>';
     return;
   }
-
-  const stops = streetData[street];
-  document.getElementById("street-count-label").textContent = `${stops.length} stops on this street`;
-  container.innerHTML = renderStreetTable(street, stops);
+  var stops = streetData[street];
+  document.getElementById('stop-count-label').textContent = stops.length + ' stops on this street';
+  container.innerHTML = renderBlock(street, stops, getCanvassMap());
 }
 
-function renderStreetTable(street, stops, forPrint = false) {
-  const rows = stops.map((s, i) => `
-    <tr id="row-${street.replace(/\s/g,'-')}-${i}">
-      <td class="td-num">${s.stop}</td>
-      <td class="td-name">${s.name}</td>
-      <td class="td-addr">${s.address}</td>
-      <td>${s.party}</td>
-      <td>${s.age}</td>
-      <td>${s.voters}</td>
-      <td>
-        <div class="result-cell">
-          <span class="chip yes${s.result==='yes'?' yes':''}"   onclick="setResult('${street}',${i},'yes',this)">YES</span>
-          <span class="chip no${s.result==='no'?' no':''}"    onclick="setResult('${street}',${i},'no',this)">NO</span>
-          <span class="chip maybe${s.result==='maybe'?' maybe':''}" onclick="setResult('${street}',${i},'maybe',this)">UNDEC</span>
-          <span class="chip${s.result==='nh'?' no':''}"   onclick="setResult('${street}',${i},'nh',this)">N/H</span>
-        </div>
-      </td>
-      <td><input class="notes-input" type="text" placeholder="Notes…" value="${s.notes}" oninput="setNotes('${street}',${i},this.value)" /></td>
-    </tr>`).join("");
+function renderBlock(street, stops, canvass) {
+  var likely=0, possible=0, notHome=0;
+  stops.forEach(function(s){
+    var cv = canvass[s.address.toLowerCase()] || {};
+    var resp = (cv.resp || '').toLowerCase();
+    if (resp === 'not home') notHome++;
+    var lk = getLikelihood(cv);
+    if (lk === 'likely') likely++;
+    else possible++;
+  });
 
-  return `
-    <div class="street-header">
-      <h2>${street}</h2>
-      <span class="badge">${stops.length} stops</span>
-    </div>
-    <table>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Name</th>
-          <th>Address</th>
-          <th>Party</th>
-          <th>Age</th>
-          <th>Voters</th>
-          <th>Result</th>
-          <th>Notes</th>
-        </tr>
-      </thead>
-      <tbody>${rows}</tbody>
-    </table>`;
+  var hdr = '<div class="street-block"><div class="street-hdr">' +
+    '<h2>' + cap(street) + '</h2>' +
+    '<span class="hdr-stat"><span>' + stops.length + '</span> stops</span>' +
+    '<span class="hdr-dot">•</span>' +
+    '<span class="hdr-stat hdr-likely"><span>' + likely + '</span> Likely</span>' +
+    '<span class="hdr-dot">•</span>' +
+    '<span class="hdr-stat hdr-possible"><span>' + possible + '</span> Possible</span>' +
+    '<span class="hdr-dot">•</span>' +
+    '<span class="hdr-stat hdr-nh"><span>' + notHome + '</span> Not Home</span> <span style="color:#8a9bb0;font-size:11px">(return visit)</span>' +
+    '</div>';
+
+  var rows = stops.map(function(s, i) {
+    var cv = canvass[s.address.toLowerCase()] || {};
+    var resp = (cv.resp || '').toLowerCase();
+    var isNotHome = resp === 'not home';
+    var lk = getLikelihood(cv);
+    var likeBadge = lk === 'likely'
+      ? '<span class="like-likely">★ LIKELY</span>'
+      : '<span class="like-possible">POSSIBLE</span>';
+    var nhBadge = isNotHome ? '<span class="badge-nh">NOT HOME</span>' : '';
+    var canvassNote = cv.notes ? cv.notes : '';
+    var houseNum = s.address.replace(/[a-z].*/i, '').trim();
+
+    return '<tr>' +
+      '<td class="td-check"><input type="checkbox"></td>' +
+      '<td class="td-house">' + houseNum + '</td>' +
+      '<td class="td-name">' + cap(s.name) + nhBadge + '</td>' +
+      '<td class="td-voters">' + s.voters + '</td>' +
+      '<td>' + likeBadge + '</td>' +
+      '<td class="td-levy">$' + s.levy.toFixed(2) + '/yr</td>' +
+      '<td class="td-yn"><input type="checkbox" class="y-box"></td>' +
+      '<td class="td-yn"><input type="checkbox" class="n-box"></td>' +
+      '<td class="td-yn"><input type="checkbox" class="u-box"></td>' +
+      '<td><input class="notes-input" type="text" value="' + canvassNote.replace(/"/g,'&quot;') + '" placeholder="Notes…"></td>' +
+    '</tr>';
+  }).join('');
+
+  return hdr +
+    '<table>' +
+    '<thead><tr>' +
+    '<th>✓</th><th>House #</th><th>Voter Name(s)</th><th>#V</th>' +
+    '<th>Likelihood</th><th>Levy Cost</th><th>Y</th><th>N</th><th>U</th><th>Notes</th>' +
+    '</tr></thead>' +
+    '<tbody>' + rows + '</tbody></table></div>';
 }
 
-// ─────────────────────────────────────────────
-//  RESULT / NOTES TRACKING
-// ─────────────────────────────────────────────
-function setResult(street, idx, val, el) {
-  streetData[street][idx].result = val;
-  // update chip styling in row
-  const chips = el.closest('.result-cell').querySelectorAll('.chip');
-  chips.forEach(c => c.classList.remove('yes','no','maybe'));
-  if (val === 'yes')   el.classList.add('yes');
-  if (val === 'no')    el.classList.add('no');
-  if (val === 'maybe') el.classList.add('maybe');
-  updateStats();
+function getLikelihood(cv) {
+  var resp = (cv.resp || '').toLowerCase();
+  var notes = (cv.notes || '').toLowerCase();
+  if (resp === 'yes' || notes.indexOf('likely') >= 0) return 'likely';
+  return 'possible';
 }
 
-function setNotes(street, idx, val) {
-  streetData[street][idx].notes = val;
-}
-
-// ─────────────────────────────────────────────
-//  PRINT
-// ─────────────────────────────────────────────
 function printCurrent() {
-  const street = sel.value;
-  if (!street) { alert("Please select a street first."); return; }
-  openPrintWindow([street]);
+  var street = sel.value;
+  if (!street) { alert('Please select a street first.'); return; }
+  window.print();
 }
 
 function printAll() {
-  openPrintWindow(Object.keys(streetData).sort());
-}
-
-function openPrintWindow(streets) {
-  const w = window.open('', '_blank', 'width=900,height=700');
-  const tables = streets.map(s => renderStreetTable(s, streetData[s], true)).join('<hr style="margin:24px 0;border:1px solid #ccc">');
-
-  w.document.write(`<!DOCTYPE html><html><head>
-  <meta charset="UTF-8">
-  <title>Walk Sheet — Wave 3</title>
-  <style>
-    body { font-family: Arial, sans-serif; font-size: 11px; color: #000; margin: 20px; }
-    h1   { font-size: 18px; margin-bottom: 2px; }
-    p.sub{ font-size: 11px; color: #555; margin-bottom: 14px; }
-    .street-header h2 { font-size: 15px; font-weight: bold; color: #007a8a; margin-bottom: 6px; }
-    .badge { background: #eee; font-size: 10px; padding: 2px 7px; border-radius: 10px; margin-left: 8px; }
-    table { width: 100%; border-collapse: collapse; margin-bottom: 4px; }
-    thead th { background: #ddd; font-size: 9px; text-transform: uppercase; padding: 5px 7px; text-align: left; border-bottom: 2px solid #aaa; }
-    tbody td { padding: 6px 7px; border-bottom: 1px solid #ddd; vertical-align: top; font-size: 11px; }
-    tbody tr:nth-child(even) { background: #f8f8f8; }
-    .td-num  { color: #c05a00; font-weight: bold; }
-    .td-addr { color: #555; font-size: 10px; }
-    .result-box { border: 1px solid #bbb; width: 60px; height: 18px; display: inline-block; border-radius: 2px; }
-    .notes-box  { border-bottom: 1px solid #bbb; width: 140px; height: 18px; display: inline-block; }
-    .result-cell { display: flex; gap: 5px; }
-    .chip { border: 1px solid #999; font-size: 9px; padding: 2px 6px; border-radius: 2px; }
-    .chip.yes   { border-color: green; color: green; }
-    .chip.no    { border-color: red; color: red; }
-    .chip.maybe { border-color: #007a8a; color: #007a8a; }
-    @media print { @page { margin: 15mm; } }
-  </style>
-  </head><body>
-  <h1>🧡 Undecided Voter Walk Sheet — Wave 3</h1>
-  <p class="sub">Baughman Township Fire/EMS Levy · Door-knock targets only · Printed: ${new Date().toLocaleDateString()}</p>
-  ${tables}
-  <script>window.onload=()=>window.print();<\/script>
-  </body></html>`);
-  w.document.close();
-}
-</script>
-</body>
-</html>
-// ─────────────────────────────────────────────
-//  BUILD DROPDOWN
-// ─────────────────────────────────────────────
-const sel = document.getElementById("street-select");
-Object.keys(streetData).sort().forEach(street => {
-  const opt = document.createElement("option");
-  opt.value = street;
-  opt.textContent = `${street}  (${streetData[street].length} stops)`;
-  sel.appendChild(opt);
-});
-
-updateStats();
-
-// ─────────────────────────────────────────────
-//  UPDATE STATS
-// ─────────────────────────────────────────────
-function updateStats() {
-  let totalStops = 0, totalVoters = 0, likelyYes = 0, possibleYes = 0;
-  Object.values(streetData).forEach(stops => {
-    stops.forEach(s => {
-      totalStops++;
-      totalVoters += s.voters;
-      if (s.result === "yes")   likelyYes++;
-      if (s.result === "maybe") possibleYes++;
-    });
+  var canvass = getCanvassMap();
+  var container = document.getElementById('sheet-container');
+  var html = '';
+  Object.keys(streetData).sort().forEach(function(street) {
+    html += renderBlock(street, streetData[street], canvass);
   });
-  document.getElementById("stat-stops").textContent    = totalStops;
-  document.getElementById("stat-voters").textContent   = totalVoters;
-  document.getElementById("stat-likely").textContent   = likelyYes;
-  document.getElementById("stat-possible").textContent = possibleYes;
-}
-
-// ─────────────────────────────────────────────
-//  LOAD / RENDER A STREET
-// ─────────────────────────────────────────────
-function loadStreet() {
-  const street = sel.value;
-  const container = document.getElementById("sheet-container");
-
-  if (!street) {
-    container.innerHTML = '<div class="no-data"><span>🗺️</span>Select a street above to view the walk sheet.</div>';
-    document.getElementById("street-count-label").textContent = "";
-    return;
-  }
-
-  const stops = streetData[street];
-  document.getElementById("street-count-label").textContent = `${stops.length} stops on this street`;
-  container.innerHTML = renderStreetTable(street, stops);
-}
-
-function renderStreetTable(street, stops, forPrint = false) {
-  const rows = stops.map((s, i) => `
-    <tr id="row-${street.replace(/\s/g,'-')}-${i}">
-      <td class="td-num">${s.stop}</td>
-      <td class="td-name">${s.name}</td>
-      <td class="td-addr">${s.address}</td>
-      <td>${s.party}</td>
-      <td>${s.age}</td>
-      <td>${s.voters}</td>
-      <td>
-        <div class="result-cell">
-          <span class="chip yes${s.result==='yes'?' yes':''}"   onclick="setResult('${street}',${i},'yes',this)">YES</span>
-          <span class="chip no${s.result==='no'?' no':''}"    onclick="setResult('${street}',${i},'no',this)">NO</span>
-          <span class="chip maybe${s.result==='maybe'?' maybe':''}" onclick="setResult('${street}',${i},'maybe',this)">UNDEC</span>
-          <span class="chip${s.result==='nh'?' no':''}"   onclick="setResult('${street}',${i},'nh',this)">N/H</span>
-        </div>
-      </td>
-      <td><input class="notes-input" type="text" placeholder="Notes…" value="${s.notes}" oninput="setNotes('${street}',${i},this.value)" /></td>
-    </tr>`).join("");
-
-  return `
-    <div class="street-header">
-      <h2>${street}</h2>
-      <span class="badge">${stops.length} stops</span>
-    </div>
-    <table>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Name</th>
-          <th>Address</th>
-          <th>Party</th>
-          <th>Age</th>
-          <th>Voters</th>
-          <th>Result</th>
-          <th>Notes</th>
-        </tr>
-      </thead>
-      <tbody>${rows}</tbody>
-    </table>`;
-}
-
-// ─────────────────────────────────────────────
-//  RESULT / NOTES TRACKING
-// ─────────────────────────────────────────────
-function setResult(street, idx, val, el) {
-  streetData[street][idx].result = val;
-  // update chip styling in row
-  const chips = el.closest('.result-cell').querySelectorAll('.chip');
-  chips.forEach(c => c.classList.remove('yes','no','maybe'));
-  if (val === 'yes')   el.classList.add('yes');
-  if (val === 'no')    el.classList.add('no');
-  if (val === 'maybe') el.classList.add('maybe');
-  updateStats();
-}
-
-function setNotes(street, idx, val) {
-  streetData[street][idx].notes = val;
-}
-
-// ─────────────────────────────────────────────
-//  PRINT
-// ─────────────────────────────────────────────
-function printCurrent() {
-  const street = sel.value;
-  if (!street) { alert("Please select a street first."); return; }
-  openPrintWindow([street]);
-}
-
-function printAll() {
-  openPrintWindow(Object.keys(streetData).sort());
-}
-
-function openPrintWindow(streets) {
-  const w = window.open('', '_blank', 'width=900,height=700');
-  const tables = streets.map(s => renderStreetTable(s, streetData[s], true)).join('<hr style="margin:24px 0;border:1px solid #ccc">');
-
-  w.document.write(`<!DOCTYPE html><html><head>
-  <meta charset="UTF-8">
-  <title>Walk Sheet — Wave 3</title>
-  <style>
-    body { font-family: Arial, sans-serif; font-size: 11px; color: #000; margin: 20px; }
-    h1   { font-size: 18px; margin-bottom: 2px; }
-    p.sub{ font-size: 11px; color: #555; margin-bottom: 14px; }
-    .street-header h2 { font-size: 15px; font-weight: bold; color: #007a8a; margin-bottom: 6px; }
-    .badge { background: #eee; font-size: 10px; padding: 2px 7px; border-radius: 10px; margin-left: 8px; }
-    table { width: 100%; border-collapse: collapse; margin-bottom: 4px; }
-    thead th { background: #ddd; font-size: 9px; text-transform: uppercase; padding: 5px 7px; text-align: left; border-bottom: 2px solid #aaa; }
-    tbody td { padding: 6px 7px; border-bottom: 1px solid #ddd; vertical-align: top; font-size: 11px; }
-    tbody tr:nth-child(even) { background: #f8f8f8; }
-    .td-num  { color: #c05a00; font-weight: bold; }
-    .td-addr { color: #555; font-size: 10px; }
-    .result-box { border: 1px solid #bbb; width: 60px; height: 18px; display: inline-block; border-radius: 2px; }
-    .notes-box  { border-bottom: 1px solid #bbb; width: 140px; height: 18px; display: inline-block; }
-    .result-cell { display: flex; gap: 5px; }
-    .chip { border: 1px solid #999; font-size: 9px; padding: 2px 6px; border-radius: 2px; }
-    .chip.yes   { border-color: green; color: green; }
-    .chip.no    { border-color: red; color: red; }
-    .chip.maybe { border-color: #007a8a; color: #007a8a; }
-    @media print { @page { margin: 15mm; } }
-  </style>
-  </head><body>
-  <h1>🧡 Undecided Voter Walk Sheet — Wave 3</h1>
-  <p class="sub">Baughman Township Fire/EMS Levy · Door-knock targets only · Printed: ${new Date().toLocaleDateString()}</p>
-  ${tables}
-  <script>window.onload=()=>window.print();<\/script>
-  </body></html>`);
-  w.document.close();
+  container.innerHTML = html;
+  document.getElementById('stop-count-label').textContent = '';
+  sel.value = '';
+  setTimeout(function(){ window.print(); }, 400);
 }
 </script>
 </body>
