@@ -1979,6 +1979,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 <button class="rpt-item" onclick="closeReportsDropdown();openAnalytics();" role="menuitem"><span class="rpt-icon">📈</span><span class="rpt-text"><span class="rpt-title">Site Analytics</span><span class="rpt-desc">Visitor counts &amp; device breakdown</span></span><span class="rpt-badge rpt-badge-view">GA</span></button>
 <button class="rpt-item" onclick="closeReportsDropdown();window.location.href='doorknock.html';" role="menuitem"><span class="rpt-icon">🏘️</span><span class="rpt-text"><span class="rpt-title">Door-Knock Street Report</span><span class="rpt-desc">View canvass responses street by street</span></span><span class="rpt-badge rpt-badge-view">VIEW</span></button>
 <button class="rpt-item" onclick="closeReportsDropdown();window.location.href='undecided.html';" role="menuitem"><span class="rpt-icon">🚪</span><span class="rpt-text"><span class="rpt-title">Undecided Voters Walk Sheet</span><span class="rpt-desc">Wave 2 door-knock list — undecided households by street</span></span><span class="rpt-badge rpt-badge-view">VIEW</span></button>
+<button class="rpt-item" onclick="closeReportsDropdown();window.location.href='walksheet_phase3.html';" role="menuitem"><span class="rpt-icon">🚶</span><span class="rpt-text"><span class="rpt-title">Undecided Voter Walk Sheet — Wave 3</span><span class="rpt-desc">Wave 3 door-knock list — select street &amp; print walk sheets</span></span><span class="rpt-badge rpt-badge-view">VIEW</span></button>
 <button class="rpt-item" onclick="closeReportsDropdown();window.location.href='walksheet.html';" role="menuitem"><span class="rpt-icon">🖨️</span><span class="rpt-text"><span class="rpt-title">Walk Sheet — Needs Visit</span><span class="rpt-desc">Printable walk sheet for unvisited &amp; not-home addresses</span></span><span class="rpt-badge rpt-badge-pdf">PDF</span></button>
 <div class="rpt-divider"></div><div class="rpt-section-label">Campaign Views</div><button class="rpt-item" onclick="closeReportsDropdown();scrollToSection('tally');" role="menuitem"><span class="rpt-icon">📊</span><span class="rpt-text"><span class="rpt-title">Live Results Dashboard</span><span class="rpt-desc">Real-time canvass progress &amp; stats</span></span><span class="rpt-badge rpt-badge-view">VIEW</span></button><button class="rpt-item" onclick="closeReportsDropdown();scrollToSection('teams');" role="menuitem"><span class="rpt-icon">🗺️</span><span class="rpt-text"><span class="rpt-title">Canvasser Route Summary</span><span class="rpt-desc">All team assignments &amp; territories</span></span><span class="rpt-badge rpt-badge-view">VIEW</span></button><div class="rpt-divider"></div><button class="rpt-item" onclick="closeReportsDropdown();window.print();" role="menuitem"><span class="rpt-icon">🖨️</span><span class="rpt-text"><span class="rpt-title">Print Full Campaign Plan</span><span class="rpt-desc">Complete site as printable document</span></span><span class="rpt-badge rpt-badge-print">PRINT</span></button><div class="rpt-data-note">CSV &amp; PDF reports require canvass data to be uploaded first.</div></div></div></div></nav>
 
@@ -2320,6 +2321,15 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
           <span class="rhm-about">15 Baughman Township residents who registered to vote in the past 6 months — prime outreach targets who haven't yet heard about the levy.</span>
         </div>
         <span class="rhm-tag" style="background:rgba(46,134,193,.2);color:#1a5276;border:1px solid rgba(46,134,193,.35)">VIEW</span>
+      </button>
+
+      <button class="rhm-card" onclick="closeReportHub();window.location.href='walksheet_phase3.html';">
+        <div class="rhm-icon" style="background:rgba(39,174,96,.12)">🚶</div>
+        <div class="rhm-info">
+          <span class="rhm-name">Undecided Voter Walk Sheet — Wave 3</span>
+          <span class="rhm-about">Select a street from the dropdown and print a walk sheet for Wave 3 door-knock targets.</span>
+        </div>
+        <span class="rhm-tag" style="background:rgba(39,174,96,.2);color:#74c69d;border:1px solid rgba(39,174,96,.35)">VIEW</span>
       </button>
 
       <div class="rhm-group-label">📊 Campaign Views</div>
