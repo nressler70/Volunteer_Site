@@ -921,9 +921,15 @@ body {
     <div class="nav-bar-inner">
       <div>
         <div class="nav-title">🚒 Baughman Levy · Wave 2</div>
-        <div class="nav-subtitle">Not Home Revisit · May 5, 2026 · Load CSV to begin</div>
+        <div class="nav-subtitle">Not Home Revisit · May 5, 2026</div>
       </div>
-      <button class="nav-reload" onclick="loadData()">↻ Reload</button>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button class="nav-reload" onclick="loadData()">↻ Reload</button>
+        <button onclick="openExport()" style="display:flex;align-items:center;gap:5px;background:var(--green);border:none;border-radius:20px;padding:6px 13px;font-size:13px;font-weight:600;color:#fff;cursor:pointer;font-family:var(--font);touch-action:manipulation;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+          Export
+        </button>
+      </div>
     </div>
     <div class="nav-large-title">Not <span>Home</span><br>Revisit List</div>
   </div>
@@ -973,10 +979,7 @@ body {
     <button class="fp"    data-f="done"    onclick="setFilter(this)">✅ Revisited</button>
     <button class="fp"    data-f="TWP1"    onclick="setFilter(this)">Precinct 1</button>
     <button class="fp"    data-f="TWP2"    onclick="setFilter(this)">Precinct 2</button>
-    <button class="btn-export" onclick="openExport()">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-      Export CSV
-    </button>
+
   </div>
 
   <!-- Street Jump -->
@@ -1117,71 +1120,85 @@ var curIdx   = -1;
 var activeF  = 'all';
 var activeQ  = '';
 
-// ── LOAD ─────────────────────────────────────────────────────────
-// ── LOAD DATA ────────────────────────────────────────────────────────
-// Works when opened via https:// (e.g. hosted on campaign website).
-// Falls back to XHR if fetch is blocked.
+// ── LOAD DATA ────────────────────────────────────────────────────
+// Cache-first: shows cached list INSTANTLY, then refreshes in background.
+// First-ever visit: shows spinner while fetching (usually 1-3 seconds).
+var CACHE_KEY = 'baughman_nh_stops_v2';
+
 function loadData() {
-  setBar('loading', 'Loading not-home list…');
-  document.getElementById('loading-screen').style.display = 'flex';
-  document.getElementById('list-con').style.display       = 'none';
-  document.getElementById('empty-state').style.display    = 'none';
-  document.getElementById('welcome-content').style.display = 'none';
-  document.getElementById('loading-content').style.display = 'flex';
+  try { localSts = JSON.parse(localStorage.getItem(LSKEY) || '{}'); } catch(e) { localSts = {}; }
 
-  var url = 'https://api.jsonbin.io/v3/b/' + JB_BIN + '/latest';
+  // Do we have a cached list? Show it immediately — no waiting.
+  var cached = null;
+  try { cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null'); } catch(e) {}
 
-  // Try fetch first
-  var ctrl  = new AbortController();
-  var timer = setTimeout(function() { ctrl.abort(); }, 12000);
-
-  fetch(url, {
-    headers: { 'X-Master-Key': JB_KEY },
-    signal: ctrl.signal
-  })
-  .then(function(r) {
-    clearTimeout(timer);
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    return r.json();
-  })
-  .then(function(data) {
-    processCloudData(data);
-  })
-  .catch(function() {
-    clearTimeout(timer);
-    // fetch blocked (local file) — try XHR
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
-    xhr.setRequestHeader('X-Master-Key', JB_KEY);
-    xhr.timeout = 12000;
-    xhr.onload = function() {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        try { processCloudData(JSON.parse(xhr.responseText)); }
-        catch(e) { showLoadError('Bad response from server. Tap Reload or use Load CSV.'); }
-      } else {
-        showLoadError('Server error ' + xhr.status + '. Tap Reload or use Load CSV.');
+  if (cached && cached.length) {
+    nhStops = cached;
+    showList();
+    // Refresh silently in background — update if anything changed
+    fetchCloud(function(fresh) {
+      if (fresh && JSON.stringify(fresh) !== JSON.stringify(cached)) {
+        nhStops = fresh;
+        try { localStorage.setItem(CACHE_KEY, JSON.stringify(fresh)); } catch(e) {}
+        var t = new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+        setBar('ready', nhStops.length + ' stops · refreshed at ' + t);
+        buildStreetNav(); buildList(); updateStats();
       }
-    };
-    xhr.ontimeout = function() { showLoadError('Timed out. Check your internet connection.'); };
-    xhr.onerror   = function() {
-      // Both fetch and XHR failed — this is almost certainly a local file
-      // Show the CSV option automatically
-      showWelcome();
-      setBar('error', 'Open this app from the campaign website, or load a CSV file below');
-    };
-    xhr.send();
+    }, function() {
+      // Silent background refresh failed — no problem, cached data still showing
+    });
+    return;
+  }
+
+  // No cache — first time. Show spinner and fetch.
+  document.getElementById('loading-screen').style.display   = 'flex';
+  document.getElementById('loading-content').style.display  = 'flex';
+  document.getElementById('welcome-content').style.display  = 'none';
+  document.getElementById('list-con').style.display         = 'none';
+  document.getElementById('empty-state').style.display      = 'none';
+  setBar('loading', 'Loading not-home list… (first load only)');
+
+  fetchCloud(function(rows) {
+    try { localStorage.setItem(CACHE_KEY, JSON.stringify(rows)); } catch(e) {}
+    nhStops = rows;
+    showList();
+  }, function(errMsg) {
+    document.getElementById('loading-screen').style.display  = 'flex';
+    document.getElementById('loading-content').style.display = 'none';
+    document.getElementById('welcome-content').style.display = 'flex';
+    document.getElementById('list-con').style.display        = 'none';
+    setBar('error', '❌ ' + errMsg);
   });
 }
 
-function showLoadError(msg) {
-  document.getElementById('loading-screen').style.display = 'flex';
-  document.getElementById('welcome-content').style.display = 'flex';
-  document.getElementById('loading-content').style.display = 'none';
-  document.getElementById('list-con').style.display = 'none';
-  setBar('error', '❌ ' + msg);
+function fetchCloud(onSuccess, onError) {
+  var url  = 'https://api.jsonbin.io/v3/b/' + JB_BIN + '/latest';
+  var ctrl = new AbortController();
+  var timer = setTimeout(function() { ctrl.abort(); }, 10000);
+
+  fetch(url, { headers: { 'X-Master-Key': JB_KEY }, signal: ctrl.signal })
+  .then(function(r) { clearTimeout(timer); if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+  .then(function(data) { onSuccess(processRows(data)); })
+  .catch(function(err) {
+    clearTimeout(timer);
+    // fetch failed — try XHR (handles some CORS edge cases)
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.setRequestHeader('X-Master-Key', JB_KEY);
+    xhr.timeout = 10000;
+    xhr.onload = function() {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try { onSuccess(processRows(JSON.parse(xhr.responseText))); }
+        catch(e) { onError('Bad response from server'); }
+      } else { onError('Server error ' + xhr.status); }
+    };
+    xhr.ontimeout = function() { onError('Timed out — check internet connection'); };
+    xhr.onerror   = function() { onError('Could not connect — open from baughmanteam2026.com'); };
+    try { xhr.send(); } catch(e) { onError('Network blocked'); }
+  });
 }
 
-function processCloudData(data) {
+function processRows(data) {
   var rows = (data.record && Array.isArray(data.record.rows)) ? data.record.rows : [];
   rows.forEach(function(r) {
     if (!r) return;
@@ -1192,25 +1209,30 @@ function processCloudData(data) {
     if (v === 'U' || v === 'Unsure') { r.resp = 'Undecided'; return; }
     if (!r.resp)                       r.resp = 'Not Visited';
   });
-  nhStops = rows.filter(function(r) { return r.resp === 'Not Home'; });
-  try { localSts = JSON.parse(localStorage.getItem(LSKEY) || '{}'); } catch(e) { localSts = {}; }
+  return rows.filter(function(r) { return r.resp === 'Not Home'; });
+}
 
+function showList() {
   document.getElementById('loading-screen').style.display = 'none';
   document.getElementById('list-con').style.display       = 'block';
-
   if (!nhStops.length) {
-    setBar('error', 'No “Not Home” records found — upload canvass CSVs at the website first.');
+    setBar('error', 'No “Not Home” records yet — upload canvass CSVs at the website first.');
     showEmpty('No Not Home stops found', 'Upload canvass CSV files at baughmanteam2026.com to populate this list.');
     updateStats(); return;
   }
   var t = new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
-  setBar('ready', nhStops.length + ' not-home stop' + (nhStops.length !== 1 ? 's' : '') + ' loaded at ' + t + ' · tap Reload for fresh data');
-  buildStreetNav();
-  buildList();
-  updateStats();
+  setBar('ready', nhStops.length + ' not-home stop' + (nhStops.length!==1?'s':'') + ' loaded · ' + t);
+  buildStreetNav(); buildList(); updateStats();
 }
 
-// ── CSV FILE FALLBACK ─────────────────────────────────────────────────
+function showLoadError(msg) {
+  document.getElementById('loading-screen').style.display  = 'flex';
+  document.getElementById('welcome-content').style.display = 'flex';
+  document.getElementById('loading-content').style.display = 'none';
+  document.getElementById('list-con').style.display        = 'none';
+  setBar('error', '❌ ' + msg);
+}
+
 function handleFileLoad(input) {
   var file = input.files && input.files[0];
   if (!file) return;
