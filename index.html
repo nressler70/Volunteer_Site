@@ -7343,29 +7343,17 @@ function generateRevisitApp() {
     alert('No "Not Home" stops found yet.\n\nMake sure canvassers have submitted results with doors marked Not Home first.');
     return;
   }
-  var html = buildRevisitHTML(nh);
+  var html  = buildRevisitHTML(nh);
   var today = new Date();
-  var ds = (today.getMonth()+1) + '-' + today.getDate() + '-' + today.getFullYear();
+  var ds    = (today.getMonth()+1) + '-' + today.getDate() + '-' + today.getFullYear();
   var fname = 'Revisit_App_' + ds + '.html';
-  var blob = new Blob([html], {type:'text/html;charset=utf-8;'});
-  // Try iOS share sheet first
-  try {
-    var f = new File([blob], fname, {type:'text/html'});
-    if (navigator.canShare && navigator.canShare({files:[f]})) {
-      navigator.share({title: 'Baughman Revisit App', files:[f]})
-        .catch(function(e){ if(e.name!=='AbortError') doDownload(blob,fname); });
-      return;
-    }
-  } catch(e){}
-  doDownload(blob, fname);
-}
-function doDownload(blob, fname) {
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement('a');
+  var blob  = new Blob([html], {type:'text/html;charset=utf-8;'});
+  var url   = URL.createObjectURL(blob);
+  var a     = document.createElement('a');
   a.href = url; a.download = fname;
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(function(){ URL.revokeObjectURL(url); }, 3000);
-  alert('Downloaded: ' + fname + '\n\nAirDrop or text this file to canvassers.\nThey open it — the list loads instantly, no internet needed.');
+  alert(nh.length + ' Not Home stops baked in.\n\nSaved as: ' + fname + '\n\nAirDrop or text this file to canvassers — it works instantly with no internet.');
 }
 
 function buildRevisitHTML(stops) {
