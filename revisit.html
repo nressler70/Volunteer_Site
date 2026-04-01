@@ -240,7 +240,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--lbl);min-height:10
     <button class="fp"    data-f="TWP2"    onclick="setFilter(this)">Precinct 2</button>
   </div>
 
-  <div style="padding:6px 16px 8px;background:var(--bg2);"><select id="street-nav" onchange="jumpStreet(this)" style="width:100%;height:36px;background:var(--bg3);color:var(--lbl2);border:1px solid var(--sep2);border-radius:10px;font-size:13px;font-weight:600;font-family:var(--font);padding:0 12px;-webkit-appearance:none;appearance:none;cursor:pointer;"><option value="">&#128205; Jump to street...</option></select></div>
+  <div style="padding:5px 16px 8px;background:var(--bg2);"><button id="street-nav" onclick="openStreetPicker()" style="width:100%;height:36px;background:var(--fill);color:var(--lbl2);border:1px solid var(--sep2);border-radius:10px;font-size:13px;font-weight:600;font-family:var(--font);cursor:pointer;display:flex;align-items:center;gap:8px;padding:0 12px;-webkit-tap-highlight-color:transparent;touch-action:manipulation;"><span>&#128205;</span><span id="street-nav-label" style="flex:1;text-align:left;">Jump to street...</span><span style="font-size:10px;opacity:.5;">&#9660;</span></button></div>
 </div>
 
 <div id="main">
@@ -255,6 +255,19 @@ body{font-family:var(--font);background:var(--bg);color:var(--lbl);min-height:10
     <div class="empty-sub"   id="empty-sub"></div>
   </div>
 </div>
+</div>
+
+
+<!-- STREET PICKER MODAL -->
+<div id="street-modal" style="display:none;position:fixed;inset:0;z-index:5000;background:rgba(0,0,0,.5);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);" onclick="if(event.target===this)closeStreetPicker()">
+  <div style="position:absolute;bottom:0;left:0;right:0;background:var(--bg2);border-radius:20px 20px 0 0;max-height:70vh;display:flex;flex-direction:column;box-shadow:0 -4px 40px rgba(0,0,0,.6);">
+    <div style="width:36px;height:4px;background:var(--bg3);border-radius:2px;margin:10px auto;flex-shrink:0;"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:0 20px 12px;flex-shrink:0;">
+      <span style="font-size:17px;font-weight:700;color:var(--lbl);">Jump to Street</span>
+      <button onclick="closeStreetPicker()" style="background:var(--bg3);border:none;width:30px;height:30px;border-radius:50%;color:var(--lbl2);font-size:16px;cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;">&#x2715;</button>
+    </div>
+    <div id="street-list" style="overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 16px calc(20px + env(safe-area-inset-bottom));"></div>
+  </div>
 </div>
 
 <!-- STOP MODAL -->
@@ -354,21 +367,36 @@ function buildStreetNav() {
   var seen={}, sts=[];
   nhStops.forEach(function(r){ var s=stOf(r); if(s&&!seen[s]){seen[s]=true;sts.push(s);} });
   sts.sort();
-  var sel = document.getElementById("street-nav");
-  if (!sel) return;
-  while (sel.options.length > 0) sel.remove(0);
-  var df = document.createElement("option"); df.value=""; df.textContent="Jump to street..."; sel.appendChild(df);
-  sts.forEach(function(s) {
-    var o = document.createElement("option"); o.value=s; o.textContent=s; sel.appendChild(o);
-  });
+  // Store streets for the picker modal
+  buildStreetNav._streets = sts;
+  var lbl = document.getElementById("street-nav-label");
+  if (lbl) lbl.textContent = sts.length ? sts.length + " streets" : "No streets";
 }
-function jumpStreet(sel) {
-  var s = sel.value; if (!s) return;
-  var el = document.getElementById("sec-"+s.replace(/[^a-z0-9]/gi,"_"));
-  if (!el) { sel.value=""; return; }
-  var bar = document.querySelector(".search-wrap");
-  window.scrollTo({top: el.getBoundingClientRect().top+window.pageYOffset-(bar?bar.offsetHeight+2:60), behavior:"smooth"});
-  setTimeout(function(){ sel.value=""; }, 600);
+function openStreetPicker() {
+  var sts = buildStreetNav._streets || [];
+  if (!sts.length) return;
+  var list = document.getElementById("street-list");
+  list.innerHTML = "";
+  sts.forEach(function(s) {
+    var btn = document.createElement("button");
+    btn.textContent = s;
+    btn.style.cssText = "width:100%;text-align:left;background:var(--bg3);border:none;border-radius:10px;padding:14px 16px;margin-bottom:6px;color:var(--lbl);font-size:15px;font-weight:600;font-family:var(--font);cursor:pointer;display:block;-webkit-tap-highlight-color:transparent;touch-action:manipulation;";
+    btn.onclick = function() {
+      closeStreetPicker();
+      setTimeout(function() {
+        var el = document.getElementById("sec-"+s.replace(/[^a-z0-9]/gi,"_"));
+        if (!el) return;
+        var bar = document.querySelector(".search-wrap");
+        var off = bar ? bar.offsetHeight + 2 : 60;
+        window.scrollTo({ top: el.getBoundingClientRect().top + window.pageYOffset - off, behavior:"smooth" });
+      }, 300);
+    };
+    list.appendChild(btn);
+  });
+  document.getElementById("street-modal").style.display = "block";
+}
+function closeStreetPicker() {
+  document.getElementById("street-modal").style.display = "none";
 }
 
 // ── BUILD LIST ────────────────────────────────────────────────────────
