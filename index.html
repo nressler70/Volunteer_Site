@@ -1958,7 +1958,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 <button class="rpt-item" onclick="closeReportsDropdown();openAgeReport();" role="menuitem"><span class="rpt-icon">📊</span><span class="rpt-text"><span class="rpt-title">Age &amp; Support Analysis</span><span class="rpt-desc">Levy support by household age group — 445 matched households</span></span><span class="rpt-badge rpt-badge-view">CHART</span></button>
 <button class="rpt-item" onclick="closeReportsDropdown();openAnalytics();" role="menuitem"><span class="rpt-icon">📈</span><span class="rpt-text"><span class="rpt-title">Site Analytics</span><span class="rpt-desc">Visitor counts &amp; device breakdown</span></span><span class="rpt-badge rpt-badge-view">GA</span></button>
 <button class="rpt-item" onclick="closeReportsDropdown();window.location.href='doorknock.html';" role="menuitem"><span class="rpt-icon">🏘️</span><span class="rpt-text"><span class="rpt-title">Door-Knock Street Report</span><span class="rpt-desc">View canvass responses street by street</span></span><span class="rpt-badge rpt-badge-view">VIEW</span></button>
-<button class="rpt-item" onclick="closeReportsDropdown();window.location.href='walksheet.html';" role="menuitem"><span class="rpt-icon">🖨️</span><span class="rpt-text"><span class="rpt-title">Walk Sheet — Needs Visit</span><span class="rpt-desc">Printable walk sheet for unvisited &amp; not-home addresses</span></span><span class="rpt-badge rpt-badge-pdf">PDF</span></button><button class="rpt-item" onclick="closeReportsDropdown();window.location.href='revisit.html';" role="menuitem"><span class="rpt-icon">🏠</span><span class="rpt-text"><span class="rpt-title">Not Home Revisit App</span><span class="rpt-desc">Wave 2 re-knock list for canvassers</span></span><span class="rpt-badge rpt-badge-view">APP</span></button>
+<button class="rpt-item" onclick="closeReportsDropdown();window.location.href='walksheet.html';" role="menuitem"><span class="rpt-icon">🖨️</span><span class="rpt-text"><span class="rpt-title">Walk Sheet — Needs Visit</span><span class="rpt-desc">Printable walk sheet for unvisited &amp; not-home addresses</span></span><span class="rpt-badge rpt-badge-pdf">PDF</span></button><button class="rpt-item" onclick="closeReportsDropdown();generateRevisitApp();" role="menuitem"><span class="rpt-icon">🏠</span><span class="rpt-text"><span class="rpt-title">📱 Generate Not Home Revisit App</span><span class="rpt-desc">Creates a canvasser app with Not Home stops baked in — share via AirDrop or Messages</span></span><span class="rpt-badge rpt-badge-view" style="background:rgba(48,209,88,.15);color:#30D158;">APP</span></button>
 <div class="rpt-divider"></div><div class="rpt-section-label">Campaign Views</div><button class="rpt-item" onclick="closeReportsDropdown();scrollToSection('tally');" role="menuitem"><span class="rpt-icon">📊</span><span class="rpt-text"><span class="rpt-title">Live Results Dashboard</span><span class="rpt-desc">Real-time canvass progress &amp; stats</span></span><span class="rpt-badge rpt-badge-view">VIEW</span></button><button class="rpt-item" onclick="closeReportsDropdown();scrollToSection('teams');" role="menuitem"><span class="rpt-icon">🗺️</span><span class="rpt-text"><span class="rpt-title">Canvasser Route Summary</span><span class="rpt-desc">All team assignments &amp; territories</span></span><span class="rpt-badge rpt-badge-view">VIEW</span></button><div class="rpt-divider"></div><button class="rpt-item" onclick="closeReportsDropdown();window.print();" role="menuitem"><span class="rpt-icon">🖨️</span><span class="rpt-text"><span class="rpt-title">Print Full Campaign Plan</span><span class="rpt-desc">Complete site as printable document</span></span><span class="rpt-badge rpt-badge-print">PRINT</span></button><div class="rpt-data-note">CSV &amp; PDF reports require canvass data to be uploaded first.</div></div></div></div></nav>
 
 
@@ -7321,6 +7321,55 @@ function buildAgeReport() {
     '<td style="text-align:center;font-weight:700;color:#74c69d">48%</td>' +
     '<td style="text-align:center;font-family:\'JetBrains Mono\',monospace;font-size:.75rem;color:#8a9bb0">$168</td>';
   tbody.appendChild(tot);
+}
+
+// ── GENERATE REVISIT APP ─────────────────────────────────────────────
+// Fetches revisit.html from this server, injects Not Home data, downloads it.
+function generateRevisitApp() {
+  var raw = [];
+  try { raw = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]'); } catch(e) {}
+  if (!raw.length) {
+    alert('No canvass data found.\n\nUpload at least one canvass CSV file first.');
+    return;
+  }
+  var nhStops = raw.filter(function(r){ return r && r.resp === 'Not Home'; })
+    .map(function(r){ return {address:r.address||'',street:r.street||'',name:r.name||'',
+      voters:r.voters||1,like:r.like||'',levy:r.levy||0,prec:r.prec||'',notes:r.notes||'',resp:'Not Home'}; });
+  if (!nhStops.length) {
+    alert('No "Not Home" stops found yet.\n\nCanvassers need to submit results with doors marked Not Home first.');
+    return;
+  }
+  // Fetch the template from this server (same-origin — always works)
+  fetch('/revisit.html')
+    .then(function(r){ if(!r.ok) throw new Error(r.status); return r.text(); })
+    .then(function(tmpl){
+      var out = tmpl.replace(
+        'var NH_STOPS = []; // populated by generator',
+        'var NH_STOPS = ' + JSON.stringify(nhStops) + ';'
+      );
+      var d = new Date(), ds = (d.getMonth()+1)+'-'+d.getDate()+'-'+d.getFullYear();
+      var fname = 'Revisit_App_' + ds + '.html';
+      var blob  = new Blob([out], {type:'text/html;charset=utf-8;'});
+      try {
+        var file = new File([blob], fname, {type:'text/html'});
+        if (navigator.canShare && navigator.canShare({files:[file]})) {
+          navigator.share({title:'Revisit App '+ds, files:[file]})
+            .catch(function(e){ if(e.name!=='AbortError') dlGeneratedApp(blob,fname); });
+          return;
+        }
+      } catch(e) {}
+      dlGeneratedApp(blob, fname);
+    })
+    .catch(function(err){
+      alert('Could not load revisit.html from server (error: '+err.message+').\n\nMake sure revisit.html is uploaded to the same folder as index.html on your website.');
+    });
+}
+function dlGeneratedApp(blob, fname) {
+  var url=URL.createObjectURL(blob), a=document.createElement('a');
+  a.href=url; a.download=fname;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 3000);
+  alert('✅ ' + fname + ' downloaded!\n\nShare this file with canvassers via AirDrop or Messages. They open it and it works instantly — no internet needed.');
 }
 </script>
 </body>
