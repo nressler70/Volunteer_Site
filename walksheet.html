@@ -281,12 +281,23 @@ function buildStreetList() {
   var streets = {};
   Object.keys(VOTER_DATA).forEach(function(addr){
     var p = addr.split(' '); if (p.length < 2) return;
-    var s = p.slice(1).join(' '); streets[s] = (streets[s]||0)+1;
+    var s = p.slice(1).join(' ');
+    if (!streets[s]) streets[s] = 0;
+    var key  = addr.toLowerCase().trim();
+    var resp = (addrIndex[key] || {}).resp || 'Not Visited';
+    if (resp === 'Not Visited' || resp === 'Not Home') streets[s]++;
   });
   var picker = document.getElementById('streetPicker');
-  Object.keys(streets).sort().forEach(function(s){
+  var sorted = Object.keys(streets).sort(function(a, b){
+    if (streets[b] !== streets[a]) return streets[b] - streets[a];
+    return a < b ? -1 : 1;
+  });
+  sorted.forEach(function(s){
+    var count = streets[s];
+    if (count === 0) return;
     var o = document.createElement('option');
-    o.value = s; o.textContent = tc(s) + '  (' + streets[s] + ' addresses)';
+    o.value = s;
+    o.textContent = tc(s) + '  (' + count + ' need' + (count === 1 ? 's' : '') + ' visit)';
     picker.appendChild(o);
   });
 }
