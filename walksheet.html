@@ -253,7 +253,7 @@ function eh(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(
 
 // Load canvass data from localStorage (same store as index.html)
 (function loadFromLocalStorage() {
-  setSyncState('loading', 'Loading canvass data\u2026');
+  setSyncState('loading', 'Loading canvass data…');
   try {
     var raw = JSON.parse(localStorage.getItem('baughman_rows_v2') || '[]');
     addrIndex = {};
@@ -269,7 +269,7 @@ function eh(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(
     if (count > 0) {
       setSyncState('ok', count + ' households loaded');
     } else {
-      setSyncState('err', 'No canvass data found \u2014 upload data on the main page first');
+      setSyncState('err', 'No canvass data found — upload data on the main page first');
     }
     buildStreetList();
   } catch(e) {
