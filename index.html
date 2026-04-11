@@ -2817,6 +2817,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
               <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#ff8a7a;padding:9px 10px;text-align:center">❌ No</th>
               <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-light);padding:9px 10px;text-align:center">❓ Undecided</th>
               <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#8a9bb0;padding:9px 10px;text-align:center">🏠 Not Home</th>
+              <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#d488f0;padding:9px 10px;text-align:center">🚫 DNV</th>
               <th style="font-family:'Oswald',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#445566;padding:9px 10px;text-align:center">⚪ Not Visited</th>
             </tr></thead>
             <tbody id="street-tbody"></tbody>
@@ -2854,8 +2855,9 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
             <button class="rf-btn"           data-f="sign"        onclick="setFilterAndShow('sign')" style="border-color:rgba(244,164,96,.35);color:var(--gold-light)">🪧 Sign Needed</button>
             <button class="rf-btn rf-no"     data-f="No"          onclick="setFilterAndShow('No')">❌ No</button>
             <button class="rf-btn rf-und"    data-f="Undecided"   onclick="setFilterAndShow('Undecided')">❓ Undecided</button>
-            <button class="rf-btn rf-nh"     data-f="Not Home"    onclick="setFilterAndShow('Not Home')">🏠 Not Home</button>
-            <button class="rf-btn rf-nv"     data-f="Not Visited" onclick="setFilterAndShow('Not Visited')">⚪ Not Visited</button>
+            <button class="rf-btn rf-nh"     data-f="Not Home"           onclick="setFilterAndShow('Not Home')">🏠 Not Home</button>
+            <button class="rf-btn rf-dnv"    data-f="Do Not Visit Again" onclick="setFilterAndShow('Do Not Visit Again')" style="border-color:rgba(120,40,140,.4);color:#d488f0">🚫 Do Not Visit Again</button>
+            <button class="rf-btn rf-nv"     data-f="Not Visited"        onclick="setFilterAndShow('Not Visited')">⚪ Not Visited</button>
             <button class="rf-btn rf-fu"     data-f="followup"    onclick="setFilterAndShow('followup')">🔁 Follow-Up List</button>
           </div>
           <input id="det-search" type="text" placeholder="🔍 Search name or address…" oninput="renderDetail()"
@@ -2920,10 +2922,11 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   var currentFilter = 'all';
 
   var RESP_STYLE = {
-    'Yes':         'background:rgba(39,174,96,.2);color:#74c69d;border:1px solid rgba(39,174,96,.35)',
-    'No':          'background:rgba(192,57,43,.2);color:#ff8a7a;border:1px solid rgba(192,57,43,.35)',
-    'Undecided':   'background:rgba(201,150,42,.18);color:var(--gold-light);border:1px solid rgba(201,150,42,.35)',
-    'Not Home':    'background:rgba(138,155,176,.15);color:#8a9bb0;border:1px solid rgba(138,155,176,.3)',
+    'Yes':               'background:rgba(39,174,96,.2);color:#74c69d;border:1px solid rgba(39,174,96,.35)',
+    'No':                'background:rgba(192,57,43,.2);color:#ff8a7a;border:1px solid rgba(192,57,43,.35)',
+    'Undecided':         'background:rgba(201,150,42,.18);color:var(--gold-light);border:1px solid rgba(201,150,42,.35)',
+    'Not Home':          'background:rgba(138,155,176,.15);color:#8a9bb0;border:1px solid rgba(138,155,176,.3)',
+    'Do Not Visit Again':'background:rgba(120,40,140,.2);color:#d488f0;border:1px solid rgba(120,40,140,.4)',
     'Not Visited': 'background:rgba(255,255,255,.05);color:#445566;border:1px solid rgba(255,255,255,.1)',
   };
 
@@ -3055,6 +3058,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       if (v === 'Y')                    return 'Yes';
       if (v === 'N')                    return 'No';
       if (v === 'NH' || v === 'NotHome' || v === 'Not-Home' || v.toLowerCase() === 'nothome') return 'Not Home';
+      if (v === 'DNV' || v === 'Do Not Visit' || v.toLowerCase() === 'donotvisit' || v.toLowerCase() === 'do not visit again') return 'Do Not Visit Again';
       if (v === '')                     return 'Not Visited';
       return v;
     }
@@ -3258,7 +3262,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
   function renderDashboard() {
     var total = rows.length;
     var yes = count('Yes'), no = count('No'), und = count('Undecided');
-    var nh = count('Not Home'), nv = count('Not Visited');
+    var nh = count('Not Home'), nv = count('Not Visited'), dnv = count('Do Not Visit Again');
     var signCount = rows.filter(function(r) { return r.sign; }).length;
     var visited = total - nv;
     var pct = total ? Math.round(visited / total * 100) : 0;
@@ -3274,10 +3278,11 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     }
 
     var TILES = [
-      {f:'Yes',         label:'Yes',         val:yes,       col:'#5ce08a', bg:'rgba(39,174,96,.18)',   bdr:'rgba(39,174,96,.5)'},
-      {f:'No',          label:'No',          val:no,        col:'#ff8a7a', bg:'rgba(192,57,43,.18)',   bdr:'rgba(192,57,43,.5)'},
-      {f:'Undecided',   label:'Undecided',   val:und,       col:'#f4c460', bg:'rgba(201,150,42,.18)',  bdr:'rgba(201,150,42,.5)'},
-      {f:'Not Home',    label:'Not Home',    val:nh,        col:'#aee2ff', bg:'rgba(46,134,193,.18)',  bdr:'rgba(46,134,193,.5)'},
+      {f:'Yes',               label:'Yes',              val:yes,       col:'#5ce08a', bg:'rgba(39,174,96,.18)',    bdr:'rgba(39,174,96,.5)'},
+      {f:'No',                label:'No',               val:no,        col:'#ff8a7a', bg:'rgba(192,57,43,.18)',    bdr:'rgba(192,57,43,.5)'},
+      {f:'Undecided',         label:'Undecided',        val:und,       col:'#f4c460', bg:'rgba(201,150,42,.18)',   bdr:'rgba(201,150,42,.5)'},
+      {f:'Not Home',          label:'Not Home',         val:nh,        col:'#aee2ff', bg:'rgba(46,134,193,.18)',   bdr:'rgba(46,134,193,.5)'},
+      {f:'Do Not Visit Again',label:'Do Not Visit Again',val:dnv,      col:'#d488f0', bg:'rgba(120,40,140,.18)',   bdr:'rgba(120,40,140,.5)'},
       {f:'Not Visited', label:'Not Visited', val:nv,        col:'#667788', bg:'rgba(255,255,255,.05)', bdr:'rgba(255,255,255,.15)'},
       {f:'followup',    label:'Follow-Up',   val:und+nh,    col:'#c0aaff', bg:'rgba(142,68,173,.18)',  bdr:'rgba(142,68,173,.5)'},
       {f:'sign',        label:'Sign Needed', val:signCount, col:'#f4a460', bg:'rgba(244,164,96,.15)',  bdr:'rgba(244,164,96,.4)'}
@@ -3328,6 +3333,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       {col:'#ff8a7a', label:'No', val:no},
       {col:'#f4c460', label:'Undecided', val:und},
       {col:'#aee2ff', label:'Not Home', val:nh},
+      {col:'#d488f0', label:'Do Not Visit Again', val:dnv},
       {col:'rgba(255,255,255,.3)', label:'Not Visited', val:nv}
     ];
     var legend = LEGS.filter(function(l) { return l.val > 0; }).map(function(l) {
@@ -3383,16 +3389,16 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       // Skip blank streets, bare numbers, and old placeholder
       if (!st || /^\d+$/.test(st.trim()) || st === '(No Street)') return;
       if (!r._st) r._st = st;
-      if (!streets[st]) streets[st] = {total:0, Yes:0, No:0, Undecided:0, 'Not Home':0, 'Not Visited':0};
+      if (!streets[st]) streets[st] = {total:0, Yes:0, No:0, Undecided:0, 'Not Home':0, 'Not Visited':0, 'Do Not Visit Again':0};
       streets[st].total++;
       streets[st][r.resp] = (streets[st][r.resp] || 0) + 1;
     });
-    var BAR = {Yes:'#5ce08a', No:'#ff8a7a', Undecided:'#f4c460', 'Not Home':'#aee2ff', 'Not Visited':'rgba(255,255,255,.08)'};
+    var BAR = {Yes:'#5ce08a', No:'#ff8a7a', Undecided:'#f4c460', 'Not Home':'#aee2ff', 'Do Not Visit Again':'#d488f0', 'Not Visited':'rgba(255,255,255,.08)'};
     var sorted = Object.keys(streets).sort();
     var tbody = document.getElementById('street-tbody');
     tbody.innerHTML = sorted.map(function(st) {
       var s = streets[st];
-      var bar = ['Yes','No','Undecided','Not Home','Not Visited'].map(function(resp) {
+      var bar = ['Yes','No','Undecided','Not Home','Do Not Visit Again','Not Visited'].map(function(resp) {
         var w = s.total ? (s[resp] || 0) / s.total * 100 : 0;
         if (w <= 0) return '';
         return '<div style="width:' + w.toFixed(1) + '%;background:' + BAR[resp] + ';height:100%;display:inline-block;vertical-align:top" title="' + resp + ': ' + (s[resp]||0) + '"></div>';
@@ -3405,6 +3411,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
         '<td style="padding:8px 10px;text-align:center;font-family:monospace;font-size:.78rem;color:#ff8a7a">' + (s['No']||0) + '</td>' +
         '<td style="padding:8px 10px;text-align:center;font-family:monospace;font-size:.78rem;color:#f4c460">' + (s['Undecided']||0) + '</td>' +
         '<td style="padding:8px 10px;text-align:center;font-family:monospace;font-size:.78rem;color:#aee2ff">' + (s['Not Home']||0) + '</td>' +
+        '<td style="padding:8px 10px;text-align:center;font-family:monospace;font-size:.78rem;color:#d488f0">' + (s['Do Not Visit Again']||0) + '</td>' +
         '<td style="padding:8px 10px;text-align:center;font-family:monospace;font-size:.78rem;color:#445566">' + (s['Not Visited']||0) + '</td>' +
         '<td style="padding:6px 14px 6px 8px;min-width:90px">' +
           '<div style="height:10px;background:rgba(255,255,255,.04);border-radius:3px;overflow:hidden;display:flex">' + bar + '</div>' +
@@ -3503,11 +3510,12 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     };
 
     var ROW_STYLE = {
-      'Yes':        {bg:'rgba(39,174,96,.14)',   left:'3px solid #5ce08a'},
-      'No':         {bg:'rgba(192,57,43,.14)',   left:'3px solid #ff8a7a'},
-      'Undecided':  {bg:'rgba(201,150,42,.12)',  left:'3px solid #f4c460'},
-      'Not Home':   {bg:'rgba(46,134,193,.12)',  left:'3px solid #aee2ff'},
-      'Not Visited':{bg:'transparent',           left:'3px solid transparent'},
+      'Yes':                {bg:'rgba(39,174,96,.14)',   left:'3px solid #5ce08a'},
+      'No':                 {bg:'rgba(192,57,43,.14)',   left:'3px solid #ff8a7a'},
+      'Undecided':          {bg:'rgba(201,150,42,.12)',  left:'3px solid #f4c460'},
+      'Not Home':           {bg:'rgba(46,134,193,.12)',  left:'3px solid #aee2ff'},
+      'Do Not Visit Again': {bg:'rgba(120,40,140,.12)',  left:'3px solid #d488f0'},
+      'Not Visited':        {bg:'transparent',           left:'3px solid transparent'},
     };
     document.getElementById('detail-tbody').innerHTML = filtered.map(function(r){
       var rs = ROW_STYLE[r.resp] || ROW_STYLE['Not Visited'];
@@ -3520,15 +3528,16 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
         '<td style="padding:7px 8px;text-align:right;font-family:monospace;font-size:.78rem;color:var(--gold-light)">'+(r.levy ? '$'+(parseFloat(r.levy)||0).toFixed(2) : '—')+'</td>'+
         '<td style="padding:4px 8px;text-align:center">'+
         '<div class="resp-selector" style="display:flex;gap:3px;justify-content:center;flex-wrap:wrap">'+
-          ['Yes','No','Undecided','Not Home'].map(function(opt) {
+          ['Yes','No','Undecided','Not Home','Do Not Visit Again'].map(function(opt) {
             var active = r.resp === opt;
             var colors = {
-              'Yes':       active ? 'background:rgba(39,174,96,.35);color:#5ce08a;border-color:rgba(39,174,96,.6)'   : 'background:rgba(39,174,96,.07);color:#3a6650;border-color:rgba(39,174,96,.2)',
-              'No':        active ? 'background:rgba(192,57,43,.35);color:#ff8a7a;border-color:rgba(192,57,43,.6)'   : 'background:rgba(192,57,43,.07);color:#664444;border-color:rgba(192,57,43,.2)',
-              'Undecided': active ? 'background:rgba(201,150,42,.35);color:#f4c460;border-color:rgba(201,150,42,.6)' : 'background:rgba(201,150,42,.07);color:#665533;border-color:rgba(201,150,42,.2)',
-              'Not Home':  active ? 'background:rgba(46,134,193,.35);color:#aee2ff;border-color:rgba(46,134,193,.6)' : 'background:rgba(46,134,193,.07);color:#334455;border-color:rgba(46,134,193,.2)'
+              'Yes':                active ? 'background:rgba(39,174,96,.35);color:#5ce08a;border-color:rgba(39,174,96,.6)'     : 'background:rgba(39,174,96,.07);color:#3a6650;border-color:rgba(39,174,96,.2)',
+              'No':                 active ? 'background:rgba(192,57,43,.35);color:#ff8a7a;border-color:rgba(192,57,43,.6)'     : 'background:rgba(192,57,43,.07);color:#664444;border-color:rgba(192,57,43,.2)',
+              'Undecided':          active ? 'background:rgba(201,150,42,.35);color:#f4c460;border-color:rgba(201,150,42,.6)'   : 'background:rgba(201,150,42,.07);color:#665533;border-color:rgba(201,150,42,.2)',
+              'Not Home':           active ? 'background:rgba(46,134,193,.35);color:#aee2ff;border-color:rgba(46,134,193,.6)'   : 'background:rgba(46,134,193,.07);color:#334455;border-color:rgba(46,134,193,.2)',
+              'Do Not Visit Again': active ? 'background:rgba(120,40,140,.35);color:#d488f0;border-color:rgba(120,40,140,.6)'   : 'background:rgba(120,40,140,.07);color:#6a3370;border-color:rgba(120,40,140,.2)'
             };
-            var labels = {'Yes':'✅','No':'❌','Undecided':'❓','Not Home':'🏠'};
+            var labels = {'Yes':'✅','No':'❌','Undecided':'❓','Not Home':'🏠','Do Not Visit Again':'🚫'};
             var locked = !window._adminEditMode;
             return '<button class="resp-btn" data-addr="'+addrEsc+'" data-resp="'+opt+'\" '+
               'title="'+(locked && !active ? '🔒 Admin login required' : 'Mark as '+opt)+'" '+
@@ -3711,9 +3720,10 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
       var searchEl = document.getElementById('det-search');
       var q = searchEl ? (searchEl.value || '').toLowerCase() : '';
       var filtered = data.filter(function(r) {
-        var matchF = currentFilter === 'all'      ? true
-                   : currentFilter === 'followup' ? (r.resp === 'Undecided' || r.resp === 'Not Home')
-                   : currentFilter === 'sign'     ? r.sign === true
+        var matchF = currentFilter === 'all'                ? true
+                   : currentFilter === 'followup'          ? (r.resp === 'Undecided' || r.resp === 'Not Home')
+                   : currentFilter === 'sign'              ? r.sign === true
+                   : currentFilter === 'Do Not Visit Again'? r.resp === 'Do Not Visit Again'
                    : r.resp === currentFilter;
         // Match name, address, OR street so clicking a street row
         // in the Street Summary table filters the export correctly.
@@ -3845,9 +3855,9 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
     var badge = document.getElementById('detail-count-badge');
     if (!badge) return;
     var total   = rows.length;
-    var yes     = count('Yes'), no = count('No'), und = count('Undecided'), nh = count('Not Home');
+    var yes     = count('Yes'), no = count('No'), und = count('Undecided'), nh = count('Not Home'), dnv = count('Do Not Visit Again');
     var visited = total - count('Not Visited');
-    badge.textContent = visited + ' visited · ' + yes + ' Yes · ' + no + ' No · ' + (und+nh) + ' Follow-Up';
+    badge.textContent = visited + ' visited · ' + yes + ' Yes · ' + no + ' No · ' + (und+nh) + ' Follow-Up · ' + dnv + ' DNV';
   }
 
   // ── RESTORE SAVED RESULTS ─────────────────────────────────────────────────
@@ -4410,15 +4420,19 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 (function migrateStoredRespValues() {
   var KEY = 'baughman_rows_v2';
   var BAD_RESP = {
-    'NH':       'Not Home',
-    'NotHome':  'Not Home',
-    'Not-Home': 'Not Home',
-    'nothome':  'Not Home',
-    'not home': 'Not Home',   // lower-case variant
-    'Unsure':   'Undecided',
-    'U':        'Undecided',
-    'Y':        'Yes',
-    'N':        'No'
+    'NH':              'Not Home',
+    'NotHome':         'Not Home',
+    'Not-Home':        'Not Home',
+    'nothome':         'Not Home',
+    'not home':        'Not Home',   // lower-case variant
+    'Unsure':          'Undecided',
+    'U':               'Undecided',
+    'Y':               'Yes',
+    'N':               'No',
+    'DNV':             'Do Not Visit Again',
+    'Do Not Visit':    'Do Not Visit Again',
+    'donotvisit':      'Do Not Visit Again',
+    'do not visit':    'Do Not Visit Again'
   };
   try {
     var raw = JSON.parse(localStorage.getItem(KEY) || '[]');
@@ -4645,7 +4659,9 @@ function jsonbinFetch() {
     var BAD_RESP = {
       'NH':'Not Home', 'NotHome':'Not Home', 'Not-Home':'Not Home',
       'nothome':'Not Home', 'not home':'Not Home',
-      'Unsure':'Undecided', 'U':'Undecided', 'Y':'Yes', 'N':'No'
+      'Unsure':'Undecided', 'U':'Undecided', 'Y':'Yes', 'N':'No',
+      'DNV':'Do Not Visit Again', 'Do Not Visit':'Do Not Visit Again',
+      'donotvisit':'Do Not Visit Again', 'do not visit':'Do Not Visit Again'
     };
     var cloudFixed = 0;
     rawRows.forEach(function(row) {
@@ -5185,6 +5201,7 @@ window.adminScanDupes = function() {
                     : resp === 'No'  ? '#ff8a7a'
                     : resp === 'Undecided' ? '#f4c460'
                     : resp === 'Not Home'  ? '#aee2ff'
+                    : resp === 'Do Not Visit Again' ? '#d488f0'
                     : '#445566';
       return '<div style="background:#0a0e14;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:8px 10px;margin-bottom:6px">'
         + '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:6px">'
@@ -5375,6 +5392,7 @@ document.addEventListener('DOMContentLoaded', function() {
           <label class="me-resp-btn"><input type="radio" name="me-resp" value="No"> ❌ No</label>
           <label class="me-resp-btn"><input type="radio" name="me-resp" value="Undecided"> ❓ Undecided</label>
           <label class="me-resp-btn"><input type="radio" name="me-resp" value="Not Home"> 🏠 Not Home</label>
+          <label class="me-resp-btn"><input type="radio" name="me-resp" value="Do Not Visit Again"> 🚫 Do Not Visit Again</label>
           <label class="me-resp-btn"><input type="radio" name="me-resp" value="Not Visited"> ⚪ Not Visited</label>
         </div>
       </div>
@@ -5811,11 +5829,12 @@ window.submitManualEntry = function() {
 
   /* ── Status definitions ──────────────────────────────────────────── */
   var STATUSES = [
-    { key:'Not Visited', label:'⚪ Not Visited', color:'#667788' },
-    { key:'Not Home',    label:'🏠 Not Home',    color:'#aee2ff' },
-    { key:'Yes',         label:'✅ Yes',          color:'#5ce08a' },
-    { key:'No',          label:'❌ No',           color:'#ff8a7a' },
-    { key:'Undecided',   label:'❓ Undecided',   color:'#f4c460' }
+    { key:'Not Visited',        label:'⚪ Not Visited',         color:'#667788' },
+    { key:'Not Home',           label:'🏠 Not Home',            color:'#aee2ff' },
+    { key:'Yes',                label:'✅ Yes',                  color:'#5ce08a' },
+    { key:'No',                 label:'❌ No',                   color:'#ff8a7a' },
+    { key:'Undecided',          label:'❓ Undecided',           color:'#f4c460' },
+    { key:'Do Not Visit Again', label:'🚫 Do Not Visit Again',  color:'#d488f0' }
   ];
 
   /* ── Open modal ───────────────────────────────────────────────────── */
@@ -5967,9 +5986,9 @@ window.submitManualEntry = function() {
     var lightGr  = [170, 170, 170];
     var midGr    = [100, 100, 100];
 
-    function respBg(r)  { return r==='Yes'?[220,240,225]:r==='No'?[245,220,218]:r==='Undecided'?[250,242,210]:r==='Not Home'?[218,232,248]:[235,235,235]; }
-    function respTxt(r) { return r==='Yes'?[25,100,50]:r==='No'?[140,35,25]:r==='Undecided'?[120,85,10]:r==='Not Home'?[25,75,140]:[90,90,90]; }
-    function respAcc(r) { return r==='Yes'?[46,160,90]:r==='No'?[192,57,43]:r==='Undecided'?[180,130,10]:r==='Not Home'?[46,134,193]:[160,160,160]; }
+    function respBg(r)  { return r==='Yes'?[220,240,225]:r==='No'?[245,220,218]:r==='Undecided'?[250,242,210]:r==='Not Home'?[218,232,248]:r==='Do Not Visit Again'?[235,218,245]:[235,235,235]; }
+    function respTxt(r) { return r==='Yes'?[25,100,50]:r==='No'?[140,35,25]:r==='Undecided'?[120,85,10]:r==='Not Home'?[25,75,140]:r==='Do Not Visit Again'?[90,30,110]:[90,90,90]; }
+    function respAcc(r) { return r==='Yes'?[46,160,90]:r==='No'?[192,57,43]:r==='Undecided'?[180,130,10]:r==='Not Home'?[46,134,193]:r==='Do Not Visit Again'?[140,60,170]:[160,160,160]; }
 
     var headerH = 56;
     function drawHeader() {
@@ -6077,7 +6096,7 @@ window.submitManualEntry = function() {
       }
 
       /* Count per-status totals for this street */
-      var stCounts = { Yes:0, No:0, Undecided:0, 'Not Home':0, 'Not Visited':0 };
+      var stCounts = { Yes:0, No:0, Undecided:0, 'Not Home':0, 'Not Visited':0, 'Do Not Visit Again':0 };
       sRows.forEach(function(r) { var rv = r.resp||'Not Visited'; stCounts[rv] = (stCounts[rv]||0)+1; });
       var stVoters = sRows.reduce(function(s,r){ return s+(parseInt(r.voters)||0); }, 0);
 
@@ -6095,11 +6114,12 @@ window.submitManualEntry = function() {
       /* ── Totals summary bar ── */
       /* Only show statuses that appear in the selected filter AND have a count > 0 */
       var STAT_DEFS = [
-        { key:'Yes',         label:'Yes',         bg:[220,240,225], txt:[25,100,50],   border:[46,160,90]  },
-        { key:'No',          label:'No',           bg:[245,220,218], txt:[140,35,25],  border:[192,57,43]  },
-        { key:'Undecided',   label:'Undecided',    bg:[250,242,210], txt:[120,85,10],  border:[180,130,10] },
-        { key:'Not Home',    label:'Not Home',     bg:[218,232,248], txt:[25,75,140],  border:[46,134,193] },
-        { key:'Not Visited', label:'Not Visited',  bg:[235,235,235], txt:[90,90,90],   border:[160,160,160]}
+        { key:'Yes',                label:'Yes',                bg:[220,240,225], txt:[25,100,50],   border:[46,160,90]   },
+        { key:'No',                 label:'No',                 bg:[245,220,218], txt:[140,35,25],   border:[192,57,43]   },
+        { key:'Undecided',          label:'Undecided',          bg:[250,242,210], txt:[120,85,10],   border:[180,130,10]  },
+        { key:'Not Home',           label:'Not Home',           bg:[218,232,248], txt:[25,75,140],   border:[46,134,193]  },
+        { key:'Do Not Visit Again', label:'Do Not Visit Again', bg:[235,218,245], txt:[90,30,110],   border:[140,60,170]  },
+        { key:'Not Visited',        label:'Not Visited',        bg:[235,235,235], txt:[90,90,90],    border:[160,160,160] }
       ];
       /* Filter to only those with a count in this street */
       var activeDefs = STAT_DEFS.filter(function(d){ return stCounts[d.key] > 0; });
@@ -6383,7 +6403,7 @@ window.submitManualEntry = function() {
     });
 
     if (filtered.length === 0) {
-      var labels = { all:'any data', Yes:'Yes responses', followup:'Undecided or Not Home entries', sign:'Sign Requests' };
+      var labels = { all:'any data', Yes:'Yes responses', followup:'Undecided or Not Home entries', sign:'Sign Requests', 'Do Not Visit Again':'Do Not Visit Again entries' };
       alert('No households found with ' + (labels[filterType] || filterType) + '.\n\nMake sure data has been uploaded and canvassed entries exist for this category.');
       return;
     }
@@ -6505,8 +6525,9 @@ window.submitManualEntry = function() {
     'Yes':         '#27ae60',   // Green = supporter
     'No':          '#c0392b',   // Red = opposition
     'Undecided':   '#f39c12',   // Amber = undecided
-    'Not Home':    '#2980b9',   // Blue = not home
-    'Not Visited': '#445566'    // Dark = not yet canvassed
+    'Not Home':           '#2980b9',   // Blue = not home
+    'Do Not Visit Again': '#8e44ad',   // Purple = do not visit again
+    'Not Visited':        '#445566'    // Dark = not yet canvassed
   };
 
   // Human-readable labels for BOE party codes
@@ -6519,10 +6540,10 @@ window.submitManualEntry = function() {
   };
   function partyLabel(code) { return PARTY_LABELS[code] || code; }
 
-  var RESP_ORDER = ['Yes', 'No', 'Undecided', 'Not Home', 'Not Visited'];
+  var RESP_ORDER = ['Yes', 'No', 'Undecided', 'Not Home', 'Do Not Visit Again', 'Not Visited'];
   var RESP_LABELS = {
     'Yes': 'Yes', 'No': 'No', 'Undecided': 'Undecided',
-    'Not Home': 'Not Home', 'Not Visited': 'Not Visited'
+    'Not Home': 'Not Home', 'Do Not Visit Again': 'Do Not Visit Again', 'Not Visited': 'Not Visited'
   };
 
   /* ── Open the party report modal ────────────────────────────────── */
@@ -6682,20 +6703,20 @@ window.submitManualEntry = function() {
     // Also add a summary section at the bottom
     lines.push([]);
     lines.push(['--- SUMMARY BY PARTY ---', '', '', '', '', '', '', '', '', '']);
-    lines.push(['Party', 'Yes', 'No', 'Undecided', 'Not Home', 'Not Visited', 'Total HH', '', '', '']);
+    lines.push(['Party', 'Yes', 'No', 'Undecided', 'Not Home', 'Do Not Visit Again', 'Not Visited', 'Total HH', '', '']);
 
     var partyMap = {};
     rows.forEach(function(r) {
       var party = partyLabel((r.party && r.party.trim()) ? r.party.trim() : 'Unknown');
       var resp  = r.resp || 'Not Visited';
-      if (!partyMap[party]) partyMap[party] = {Yes:0, No:0, Undecided:0, 'Not Home':0, 'Not Visited':0};
+      if (!partyMap[party]) partyMap[party] = {Yes:0, No:0, Undecided:0, 'Not Home':0, 'Do Not Visit Again':0, 'Not Visited':0};
       if (partyMap[party][resp] !== undefined) partyMap[party][resp]++;
       else partyMap[party]['Not Visited']++;
     });
     Object.keys(partyMap).sort().forEach(function(party) {
       var d = partyMap[party];
-      var total = d['Yes'] + d['No'] + d['Undecided'] + d['Not Home'] + d['Not Visited'];
-      lines.push([party, d['Yes'], d['No'], d['Undecided'], d['Not Home'], d['Not Visited'], total, '', '', '']);
+      var total = d['Yes'] + d['No'] + d['Undecided'] + d['Not Home'] + d['Do Not Visit Again'] + d['Not Visited'];
+      lines.push([party, d['Yes'], d['No'], d['Undecided'], d['Not Home'], d['Do Not Visit Again'], d['Not Visited'], total, '', '']);
     });
 
     var csvText = lines.map(function(row) {
