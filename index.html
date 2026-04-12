@@ -1959,7 +1959,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
 <button class="rpt-item" onclick="closeReportsDropdown();openAnalytics();" role="menuitem"><span class="rpt-icon">📈</span><span class="rpt-text"><span class="rpt-title">Site Analytics</span><span class="rpt-desc">Visitor counts &amp; device breakdown</span></span><span class="rpt-badge rpt-badge-view">GA</span></button>
 <button class="rpt-item" onclick="closeReportsDropdown();window.location.href='doorknock.html';" role="menuitem"><span class="rpt-icon">🏘️</span><span class="rpt-text"><span class="rpt-title">Door-Knock Street Report</span><span class="rpt-desc">View canvass responses street by street</span></span><span class="rpt-badge rpt-badge-view">VIEW</span></button>
 <button class="rpt-item" onclick="closeReportsDropdown();window.location.href='walksheet.html';" role="menuitem"><span class="rpt-icon">🖨️</span><span class="rpt-text"><span class="rpt-title">Walk Sheet — Needs Visit</span><span class="rpt-desc">Printable walk sheet for unvisited &amp; not-home addresses</span></span><span class="rpt-badge rpt-badge-pdf">PDF</span></button><button class="rpt-item" onclick="closeReportsDropdown();generateRevisitApp();" role="menuitem"><span class="rpt-icon">&#127968;</span><span class="rpt-text"><span class="rpt-title">&#128241; Generate Not Home Revisit App</span><span class="rpt-desc">Download canvasser app with Not Home stops baked in</span></span><span class="rpt-badge rpt-badge-view" style="background:rgba(48,209,88,.15);color:#30D158;">APP</span></button><button class="rpt-item" onclick="closeReportsDropdown();window.open('nothome_wave2.html','_blank');" role="menuitem"><span class="rpt-icon">🚪</span><span class="rpt-text"><span class="rpt-title">Not Home Walk Sheet</span><span class="rpt-desc">Print Wave 2 return visits for Not Home households</span></span><span class="rpt-badge rpt-badge-pdf">PRINT</span></button><button class="rpt-item" onclick="closeReportsDropdown();window.open('not_home_report.html','_blank');" role="menuitem"><span class="rpt-icon">🏠</span><span class="rpt-text"><span class="rpt-title">Not Home Street Summary</span><span class="rpt-desc">153 households / 267 voters not reached — by street</span></span><span class="rpt-badge rpt-badge-view">VIEW</span></button><button class="rpt-item" onclick="closeReportsDropdown();window.open('undecided_report.html','_blank');" role="menuitem"><span class="rpt-icon">❓</span><span class="rpt-text"><span class="rpt-title">Undecided Street Summary</span><span class="rpt-desc">127 households / 256 voters persuadable — by street</span></span><span class="rpt-badge rpt-badge-view">VIEW</span></button><button class="rpt-item" onclick="closeReportsDropdown();window.open('yes_report.html','_blank');" role="menuitem"><span class="rpt-icon">✅</span><span class="rpt-text"><span class="rpt-title">Yes Street Summary</span><span class="rpt-desc">444 households / 862 voters confirmed Yes — by street</span></span><span class="rpt-badge rpt-badge-view">VIEW</span></button><button class="rpt-item" onclick="closeReportsDropdown();window.open('undecided_wave2.html','_blank');" role="menuitem"><span class="rpt-icon">❓</span><span class="rpt-text"><span class="rpt-title">Undecided Walk Sheet</span><span class="rpt-desc">Print persuasion walk sheet for undecided households</span></span><span class="rpt-badge rpt-badge-pdf">PRINT</span></button>
-<div class="rpt-divider"></div><div class="rpt-section-label">Campaign Views</div><button class="rpt-item" onclick="closeReportsDropdown();scrollToSection('tally');" role="menuitem"><span class="rpt-icon">📊</span><span class="rpt-text"><span class="rpt-title">Live Results Dashboard</span><span class="rpt-desc">Real-time canvass progress &amp; stats</span></span><span class="rpt-badge rpt-badge-view">VIEW</span></button><button class="rpt-item" onclick="closeReportsDropdown();scrollToSection('teams');" role="menuitem"><span class="rpt-icon">🗺️</span><span class="rpt-text"><span class="rpt-title">Canvasser Route Summary</span><span class="rpt-desc">All team assignments &amp; territories</span></span><span class="rpt-badge rpt-badge-view">VIEW</span></button><div class="rpt-divider"></div><button class="rpt-item" onclick="closeReportsDropdown();window.print();" role="menuitem"><span class="rpt-icon">🖨️</span><span class="rpt-text"><span class="rpt-title">Print Full Campaign Plan</span><span class="rpt-desc">Complete site as printable document</span></span><span class="rpt-badge rpt-badge-print">PRINT</span></button><div class="rpt-data-note">CSV &amp; PDF reports require canvass data to be uploaded first.</div></div></div></div></nav>
+<div class="rpt-divider"></div><div class="rpt-section-label">Campaign Views</div><button class="rpt-item" onclick="closeReportsDropdown();scrollToSection('tally');" role="menuitem"><span class="rpt-icon">📊</span><span class="rpt-text"><span class="rpt-title">Live Results Dashboard</span><span class="rpt-desc">Real-time canvass progress &amp; stats</span></span><span class="rpt-badge rpt-badge-view">VIEW</span></button><div class="rpt-data-note">CSV &amp; PDF reports require canvass data to be uploaded first.</div></div></div></div></nav>
 
 
 <!-- Party Breakdown Report Modal -->
@@ -2312,14 +2312,6 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
         <span class="rhm-tag" style="background:rgba(46,134,193,.2);color:#aee2ff;border:1px solid rgba(46,134,193,.35)">VIEW</span>
       </button>
 
-      <button class="rhm-card" onclick="closeReportHub();scrollToSection('teams');">
-        <div class="rhm-icon" style="background:rgba(142,68,173,.12)">🗺️</div>
-        <div class="rhm-info">
-          <span class="rhm-name">Canvasser Route Summary</span>
-          <span class="rhm-about">All team assignments, street territories, door counts, and assigned canvassers.</span>
-        </div>
-        <span class="rhm-tag" style="background:rgba(46,134,193,.2);color:#aee2ff;border:1px solid rgba(46,134,193,.35)">VIEW</span>
-      </button>
 
       <div class="rhm-group-label">🚶 Walk Sheets</div>
 
@@ -2362,16 +2354,7 @@ footer p{font-size:.82rem;color:#445566;line-height:1.7}footer strong{color:#778
         <span class="rhm-tag" style="background:rgba(201,150,42,.2);color:var(--gold-light);border:1px solid rgba(201,150,42,.35)">PRINT</span>
       </button>
 
-      <div class="rhm-group-label">🖨️ Print</div>
 
-      <button class="rhm-card" onclick="closeReportHub();window.print();">
-        <div class="rhm-icon" style="background:rgba(255,255,255,.06)">🖨️</div>
-        <div class="rhm-info">
-          <span class="rhm-name">Print Full Campaign Plan</span>
-          <span class="rhm-about">Send the complete site to your printer or save as PDF from your browser's print dialog.</span>
-        </div>
-        <span class="rhm-tag" style="background:rgba(255,255,255,.08);color:#c0ccdd;border:1px solid rgba(255,255,255,.15)">PRINT</span>
-      </button>
     </div>
   </div>
 </div>
